@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 23. 07. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2025-09-06 16:40:59 krylon>
+// Time-stamp: <2026-01-06 15:33:46 krylon>
 
 // Package common contains definitions used throughout the application
 package common
@@ -19,7 +19,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/blicero/carebear/logdomain"
+	"github.com/blicero/chili/logdomain"
 	"github.com/blicero/krylib"
 	"github.com/hashicorp/logutils"
 	uuid "github.com/odeke-em/go-uuid"
@@ -34,10 +34,10 @@ import (
 // TimestampFormat is the default format for timestamp used throughout the
 // application.
 const (
-	AppName                  = "CareBear"
-	Version                  = "0.2.0"
+	AppName                  = "Chili"
+	Version                  = "0.0.1"
 	Debug                    = true
-	DefaultPort              = 3819
+	DefaultPort              = 2980
 	TimestampFormatMinute    = "2006-01-02 15:04"
 	TimestampFormat          = "2006-01-02 15:04:05"
 	TimestampFormatSubSecond = "2006-01-02 15:04:05.0000 MST"
