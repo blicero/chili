@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2025-09-05 19:45:35 krylon>
+// Time-stamp: <2026-01-06 15:36:24 krylon>
 
 //go:build ignore
 // +build ignore
@@ -59,47 +59,15 @@ var candidates = map[string][]string{
 	"generate": {
 		"common",
 		"logdomain",
-		"model/info",
-		"database/query",
-		"scanner/command",
-		"scheduler/task",
 	},
-	"test": {
-		"database",
-		"model",
-		"probe",
-		"settings",
-		"web",
-	},
+	"test": {},
 	"vet": {
 		"logdomain",
 		"common",
-		"database",
-		"database/query",
-		"model",
-		"model/info",
-		"ping",
-		"probe",
-		"scanner",
-		"scanner/command",
-		"scheduler",
-		"settings",
-		"web",
 	},
 	"lint": {
 		"logdomain",
 		"common",
-		"database",
-		"database/query",
-		"model",
-		"model/info",
-		"ping",
-		"probe",
-		"scanner",
-		"scanner/command",
-		"scheduler",
-		"settings",
-		"web",
 	},
 }
 
@@ -251,7 +219,7 @@ This flag is not case-sensitive.`, strings.Join(orderedSteps, ", ")))
 	if steps["build"] {
 		var output []byte
 
-		dbg.Println("[INFO] Building carebear")
+		dbg.Println("[INFO] Building Chili...")
 
 		// Put aside a possibly existing binary
 		if err = backupExecutable(); err != nil {
@@ -271,7 +239,7 @@ This flag is not case-sensitive.`, strings.Join(orderedSteps, ", ")))
 		}
 		var cmd = exec.Command("go", args...)
 		if output, err = cmd.CombinedOutput(); err != nil {
-			dbg.Printf("[ERROR] Error building carebear: %s\n%s\n",
+			dbg.Printf("[ERROR] Error building chili: %s\n%s\n",
 				err.Error(),
 				output)
 			os.Exit(1)
@@ -374,7 +342,7 @@ func worker(n int, op string, pkgq <-chan string, errq chan<- error, wg *sync.Wa
 	defer wg.Done()
 
 	for folder := range pkgq {
-		pkg = "github.com/blicero/carebear/" + folder
+		pkg = "github.com/blicero/chili/" + folder
 		dbg.Printf("[TRACE] Worker %d call %s on %s\n",
 			n,
 			op,
@@ -466,7 +434,7 @@ func initLog(min string) error {
 		writer io.Writer
 		// Trailing space because Logger does not seem to insert one
 		// between fields of the line.
-		logName = "carebear.build "
+		logName = "chili.build "
 	)
 
 	// fmt.Printf("Creating Logger with minLevel = %q\n",
@@ -496,8 +464,8 @@ func initLog(min string) error {
 
 func backupExecutable() error {
 	const (
-		execPath   = "carebear"
-		backupPath = "bak.carebear"
+		execPath   = "chili"
+		backupPath = "bak.chili"
 	)
 	var (
 		exists bool
