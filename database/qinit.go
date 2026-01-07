@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-07 15:43:05 krylon>
+// Time-stamp: <2026-01-07 16:22:01 krylon>
 
 package database
 
@@ -37,4 +37,5 @@ CREATE TABLE device (
 ) STRICT
 `,
 	"CREATE INDEX dev_net_idx ON device (net_id)",
+	"CREATE INDEX dev_contact_idx ON device (last_contact)",
 }
