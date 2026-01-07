@@ -29,6 +29,7 @@ CREATE TABLE device (
     last_contact INTEGER NOT NULL DEFAULT 0,
     os TEXT,
     class INTEGER NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1,
     FOREIGN KEY (net_id) REFERENCES network (id)
         ON UPDATE RESTRICT
         ON DELETE CASCADE,

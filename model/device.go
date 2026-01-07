@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-07 15:19:22 krylon>
+// Time-stamp: <2026-01-07 15:52:11 krylon>
 
 package model
 
@@ -21,4 +21,5 @@ type Device struct {
 	LastContact time.Time
 	OS          string
 	Class       device.Class
+	Active      bool
 }

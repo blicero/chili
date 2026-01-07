@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-07 15:19:09 krylon>
+// Time-stamp: <2026-01-07 15:27:23 krylon>
 
 package query
 
@@ -15,4 +15,12 @@ const (
 	NetAdd ID = iota
 	NetUpdateLastScan
 	DeviceAdd
+	DeviceUpdateLastContact
+	DeviceUpdateOS
+	DeviceUpdateClass
+	DeviceUpdateName
+	DeviceUpdateActive
+	DeviceGetByNet
+	DeviceGetAll
+	DeviceGetByID
 )
