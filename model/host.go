@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-06 16:04:46 krylon>
+// Time-stamp: <2026-01-07 15:19:22 krylon>
 
 package model
 
@@ -12,12 +12,13 @@ import (
 	"github.com/blicero/chili/model/device"
 )
 
-type Host struct {
+type Device struct {
 	ID          int64
+	NetID       int64
 	Name        string
 	Addr        string
 	Added       time.Time
 	LastContact time.Time
 	OS          string
-	Type        device.Class
+	Class       device.Class
 }
