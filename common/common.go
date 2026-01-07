@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 23. 07. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-01-06 15:33:46 krylon>
+// Time-stamp: <2026-01-07 15:42:43 krylon>
 
 // Package common contains definitions used throughout the application
 package common
@@ -104,7 +104,7 @@ func InitApp() error {
 	var err error
 
 	if err = os.Mkdir(BaseDir, 0700); err != nil && !os.IsExist(err) {
-		return fmt.Errorf("Error creating BaseDir %s: %s", BaseDir, err.Error())
+		return fmt.Errorf("error creating BaseDir %s: %s", BaseDir, err.Error())
 	}
 
 	LogPath = filepath.Join(BaseDir, fmt.Sprintf("%s.log", strings.ToLower(AppName)))
@@ -157,7 +157,7 @@ func GetLogger(domain logdomain.ID) (*log.Logger, error) { // nolint: interfacer
 	)
 
 	if err = InitApp(); err != nil {
-		return nil, fmt.Errorf("Error initializing application environment: %s", err.Error())
+		return nil, fmt.Errorf("error initializing application environment: %s", err.Error())
 	}
 
 	if logfile, err = os.OpenFile(LogPath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0600); err != nil {
@@ -193,7 +193,7 @@ func GetLoggerStdout(domain logdomain.ID) (*log.Logger, error) { // nolint: inte
 	var err error
 
 	if err = InitApp(); err != nil {
-		return nil, fmt.Errorf("Error initializing application environment: %s", err.Error())
+		return nil, fmt.Errorf("error initializing application environment: %s", err.Error())
 	}
 
 	var (
