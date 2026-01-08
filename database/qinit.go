@@ -2,7 +2,9 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-07 16:22:01 krylon>
+// Time-stamp: <2026-01-07 16:28:01 krylon>
+//
+// This file contains the SQL queries to initialize an empty database.
 
 package database
 
