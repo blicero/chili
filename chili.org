@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-01-08 15:37:46 krylon>
+# Time-stamp: <2026-01-08 18:19:53 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -15,16 +15,16 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-01-08 Do 15:37]
-   | Headline               | Time   |        |      |
-   |------------------------+--------+--------+------|
-   | *Total time*           | *8:30* |        |      |
-   |------------------------+--------+--------+------|
-   | *Chili [0/0]*          | *8:30* |        |      |
-   | \_  /Components [0/0]/ |        | /8:30/ |      |
-   | \_    Data model [0/0] |        |        | 5:35 |
-   | \_    Database [0/0]   |        |        | 2:52 |
-   | \_    Main [0/0]       |        |        | 0:03 |
+   #+CAPTION: Clock summary at [2026-01-08 Do 18:19]
+   | Headline               | Time    |         |      |
+   |------------------------+---------+---------+------|
+   | *Total time*           | *11:09* |         |      |
+   |------------------------+---------+---------+------|
+   | *Chili [0/0]*          | *11:09* |         |      |
+   | \_  /Components [0/0]/ |         | /11:09/ |      |
+   | \_    Data model [0/0] |         |         | 5:35 |
+   | \_    Database [0/0]   |         |         | 5:31 |
+   | \_    Main [0/0]       |         |         | 0:03 |
    #+END:
 ** Components [0/0]
    :PROPERTIES:
@@ -40,6 +40,7 @@
     :END:
 *** Database [0/0]
     :LOGBOOK:
+    CLOCK: [2026-01-08 Do 15:40]--[2026-01-08 Do 18:19] =>  2:39
     CLOCK: [2026-01-08 Do 14:56]--[2026-01-08 Do 15:06] =>  0:10
     CLOCK: [2026-01-07 Mi 18:08]--[2026-01-07 Mi 19:02] =>  0:54
     CLOCK: [2026-01-07 Mi 16:26]--[2026-01-07 Mi 17:07] =>  0:41
