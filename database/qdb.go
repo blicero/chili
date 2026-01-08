@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-08 15:38:47 krylon>
+// Time-stamp: <2026-01-08 15:46:47 krylon>
 //
 // This files contains the SQL queries we intend to run on the database.
 
@@ -10,7 +10,6 @@ package database
 
 import "github.com/blicero/chili/database/query"
 
-// nolint: unused
 var qdb = map[query.ID]string{
 	query.NetAdd:            "INSERT INTO network (name, addr, added) VALUE (?, ?, ?) RETURNING id",
 	query.NetUpdateLastScan: "UPDATE network SET last_scan = ? WHERE id = ?",
