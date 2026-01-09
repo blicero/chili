@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-01-09 15:50:38 krylon>
+# Time-stamp: <2026-01-09 16:13:42 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -15,15 +15,16 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-01-09 Fr 15:50]
+   #+CAPTION: Clock summary at [2026-01-09 Fr 16:13]
    | Headline               | Time    |         |      |      |
    |------------------------+---------+---------+------+------|
-   | *Total time*           | *11:55* |         |      |      |
+   | *Total time*           | *11:57* |         |      |      |
    |------------------------+---------+---------+------+------|
-   | *Chili [0/0]*          | *11:55* |         |      |      |
-   | \_  /Components [0/0]/ |         | /11:55/ |      |      |
+   | *Chili [0/0]*          | *11:57* |         |      |      |
+   | \_  /Components [0/0]/ |         | /11:57/ |      |      |
    | \_    Data model [0/0] |         |         | 5:35 |      |
-   | \_    Database [0/0]   |         |         | 6:17 |      |
+   | \_    Database [0/0]   |         |         | 6:19 |      |
+   | \_      Pool           |         |         |      | 0:02 |
    | \_      Testing        |         |         |      | 0:10 |
    | \_    Main [0/0]       |         |         | 0:03 |      |
    #+END:
@@ -57,6 +58,13 @@
     CLOCK: [2026-01-07 Mi 15:55]--[2026-01-07 Mi 16:24] =>  0:29
     CLOCK: [2026-01-07 Mi 15:07]--[2026-01-07 Mi 15:45] =>  0:38
     :END:
+**** Pool
+     :LOGBOOK:
+     CLOCK: [2026-01-09 Fr 16:09]--[2026-01-09 Fr 16:11] =>  0:02
+     :END:
+     I almost forgot about this.
+     Fortunately, I could practically copy the implementation verbatim from a
+     previous project.
 **** Testing
      :LOGBOOK:
      CLOCK: [2026-01-09 Fr 15:40]--[2026-01-09 Fr 15:50] =>  0:10
