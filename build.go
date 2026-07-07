@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-01-09 21:34:10 krylon>
+// Time-stamp: <2026-07-07 14:45:52 krylon>
 
 //go:build ignore
 // +build ignore
@@ -51,6 +51,7 @@ var orderedSteps = []string{
 	"generate",
 	"vet",
 	"lint",
+	"nilaway",
 	"test",
 	"build",
 }
@@ -62,9 +63,6 @@ var candidates = map[string][]string{
 		"model/device",
 		"database/query",
 		"control",
-	},
-	"test": {
-		"database",
 	},
 	"vet": {
 		"logdomain",
@@ -85,6 +83,19 @@ var candidates = map[string][]string{
 		"database/query",
 		"scanner",
 		"control",
+	},
+	"nilaway": {
+		"logdomain",
+		"common",
+		"model",
+		"model/device",
+		"database",
+		"database/query",
+		"scanner",
+		"control",
+	},
+	"test": {
+		"database",
 	},
 }
 
@@ -112,7 +123,7 @@ func main() {
 		stepsRaw              string
 		steps                 map[string]bool
 		stepList              []string
-		race                  bool
+		race, skipNil         bool
 		lvlString             = make([]string, len(logLevels))
 	)
 
@@ -122,6 +133,7 @@ func main() {
 
 	flag.IntVar(&workerCnt, "parallel", runtime.NumCPU(), "Number of concurrent build processes")
 	flag.BoolVar(&verbose, "verbose", false, "Emit additional messages to aid in debugging")
+	flag.BoolVar(&skipNil, "skipnil", false, "Skip nilaway")
 	flag.BoolVar(&race, "race", false, "Enable to the go race condition detector")
 	flag.StringVar(&minLevel, "loglevel", "DEBUG", fmt.Sprintf(`Log messages with a lower priority than this will be discarded.
 Valid log levels are: %s
@@ -269,6 +281,12 @@ This flag is not case-sensitive.`, strings.Join(orderedSteps, ", ")))
 func dispatch(op string, workers int) error {
 	if l := len(candidates[op]); l == 0 {
 		return nil
+	} else if op == "nilaway" {
+		if skipNil {
+			return nil
+		} else {
+			workers = 1
+		}
 	} else if l < workers {
 		workers = l
 	}
@@ -387,6 +405,12 @@ func worker(n int, op string, pkgq <-chan string, errq chan<- error, wg *sync.Wa
 			} else {
 				cmd = exec.Command("go", op, "-v", "-timeout", "30m", "-race", pkg)
 			}
+		case "nilaway":
+			cmd = exec.Command(
+				op,
+				"-pretty-print=false",
+				"-include-pkgs=github.com/blicero/newsroom",
+				pkg)
 		default:
 			cmd = exec.Command("go", op, "-v", pkg)
 		}
