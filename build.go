@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-07-07 14:45:52 krylon>
+// Time-stamp: <2026-07-07 16:06:15 krylon>
 
 //go:build ignore
 // +build ignore
@@ -110,7 +110,7 @@ var cleanPatterns = []*regexp.Regexp{
 }
 
 var errDone = errors.New("Done")
-var verbose bool
+var verbose, skipNil bool
 var dbg *log.Logger
 
 // nolint: gocyclo
