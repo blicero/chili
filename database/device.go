@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-08 12:25:03 krylon>
+// Time-stamp: <2026-07-08 12:28:16 krylon>
 
 package database
 
@@ -371,6 +371,7 @@ EXEC_QUERY:
 	return devices, nil
 } // func (db *Database) DeviceGetByNet(netID int64) ([]*model.Device, error)
 
+// DeviceGetAll loads all Devices from the Database.
 func (db *Database) DeviceGetAll() ([]*model.Device, error) {
 	const qid query.ID = query.DeviceGetAll
 	var (
