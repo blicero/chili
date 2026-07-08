@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-09 15:48:11 krylon>
+// Time-stamp: <2026-07-08 12:38:04 krylon>
 //
 // This files contains the SQL queries we intend to run on the database.
 
@@ -35,6 +35,7 @@ FROM network
 	query.DeviceAdd: `
 INSERT INTO device (net_id, name, addr, added, class)
             VALUES (     ?,    ?,    ?,     ?,     ?)
+ON CONFLICT (addr) DO UPDATE SET last_contact = unixepoch()
 RETURNING id
 `,
 	query.DeviceUpdateLastContact: "UPDATE device SET last_contact = ? WHERE id = ?",
