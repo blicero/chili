@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-08 12:23:13 krylon>
+// Time-stamp: <2026-07-08 13:34:53 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -97,6 +98,9 @@ func (sc *Scanner) mainLoop() {
 	var ticker = time.NewTicker(scanInterval)
 	defer ticker.Stop()
 
+	sc.log.Println("[TRACE] Scanner mainloop initiated")
+	defer sc.log.Println("[TRACE] Scanner mainloop finished")
+
 	for sc.active.Load() {
 		select {
 		case <-ticker.C:
@@ -105,6 +109,10 @@ func (sc *Scanner) mainLoop() {
 			switch cmd {
 			case control.Scan:
 				go sc.runScan()
+			case control.Stop:
+				sc.log.Println("[DEBUG] Someone told me to stop. Bye.")
+				sc.active.Store(false)
+				return
 			}
 		}
 	}
@@ -214,7 +222,10 @@ func (sc *Scanner) scanAddr(target *scanTarget, devQ chan<- *model.Device) {
 
 	sc.log.Printf("[INFO] Discovered one Device at %s\n", target.addr)
 
-	var names []string
+	var (
+		name  string
+		names []string
+	)
 
 	if names, err = net.LookupAddr(target.addr.String()); err != nil {
 		sc.log.Printf("[ERROR] Could not resolve address %s to name: %s\n",
@@ -227,13 +238,15 @@ func (sc *Scanner) scanAddr(target *scanTarget, devQ chan<- *model.Device) {
 		return
 	}
 
+	name, _ = strings.CutSuffix(names[0], ".")
+
 	sc.log.Printf("[DEBUG] Discovered one device: %s / %s\n",
-		names[0],
+		name,
 		target.addr)
 
 	var dev = &model.Device{
 		NetID:  target.net.ID,
-		Name:   names[0],
+		Name:   name,
 		Addr:   target.addr,
 		Added:  time.Now(),
 		Active: true,
