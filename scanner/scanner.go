@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-10 16:15:34 krylon>
+// Time-stamp: <2026-07-08 11:38:53 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -47,7 +47,7 @@ type scanTarget struct {
 
 type Scanner struct {
 	log       *log.Logger
-	lock      *sync.RWMutex
+	lock      *sync.RWMutex // nolint: unused
 	active    atomic.Bool
 	workerCnt int
 	dbPool    *database.Pool
