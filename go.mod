@@ -1,6 +1,6 @@
 module github.com/blicero/chili
 
-go 1.25.5
+go 1.26.0
 
 require (
 	github.com/blicero/krylib v0.2.1
