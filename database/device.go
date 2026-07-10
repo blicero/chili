@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-08 12:28:16 krylon>
+// Time-stamp: <2026-07-10 10:54:27 krylon>
 
 package database
 
@@ -80,9 +80,9 @@ EXEC_QUERY:
 	return nil
 } // func (db *Database) DeviceAdd(d *model.Device) error
 
-// DeviceUpdateLastContact updates a Device's LastContact timestamp.
-func (db *Database) DeviceUpdateLastContact(d *model.Device, contact time.Time) error {
-	const qid query.ID = query.DeviceUpdateLastContact
+// DeviceSetLastContact updates a Device's LastContact timestamp.
+func (db *Database) DeviceSetLastContact(d *model.Device, contact time.Time) error {
+	const qid query.ID = query.DeviceSetLastContact
 	var (
 		err  error
 		stmt *sql.Stmt
@@ -121,11 +121,11 @@ EXEC_QUERY:
 
 	d.LastContact = contact
 	return nil
-} // func (db *Database) DeviceUpdateLastContact(d *model.Device, contact time.Time) error
+} // func (db *Database) DeviceSetLastContact(d *model.Device, contact time.Time) error
 
-// DeviceUpdateOS updates a Device's OS
-func (db *Database) DeviceUpdateOS(d *model.Device, osName string) error {
-	const qid query.ID = query.DeviceUpdateOS
+// DeviceSetOS updates a Device's OS
+func (db *Database) DeviceSetOS(d *model.Device, osName string) error {
+	const qid query.ID = query.DeviceSetOS
 	var (
 		err  error
 		stmt *sql.Stmt
@@ -164,11 +164,11 @@ EXEC_QUERY:
 
 	d.OS = osName
 	return nil
-} // func (db *Database) DeviceUpdateOS(d *model.Device, osName string) error
+} // func (db *Database) DeviceSetOS(d *model.Device, osName string) error
 
-// DeviceUpdateClass updates a Device's Class.
-func (db *Database) DeviceUpdateClass(d *model.Device, class device.Class) error {
-	const qid query.ID = query.DeviceUpdateClass
+// DeviceSetClass updates a Device's Class.
+func (db *Database) DeviceSetClass(d *model.Device, class device.Class) error {
+	const qid query.ID = query.DeviceSetClass
 	var (
 		err  error
 		stmt *sql.Stmt
@@ -207,11 +207,11 @@ EXEC_QUERY:
 
 	d.Class = class
 	return nil
-} // func (db *Database) DeviceUpdateClass(d *model.Device, class device.Class) error
+} // func (db *Database) DeviceSetClass(d *model.Device, class device.Class) error
 
-// DeviceUpdateActive updates a Device's active flag.
-func (db *Database) DeviceUpdateActive(d *model.Device, active bool) error {
-	const qid query.ID = query.DeviceUpdateActive
+// DeviceSetActive updates a Device's active flag.
+func (db *Database) DeviceSetActive(d *model.Device, active bool) error {
+	const qid query.ID = query.DeviceSetActive
 	var (
 		err  error
 		stmt *sql.Stmt
@@ -250,7 +250,7 @@ EXEC_QUERY:
 
 	d.Active = active
 	return nil
-} // func (db *Database) DeviceUpdateActive(d *model.Device, class device.Class) error
+} // func (db *Database) DeviceSetActive(d *model.Device, class device.Class) error
 
 // DeviceGetByID loads a Device by its ID, if such a record exists in the Datbase.
 func (db *Database) DeviceGetByID(id int64) (*model.Device, error) {

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-08 12:38:04 krylon>
+// Time-stamp: <2026-07-10 10:53:36 krylon>
 //
 // This files contains the SQL queries we intend to run on the database.
 
@@ -11,9 +11,9 @@ package database
 import "github.com/blicero/chili/database/query"
 
 var qdb = map[query.ID]string{
-	query.NetAdd:            "INSERT INTO network (name, addr, added) VALUES (?, ?, ?) RETURNING id",
-	query.NetUpdateLastScan: "UPDATE network SET last_scan = ? WHERE id = ?",
-	query.NetUpdateName:     "UPDATE network SET name = ? WHERE id = ?",
+	query.NetAdd:         "INSERT INTO network (name, addr, added) VALUES (?, ?, ?) RETURNING id",
+	query.NetSetLastScan: "UPDATE network SET last_scan = ? WHERE id = ?",
+	query.NetSetName:     "UPDATE network SET name = ? WHERE id = ?",
 	query.NetGetByID: `
 SELECT
     name,
@@ -38,11 +38,11 @@ INSERT INTO device (net_id, name, addr, added, class)
 ON CONFLICT (addr) DO UPDATE SET last_contact = unixepoch()
 RETURNING id
 `,
-	query.DeviceUpdateLastContact: "UPDATE device SET last_contact = ? WHERE id = ?",
-	query.DeviceUpdateOS:          "UPDATE device SET os = ? WHERE id = ?",
-	query.DeviceUpdateClass:       "UPDATE device SET class = ? WHERE id = ?",
-	query.DeviceUpdateName:        "UPDATE device SET name = ? WHERE id = ?",
-	query.DeviceUpdateActive:      "UPDATE device SET active = ? WHERE id = ?",
+	query.DeviceSetLastContact: "UPDATE device SET last_contact = ? WHERE id = ?",
+	query.DeviceSetOS:          "UPDATE device SET os = ? WHERE id = ?",
+	query.DeviceSetClass:       "UPDATE device SET class = ? WHERE id = ?",
+	query.DeviceSetName:        "UPDATE device SET name = ? WHERE id = ?",
+	query.DeviceSetActive:      "UPDATE device SET active = ? WHERE id = ?",
 	query.DeviceGetByID: `
 SELECT
     net_id,

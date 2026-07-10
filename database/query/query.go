@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-07 16:24:00 krylon>
+// Time-stamp: <2026-07-10 10:52:44 krylon>
 
 package query
 
@@ -13,16 +13,16 @@ type ID uint8
 
 const (
 	NetAdd ID = iota
-	NetUpdateLastScan
-	NetUpdateName
+	NetSetLastScan
+	NetSetName
 	NetGetByID
 	NetGetAll
 	DeviceAdd
-	DeviceUpdateLastContact
-	DeviceUpdateOS
-	DeviceUpdateClass
-	DeviceUpdateName
-	DeviceUpdateActive
+	DeviceSetLastContact
+	DeviceSetOS
+	DeviceSetClass
+	DeviceSetName
+	DeviceSetActive
 	DeviceGetByID
 	DeviceGetByNet
 	DeviceGetAll

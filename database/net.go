@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-08 12:28:31 krylon>
+// Time-stamp: <2026-07-10 10:54:43 krylon>
 
 package database
 
@@ -79,9 +79,9 @@ EXEC_QUERY:
 	return nil
 } // func (db *Database) NetAdd(n *model.Network) error
 
-// NetUpdateLastScan updates a Network's scan timestamp.
-func (db *Database) NetUpdateLastScan(n *model.Network, t time.Time) error {
-	const qid query.ID = query.NetUpdateLastScan
+// NetSetLastScan updates a Network's scan timestamp.
+func (db *Database) NetSetLastScan(n *model.Network, t time.Time) error {
+	const qid query.ID = query.NetSetLastScan
 	var (
 		err  error
 		stmt *sql.Stmt
@@ -112,11 +112,11 @@ EXEC_QUERY:
 
 	n.LastScan = t
 	return nil
-} // func (db *Database) NetUpdateLastScan(n *model.Network, t time.Time) error
+} // func (db *Database) NetSetLastScan(n *model.Network, t time.Time) error
 
-// NetUpdateName updates a Network's name.
-func (db *Database) NetUpdateName(n *model.Network, name string) error {
-	const qid query.ID = query.NetUpdateName
+// NetSetName updates a Network's name.
+func (db *Database) NetSetName(n *model.Network, name string) error {
+	const qid query.ID = query.NetSetName
 	var (
 		err  error
 		stmt *sql.Stmt
@@ -147,7 +147,7 @@ EXEC_QUERY:
 
 	n.Name = name
 	return nil
-} // func (db *Database) NetUpdateName(n *model.Network, name string) error
+} // func (db *Database) NetSetName(n *model.Network, name string) error
 
 // NetGetByID looks up a Networkd by its ID.
 func (db *Database) NetGetByID(id int64) (*model.Network, error) {
