@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 11:38:16 krylon>
+// Time-stamp: <2026-07-10 14:03:51 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -94,6 +94,11 @@ func (sc *Scanner) Start() error {
 
 	return nil
 } // func (sc *Scanner) Start() error
+
+// Stop tells the Scanner to shut down.
+func (sc *Scanner) Stop() {
+	sc.active.Store(false)
+} // func (sc *Scanner) Stop()
 
 func (sc *Scanner) mainLoop() {
 	var ticker = time.NewTicker(scanInterval)
