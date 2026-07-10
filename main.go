@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-08 13:38:57 krylon>
+// Time-stamp: <2026-07-09 09:30:20 krylon>
 
 package main
 
@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"runtime/pprof"
 	"syscall"
 	"time"
 
@@ -29,6 +30,7 @@ func main() {
 		err             error
 		sc              *scanner.Scanner
 		scanWorkerCount int
+		profOut         string
 		ticker          *time.Ticker
 		sigQ            chan os.Signal
 	)
@@ -38,8 +40,42 @@ func main() {
 		"parallel",
 		runtime.NumCPU(),
 		"number of workers to run network scans in parallel")
+	flag.StringVar(
+		&profOut,
+		"profile",
+		"",
+		"file to write profiling data to (ignored if empty)",
+	)
 
 	flag.Parse()
+
+	if profOut != "" {
+		var profH *os.File
+
+		fmt.Printf("Writing profiling data to %s\n",
+			profOut)
+
+		if profH, err = os.Create(profOut); err != nil {
+			fmt.Fprintf(
+				os.Stderr,
+				"Failed to open %s: %s\n",
+				profOut,
+				err.Error())
+			os.Exit(1)
+		}
+
+		defer profH.Close() // nolint: errcheck
+
+		if err = pprof.StartCPUProfile(profH); err != nil {
+			fmt.Fprintf(
+				os.Stderr,
+				"Error starting CPU profile: %s\n",
+				err.Error())
+			os.Exit(1)
+		}
+
+		defer pprof.StopCPUProfile()
+	}
 
 	if sc, err = scanner.New(scanWorkerCount); err != nil {
 		fmt.Fprintf(
