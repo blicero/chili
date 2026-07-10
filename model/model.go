@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-08 12:40:03 krylon>
+// Time-stamp: <2026-07-09 13:17:05 krylon>
 
 package model
 
@@ -12,8 +12,23 @@ import (
 	"time"
 
 	"github.com/blicero/chili/model/device"
-	"github.com/korylprince/ipnetgen"
 )
+
+// // http://play.golang.org/p/m8TNTtygK0
+func inc(ip net.IP) {
+	for j := len(ip) - 1; j >= 0; j-- {
+		ip[j]++
+		if ip[j] > 0 {
+			break
+		}
+	}
+}
+
+func clone(ip net.IP) net.IP {
+	var b = make(net.IP, len(ip))
+	copy(b, ip)
+	return b
+} // func clone(ip net.IP) net.IP
 
 // Network defines a range of IP addresses where our devices live.
 type Network struct {
@@ -37,22 +52,20 @@ func NewNet(name, addr string) (*Network, error) {
 	return n, nil
 } // func NewNet(name, addr string) (*Network, error)
 
-// Enumerate generates all IP addresses for the Network and sends them through the channel
-// passed in as its argument.
+// Enumerate generates all IP addresses for the Network and sends them through
+// the channel passed in as its argument.
 func (n *Network) Enumerate(q chan<- net.IP) error {
-	gen, err := ipnetgen.New(n.Addr.String())
-
-	if err != nil {
-		return err
-	}
-
 	go func() {
-		for ip := gen.Next(); ip != nil; ip = gen.Next() {
-			if !ip.IsMulticast() {
-				q <- ip
-			}
+		var ip net.IP
+		defer close(q)
+		ip = make(net.IP, len(n.Addr.IP))
+		copy(ip, n.Addr.IP)
+		inc(ip)
+		for n.Addr.Contains(ip) {
+			var b = clone(ip)
+			inc(ip)
+			q <- b
 		}
-		close(q)
 	}()
 
 	return nil
