@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-08 13:34:53 krylon>
+// Time-stamp: <2026-07-10 10:39:37 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -38,8 +38,10 @@ import (
 // }
 
 const (
-	pingCount    = 8
-	scanInterval = time.Minute // XXX Set to more reasonable value after testing/debugging.
+	pingCount    = 4
+	pingTimeout  = time.Second * 10
+	pingInterval = time.Millisecond * 250
+	scanInterval = time.Second * 30 // XXX Set to more reasonable value after testing/debugging.
 )
 
 type scanTarget struct {
@@ -48,12 +50,13 @@ type scanTarget struct {
 }
 
 type Scanner struct {
-	log       *log.Logger
-	scanLock  sync.RWMutex
-	active    atomic.Bool
-	workerCnt int
-	dbPool    *database.Pool
-	CmdQ      chan control.Message
+	log *log.Logger
+	// scanLock    sync.RWMutex
+	active      atomic.Bool
+	scanRunning atomic.Bool
+	workerCnt   int
+	dbPool      *database.Pool
+	CmdQ        chan control.Message
 }
 
 // New creates a new Scanner with the given number of worker goroutines.
@@ -119,8 +122,11 @@ func (sc *Scanner) mainLoop() {
 } // func (sc *Scanner) mainLoop()
 
 func (sc *Scanner) runScan() {
-	sc.scanLock.Lock()
-	defer sc.scanLock.Unlock()
+	if swapped := sc.scanRunning.CompareAndSwap(false, true); !swapped {
+		sc.log.Println("[INFO] Another scan appears to be in progress. Bye.")
+		return
+	}
+	defer sc.scanRunning.Store(false)
 
 	sc.log.Println("[TRACE] Begin network scan")
 	defer sc.log.Println("[TRACE] Finished network scan")
@@ -138,6 +144,8 @@ func (sc *Scanner) runScan() {
 		wg.Go(func() { sc.scanWorker(i+1, scanQ, devQ) })
 	}
 
+	//sc.feeder(scanQ)
+
 	wg.Wait()
 } // func (sc Scanner) runScan()
 
@@ -145,11 +153,18 @@ func (sc *Scanner) feeder(scanQ chan<- *scanTarget) {
 	sc.log.Println("[TRACE] Scanner feeder coming up...")
 	defer sc.log.Println("[TRACE] Scanner feeder quitting...")
 
+	defer close(scanQ) // nolint: errcheck
+
+	const reportInterval = 1024
+
 	var (
 		err      error
 		db       *database.Database
 		networks []*model.Network
+		ticker   = time.NewTicker(common.ActiveTimeout)
 	)
+
+	defer ticker.Stop()
 
 	db = sc.dbPool.Get()
 	defer sc.dbPool.Put(db)
@@ -164,7 +179,10 @@ func (sc *Scanner) feeder(scanQ chan<- *scanTarget) {
 		sc.log.Printf("[DEBUG] Scanning network %d (%s)\n",
 			n.ID,
 			n.Addr)
-		var ipq = make(chan net.IP)
+		var (
+			ipq = make(chan net.IP)
+			cnt int
+		)
 
 		if err = n.Enumerate(ipq); err != nil {
 			sc.log.Printf("[ERROR] Failed to enumerate network %d (%s): %s\n",
@@ -174,12 +192,30 @@ func (sc *Scanner) feeder(scanQ chan<- *scanTarget) {
 			return
 		}
 
+	ADDR:
 		for ip := range ipq {
 			var target = &scanTarget{
 				net:  n,
 				addr: ip,
 			}
-			scanQ <- target
+
+			sc.log.Printf("[TRACE] Enqueueing %s\n",
+				ip)
+
+		TIMEOUT:
+			for sc.active.Load() && sc.scanRunning.Load() {
+				select {
+				case <-ticker.C:
+					continue TIMEOUT
+				case scanQ <- target:
+					if cnt++; cnt%reportInterval == 0 {
+						sc.log.Printf("[TRACE] Feeder dispatched %d IP addresses, most recently %s.\n",
+							cnt,
+							target.addr)
+					}
+					continue ADDR
+				}
+			}
 		}
 	}
 } // func (sc *Scanner) feeder(scanQ chan<- *scanTarget)
@@ -188,20 +224,15 @@ func (sc *Scanner) scanWorker(id int, scanQ <-chan *scanTarget, devQ chan<- *mod
 	sc.log.Printf("[TRACE] Scanner worker #%d starting up...\n", id)
 	defer sc.log.Printf("[TRACE] Scanner worker #%d quitting...\n", id)
 
-	var ticker = time.NewTicker(common.ActiveTimeout)
-	defer ticker.Stop()
-
-	for sc.IsActive() {
-		select {
-		case <-ticker.C:
-			continue
-		case addr := <-scanQ:
-			sc.scanAddr(addr, devQ)
-		}
+	for target := range scanQ {
+		sc.log.Printf("[TRACE] Scan worker %03d about to scan %s\n",
+			id,
+			target.addr)
+		sc.scanAddr(id, target, devQ)
 	}
 } // func (sc *Scanner) scanWorker(id int, scanQ <-chan *scanTarget, devQ chan<- *model.Device)
 
-func (sc *Scanner) scanAddr(target *scanTarget, devQ chan<- *model.Device) {
+func (sc *Scanner) scanAddr(wid int, target *scanTarget, devQ chan<- *model.Device) {
 	var (
 		err    error
 		pinger *probing.Pinger
@@ -209,8 +240,14 @@ func (sc *Scanner) scanAddr(target *scanTarget, devQ chan<- *model.Device) {
 
 	pinger = probing.New(target.addr.String())
 	pinger.Count = pingCount
+	pinger.Interval = pingInterval
+	pinger.Timeout = pingCount * pingInterval * 2
 
 	if err = pinger.Run(); err != nil {
+		sc.log.Printf("[ERROR] sc#%03d Error scanning %s: %s\n",
+			wid,
+			target.addr,
+			err.Error())
 		return
 	}
 
@@ -228,19 +265,22 @@ func (sc *Scanner) scanAddr(target *scanTarget, devQ chan<- *model.Device) {
 	)
 
 	if names, err = net.LookupAddr(target.addr.String()); err != nil {
-		sc.log.Printf("[ERROR] Could not resolve address %s to name: %s\n",
+		sc.log.Printf("[ERROR] sc#%03d Could not resolve address %s to name: %s\n",
+			wid,
 			target.addr,
 			err.Error())
 		return
 	} else if len(names) == 0 {
-		sc.log.Printf("[INFO] No name(s) were found for %s\n",
+		sc.log.Printf("[INFO] sc#%03d No name(s) were found for %s\n",
+			wid,
 			target.addr)
 		return
 	}
 
 	name, _ = strings.CutSuffix(names[0], ".")
 
-	sc.log.Printf("[DEBUG] Discovered one device: %s / %s\n",
+	sc.log.Printf("[DEBUG] sc#%03d Discovered one device: %s / %s\n",
+		wid,
 		name,
 		target.addr)
 
@@ -271,7 +311,7 @@ func (sc *Scanner) gatherDevices(devQ <-chan *model.Device) {
 	ticker = time.NewTicker(common.ActiveTimeout)
 	defer ticker.Stop()
 
-	for sc.IsActive() {
+	for sc.scanRunning.Load() {
 		select {
 		case <-ticker.C:
 			continue
