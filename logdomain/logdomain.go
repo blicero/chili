@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-06 15:32:55 krylon>
+// Time-stamp: <2026-07-10 12:52:26 krylon>
 
 package logdomain
 
@@ -19,6 +19,7 @@ const (
 	Probe
 	Scanner
 	Scheduler
+	Nexus
 	Web
 )
 
@@ -32,6 +33,7 @@ func AllDomains() []ID {
 		Probe,
 		Scanner,
 		Scheduler,
+		Nexus,
 		Web,
 	}
 } // func AllDomains() []ID
