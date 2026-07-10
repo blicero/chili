@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 10:50:18 krylon>
+// Time-stamp: <2026-07-10 11:38:16 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -38,10 +38,8 @@ import (
 // }
 
 const (
-	pingCount    = 4
-	pingTimeout  = time.Second * 10
-	pingInterval = time.Millisecond * 250
-	scanInterval = time.Second * 30 // XXX Set to more reasonable value after testing/debugging.
+	// XXX Set to more reasonable value after testing/debugging.
+	scanInterval = time.Second * 30
 )
 
 type scanTarget struct {
@@ -236,9 +234,9 @@ func (sc *Scanner) scanAddr(wid int, target *scanTarget, devQ chan<- *model.Devi
 	)
 
 	pinger = probing.New(target.addr.String())
-	pinger.Count = pingCount
-	pinger.Interval = pingInterval
-	pinger.Timeout = pingCount * pingInterval * 2
+	pinger.Count = common.PingCount
+	pinger.Interval = common.PingInterval
+	pinger.Timeout = common.PingCount * common.PingInterval * 2
 
 	if err = pinger.Run(); err != nil {
 		sc.log.Printf("[ERROR] sc#%03d Error scanning %s: %s\n",
