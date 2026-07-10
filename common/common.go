@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 23. 07. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 11:37:41 krylon>
+// Time-stamp: <2026-07-10 14:04:20 krylon>
 
 // Package common contains definitions used throughout the application
 package common
@@ -46,10 +46,11 @@ const (
 	NetName                  = "udp4"
 	BufSize                  = 65536
 	LiveTimeout              = time.Minute * 5
-	ActiveTimeout            = time.Second * 5
+	ActiveTimeout            = time.Second * 2
 	PingCount                = 4
 	PingTimeout              = time.Second * 10
 	PingInterval             = time.Millisecond * 250
+	DefaultProbeInterval     = time.Minute
 )
 
 // LogLevels are the names of the log levels supported by the logger.
