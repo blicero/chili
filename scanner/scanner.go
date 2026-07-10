@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 10:39:37 krylon>
+// Time-stamp: <2026-07-10 10:50:18 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -199,9 +199,6 @@ func (sc *Scanner) feeder(scanQ chan<- *scanTarget) {
 				addr: ip,
 			}
 
-			sc.log.Printf("[TRACE] Enqueueing %s\n",
-				ip)
-
 		TIMEOUT:
 			for sc.active.Load() && sc.scanRunning.Load() {
 				select {
@@ -225,9 +222,9 @@ func (sc *Scanner) scanWorker(id int, scanQ <-chan *scanTarget, devQ chan<- *mod
 	defer sc.log.Printf("[TRACE] Scanner worker #%d quitting...\n", id)
 
 	for target := range scanQ {
-		sc.log.Printf("[TRACE] Scan worker %03d about to scan %s\n",
-			id,
-			target.addr)
+		// sc.log.Printf("[TRACE] Scan worker %03d about to scan %s\n",
+		// 	id,
+		// 	target.addr)
 		sc.scanAddr(id, target, devQ)
 	}
 } // func (sc *Scanner) scanWorker(id int, scanQ <-chan *scanTarget, devQ chan<- *model.Device)
