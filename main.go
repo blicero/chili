@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 12:09:26 krylon>
+// Time-stamp: <2026-07-10 14:11:32 krylon>
 
 package main
 
@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/blicero/chili/common"
-	"github.com/blicero/chili/control"
 	"github.com/blicero/chili/probe"
 	"github.com/blicero/chili/scanner"
 )
@@ -92,13 +91,16 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	if pubKeys, err = findKeyFiles(); err != nil {
-		fmt.Fprintf(
-			os.Stderr,
-			"Failed to find SSH keys: %s\n",
-			err.Error())
-		os.Exit(1)
-	} else if sc, err = scanner.New(scanWorkerCnt); err != nil {
+	pubKeys = []string{filepath.Join(os.Getenv("HOME"), ".ssh")}
+
+	// if pubKeys, err = findKeyFiles(); err != nil {
+	// 	fmt.Fprintf(
+	// 		os.Stderr,
+	// 		"Failed to find SSH keys: %s\n",
+	// 		err.Error())
+	// 	os.Exit(1)
+	// } else
+	if sc, err = scanner.New(scanWorkerCnt); err != nil {
 		fmt.Fprintf(
 			os.Stderr,
 			"Failed to create Scanner: %s\n",
@@ -130,7 +132,7 @@ func main() {
 				os.Stderr,
 				"Caught signal: %s\n",
 				s)
-			sc.CmdQ <- control.Stop
+			sc.Stop()
 			p.Stop()
 			return
 		}
