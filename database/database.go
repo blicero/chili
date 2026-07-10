@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-08 12:25:05 krylon>
+// Time-stamp: <2026-07-09 11:23:17 krylon>
 //
 // This files implements the database interface itself.
 
@@ -15,6 +15,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strings"
 	"sync"
 	"time"
 
@@ -163,6 +164,7 @@ func (db *Database) initialize() error {
 	}
 
 	for _, q := range qInit {
+		q, _ = strings.CutPrefix(q, "\n")
 		db.log.Printf("[TRACE] Execute init query:\n%s\n",
 			q)
 		if _, err = tx.Exec(q); err != nil {
