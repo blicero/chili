@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 11:57:09 krylon>
+// Time-stamp: <2026-07-10 14:02:40 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -32,6 +32,7 @@ type Probe struct {
 	log         *log.Logger
 	lock        sync.RWMutex
 	CmdQ        chan control.Message
+	interval    time.Duration
 	pool        *database.Pool
 	parCnt      int
 	active      atomic.Bool
@@ -45,8 +46,9 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 	var (
 		err error
 		p   = &Probe{
-			parCnt:  cnt,
-			clients: make(map[int64]*ssh.Client),
+			parCnt:   cnt,
+			clients:  make(map[int64]*ssh.Client),
+			interval: common.DefaultProbeInterval,
 		}
 	)
 
@@ -173,16 +175,18 @@ func (p *Probe) mainLoop() {
 	p.log.Println("[TRACE] Probe main loop starting up")
 	defer p.log.Println("[TRACE] Probe main loop quitting")
 
-	var (
-		ticker = time.NewTicker(common.ActiveTimeout)
-	)
+	var heartbeat = time.NewTicker(common.ActiveTimeout)
+	defer heartbeat.Stop()
 
-	defer ticker.Stop()
+	var probeTicker = time.NewTicker(p.interval)
+	defer probeTicker.Stop()
 
 	for p.IsActive() {
 		select {
-		case <-ticker.C:
+		case <-heartbeat.C:
 			continue
+		case <-probeTicker.C:
+			go p.probeDevices()
 		case cmd := <-p.CmdQ:
 			switch cmd {
 			case control.Stop:
@@ -199,7 +203,7 @@ func (p *Probe) probeDevices() {
 	defer p.log.Println("[TRACE] Done probing")
 
 	if swapped := p.scanRunning.CompareAndSwap(false, true); !swapped {
-		p.log.Println("[ERROR] It appears a probe is already running")
+		p.log.Println("[ERROR] It appears a probe is already running. Bye.")
 		return
 	}
 
