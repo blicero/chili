@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-07-10 14:31:26 krylon>
+# Time-stamp: <2026-07-11 14:06:37 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,31 +8,31 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [0/0]
+* Chili [1/1]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-07-10 Fr 14:31]
+   #+CAPTION: Clock summary at [2026-07-11 Sa 14:06]
    | Headline                    | Time      |           |       |      |
    |-----------------------------+-----------+-----------+-------+------|
-   | *Total time*                | *1d 3:41* |           |       |      |
+   | *Total time*                | *1d 7:21* |           |       |      |
    |-----------------------------+-----------+-----------+-------+------|
-   | *Chili [0/0]*               | *1d 3:41* |           |       |      |
-   | \_  /Components [0/1]/      |           | /1d 3:41/ |       |      |
-   | \_    Data model [0/0]      |           |           |  5:35 |      |
+   | *Chili [1/1]*               | *1d 7:21* |           |       |      |
+   | \_  /Components [1/1]/      |           | /1d 7:21/ |       |      |
+   | \_    Data model [0/0]      |           |           |  8:50 |      |
    | \_    Database [0/0]        |           |           |  6:53 |      |
    | \_      Pool                |           |           |       | 0:02 |
    | \_      Testing             |           |           |       | 0:44 |
    | \_    Network Scanner [0/0] |           |           | 11:41 |      |
-   | \_    Host Probe [0/0]      |           |           |  1:28 |      |
+   | \_    Host Probe [0/0]      |           |           |  1:53 |      |
    | \_    Nexus [0/0]           |           |           |  1:17 |      |
    | \_    Main [1/1]            |           |           |  0:47 |      |
    | \_      Profiling           |           |           |       | 0:44 |
    #+END:
-** Components [0/1]
+** Components [1/1]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -43,11 +43,19 @@
     :VISIBILITY: children
     :END:
     :LOGBOOK:
+    CLOCK: [2026-07-11 Sa 10:51]--[2026-07-11 Sa 14:06] =>  3:15
     CLOCK: [2026-01-08 Do 15:06]--[2026-01-08 Do 15:37] =>  0:31
     CLOCK: [2026-01-07 Mi 15:45]--[2026-01-07 Mi 15:50] =>  0:05
     CLOCK: [2026-01-07 Mi 15:07]--[2026-01-07 Mi 15:07] =>  0:00
     CLOCK: [2026-01-06 Di 15:20]--[2026-01-06 Di 20:19] =>  4:59
     :END:
+**** [2026-07-11 Sa 10:53]
+     I want to query and keep track of various things, such as pending
+     updates, free disk space, uptime(?). I am not entirely sure how to
+     represent that in data structures and the database. Do I use one table
+     for each kind of property, or one table that stores JSON data? I've been
+     meaning to play around with SQLite's JSON support, and this would be a
+     good use case. So, JSON it is.
 *** Database [0/0]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
@@ -92,6 +100,7 @@
     :VISIBILITY: children
     :END:
     :LOGBOOK:
+    CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
 *** Nexus [0/0]
