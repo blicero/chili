@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 10. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 12:21:31 krylon>
+// Time-stamp: <2026-07-11 10:43:01 krylon>
 
 package probe
 
@@ -525,13 +525,9 @@ func (p *Probe) QueryUpdatesFreeBSD(d *model.Device, port int) ([]string, error)
 // QueryUpdates attempts to query the given Device for available updates.
 func (p *Probe) QueryUpdates(d *model.Device, port int) ([]string, error) {
 	switch d.OS {
-	case "Debian GNU/Linux":
-		fallthrough
-	case "Raspbian GNU/Linux":
+	case "Debian GNU/Linux", "Raspbian GNU/Linux":
 		return p.QueryUpdatesDebian(d, port)
-	case "openSUSE Tumbleweed":
-		fallthrough
-	case "openSUSE Leap":
+	case "openSUSE Tumbleweed", "openSUSE Leap":
 		return p.QueryUpdatesSuse(d, port)
 	case "Fedora Linux":
 		return p.QueryUpdatesFedora(d, port)
