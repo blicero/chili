@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 14:02:40 krylon>
+// Time-stamp: <2026-07-11 13:58:44 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -23,6 +23,7 @@ import (
 	"github.com/blicero/chili/database"
 	"github.com/blicero/chili/logdomain"
 	"github.com/blicero/chili/model"
+	"github.com/blicero/chili/model/attribute"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -242,6 +243,8 @@ func (p *Probe) probeDevices() {
 		case <-ticker.C:
 			if p.active.Load() && p.scanRunning.Load() {
 				goto SELECT
+			} else {
+				return
 			}
 		case devQ <- dev:
 			continue
@@ -292,5 +295,32 @@ func (p *Probe) probeOneDevice(dev *model.Device) {
 				err.Error())
 			return
 		}
+	}
+
+	var updates []string
+
+	if updates, err = p.QueryUpdates(dev, portSSH); err != nil {
+		p.log.Printf("[ERROR] Querying %s for updates failed: %s\n",
+			dev.Name,
+			err.Error())
+		return
+	} else if len(updates) > 0 {
+		p.log.Printf("[DEBUG] %s has %d pending updates\n",
+			dev.Name,
+			len(updates))
+	}
+
+	var attr = &model.Attribute{
+		DevID:     dev.ID,
+		Timestamp: time.Now().Truncate(time.Second),
+		Type:      attribute.Updates,
+		Value:     model.Updates(updates),
+	}
+
+	if err = db.AttributeAdd(attr); err != nil {
+		p.log.Printf("[ERROR] Cannot add %s of %s to Database: %s\n",
+			attr.Type,
+			dev.Name,
+			err.Error())
 	}
 } // func (p *Probe) probeDevice(dev *model.Device)
