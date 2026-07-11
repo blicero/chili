@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 12:56:34 krylon>
+// Time-stamp: <2026-07-11 11:02:07 krylon>
 
 //go:build ignore
 // +build ignore
@@ -61,6 +61,7 @@ var candidates = map[string][]string{
 		"common",
 		"logdomain",
 		"model/device",
+		"model/attribute",
 		"database/query",
 		"control",
 		"nexus/event",
@@ -70,6 +71,7 @@ var candidates = map[string][]string{
 		"common",
 		"model",
 		"model/device",
+		"model/attribute",
 		"database",
 		"database/query",
 		"scanner",
@@ -83,6 +85,7 @@ var candidates = map[string][]string{
 		"common",
 		"model",
 		"model/device",
+		"model/attribute",
 		"database",
 		"database/query",
 		"scanner",
@@ -96,6 +99,7 @@ var candidates = map[string][]string{
 		"common",
 		"model",
 		"model/device",
+		"model/attribute",
 		"database",
 		"database/query",
 		"scanner",

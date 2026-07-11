@@ -2,15 +2,18 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-09 13:17:05 krylon>
+// Time-stamp: <2026-07-11 12:54:03 krylon>
 
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
+	"strconv"
 	"time"
 
+	"github.com/blicero/chili/model/attribute"
 	"github.com/blicero/chili/model/device"
 )
 
@@ -98,3 +101,46 @@ func NewDevice(netID int64, name, addr string) (*Device, error) {
 
 	return d, nil
 } // func NewDevice(name, addr string) (*Device, error)
+
+// Payload is the interface for different types of data we can query
+// from Devices.
+type Payload interface {
+	fmt.Stringer
+	Type() attribute.ID
+}
+
+// Updates is a list of software packages that updates are available for.
+type Updates []string
+
+func (u Updates) Type() attribute.ID { return attribute.Updates }
+
+func (u Updates) String() string {
+	var (
+		err error
+		buf []byte
+	)
+
+	if buf, err = json.Marshal(u); err != nil {
+		panic(err)
+	}
+
+	return string(buf)
+} // func (u *Updates) String() string
+
+// DiskSpace is the number of free bytes on a Device's root filesystem.
+type DiskSpace int64
+
+func (d DiskSpace) Type() attribute.ID { return attribute.DiskSpace }
+
+func (d DiskSpace) String() string {
+	return strconv.FormatInt(int64(d), 10)
+} // func (d *DiskSpace) String() string
+
+// Attribute is a property of a Device that we can query/measure.
+type Attribute struct {
+	ID        int64
+	DevID     int64
+	Timestamp time.Time
+	Type      attribute.ID
+	Value     Payload
+}

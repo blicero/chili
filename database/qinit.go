@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-07 16:28:01 krylon>
+// Time-stamp: <2026-07-11 11:17:02 krylon>
 //
 // This file contains the SQL queries to initialize an empty database.
 
@@ -40,4 +40,21 @@ CREATE TABLE device (
 `,
 	"CREATE INDEX dev_net_idx ON device (net_id)",
 	"CREATE INDEX dev_contact_idx ON device (last_contact)",
+	`
+CREATE TABLE attribute (
+    id INTEGER PRIMARY KEY,
+    dev_id INTEGER NOT NULL,
+    timestamp INTEGER NOT NULL,
+    atype INTEGER NOT NULL,
+    value TEXT NOT NULL,
+    FOREIGN KEY (dev_id) REFERENCES device (id)
+       ON UPDATE RESTRICT
+       ON DELETE CASCADE,
+    UNIQUE (dev_id, timestamp, atype),
+    CHECK (json_valid(value))
+) STRICT
+`,
+	"CREATE INDEX att_dev_idx ON attribute (dev_id)",
+	"CREATE INDEX att_time_idx ON attribute (timestamp)",
+	"CREATE INDEX att_type_idx ON attribute (atype)",
 }

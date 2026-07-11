@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 10:53:36 krylon>
+// Time-stamp: <2026-07-11 13:35:33 krylon>
 //
 // This files contains the SQL queries we intend to run on the database.
 
@@ -81,5 +81,54 @@ SELECT
     class,
     active
 FROM device
+`,
+	query.AttributeAdd: `
+INSERT INTO attribute (dev_id, timestamp, atype, value)
+VALUES                (     ?,         ?,     ?,     ?)
+RETURNING id
+`,
+	query.AttributeGetByDevice: `
+WITH dattribute AS (
+SELECT
+    id,
+    row_number() OVER (PARTITION BY atype ORDER BY timestamp DESC) AS rid,
+    atype,
+    timestamp,
+    value
+FROM attribute
+WHERE dev_id = ?
+ORDER BY timestamp DESC
+)
+
+SELECT id, atype, timestamp, value
+FROM dattribute
+WHERE rid = 1
+`,
+	query.AttributeGetByDeviceType: `
+SELECT
+    id,
+    timestamp,
+    value
+FROM attribute
+WHERE dev_id = ? AND atype = ?
+ORDER BY timestamp DESC
+LIMIT ?
+`,
+	query.AttributeGetByType: `
+WITH dattribute AS (
+SELECT
+    id,
+    row_number() OVER (PARTITION BY dev_id ORDER BY timestamp DESC) AS rid,
+    dev_id,
+    timestamp,
+    value
+FROM attribute
+WHERE atype = ?
+ORDER BY timestamp DESC
+)
+
+SELECT id, dev_id, timestamp, value
+FROM dattribute
+WHERE rid = 1
 `,
 }
