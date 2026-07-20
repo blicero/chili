@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 10. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-20 11:40:51 krylon>
+// Time-stamp: <2026-07-20 11:58:32 krylon>
 
 package probe
 
@@ -321,7 +321,7 @@ var uptimePat = regexp.MustCompile(
 
 // QueryUptime attempts to extract the system load average from the given Device.
 func (p *Probe) QueryUptime(d *model.Device, port int) (*model.Uptime, error) {
-	const cmd = "/usr/bin/uptime"
+	const cmd = "env LC_ALL=en_US.UTF-8 /usr/bin/uptime"
 	var (
 		err   error
 		res   []string
