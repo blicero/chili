@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-20 10:28:01 krylon>
+// Time-stamp: <2026-07-20 12:16:31 krylon>
 
 package model
 
@@ -126,6 +126,24 @@ func (u Updates) String() string {
 
 	return string(buf)
 } // func (u *Updates) String() string
+
+// Packages is a list of software packages that are installed on a Device.
+type Packages []string
+
+func (p Packages) Type() attribute.ID { return attribute.Packages }
+
+func (p Packages) String() string {
+	var (
+		err error
+		buf []byte
+	)
+
+	if buf, err = json.Marshal(p); err != nil {
+		panic(err)
+	}
+
+	return string(buf)
+}
 
 // DiskSpace is the number of free bytes on a Device's root filesystem.
 type DiskSpace int64
