@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-07-20 11:22:59 krylon>
+# Time-stamp: <2026-07-20 13:34:41 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,33 +8,35 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [1/1]
+* Chili [4/6]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-07-20 Mo 11:22]
+   #+CAPTION: Clock summary at [2026-07-20 Mo 13:34]
    | Headline                                     | Time      |           |       |      |
    |----------------------------------------------+-----------+-----------+-------+------|
-   | *Total time*                                 | *1d 8:35* |           |       |      |
+   | *Total time*                                 | *1d 9:26* |           |       |      |
    |----------------------------------------------+-----------+-----------+-------+------|
-   | *Chili [1/1]*                                | *1d 8:35* |           |       |      |
-   | \_  /Components [2/3]/                       |           | /1d 8:35/ |       |      |
+   | *Chili [4/6]*                                | *1d 9:26* |           |       |      |
+   | \_  /Components [4/6]/                       |           | /1d 9:26/ |       |      |
    | \_    Data model [0/0]                       |           |           |  8:50 |      |
    | \_    Database [0/0]                         |           |           |  6:53 |      |
    | \_      Pool                                 |           |           |       | 0:02 |
    | \_      Testing                              |           |           |       | 0:44 |
    | \_    Network Scanner [1/1]                  |           |           | 12:14 |      |
    | \_      Avoid adding devices we already know |           |           |       | 0:33 |
-   | \_    Host Probe [0/1]                       |           |           |  2:34 |      |
+   | \_    Host Probe [2/4]                       |           |           |  3:25 |      |
+   | \_      Packages                             |           |           |       | 0:22 |
    | \_      Uptime                               |           |           |       | 0:13 |
+   | \_      Refactor for easier testing          |           |           |       | 0:29 |
    | \_    Nexus [0/0]                            |           |           |  1:17 |      |
    | \_    Main [1/1]                             |           |           |  0:47 |      |
    | \_      Profiling                            |           |           |       | 0:44 |
    #+END:
-** Components [2/3]
+** Components [4/6]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -101,7 +103,7 @@
      :LOGBOOK:
      CLOCK: [2026-07-20 Mo 10:49]--[2026-07-20 Mo 11:22] =>  0:33
      :END:
-*** Host Probe [0/1]
+*** Host Probe [2/4]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -112,9 +114,30 @@
     CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
-**** TODO Uptime
+**** TODO Device Info
+     I should attempt to query as much as I can about the hardware, as well as
+     the installed software.
+**** TODO Packages
+     :LOGBOOK:
+     CLOCK: [2026-07-20 Mo 13:12]--[2026-07-20 Mo 13:34] =>  0:22
+     :END:
+     Querying what software installed on a system differs, obviously, by the
+     operating system. I am not even going to try to deal with alternative
+     software installation routes, such as snap or flatpack. Among the systems
+     I have access to, the most esoteric incantation is need for Arch, but
+     Debian and the BSD systems are relatively straightforward, more tedious
+     than complex.
+**** CANCELLED Uptime
+     CLOSED: [2026-07-20 Mo 12:10]
      :LOGBOOK:
      CLOCK: [2026-07-20 Mo 10:36]--[2026-07-20 Mo 10:49] =>  0:13
+     :END:
+     I would like to parse the Device's uptime in addition to its load
+     average.
+**** CANCELLED Refactor for easier testing
+     CLOSED: [2026-07-20 Mo 12:10]
+     :LOGBOOK:
+     CLOCK: [2026-07-20 Mo 11:41]--[2026-07-20 Mo 12:10] =>  0:29
      :END:
      I should attempt to disentangle the communication with the Device from
      the processing of the data, so I can more easily test the latter part.
