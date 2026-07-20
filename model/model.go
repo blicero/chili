@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-11 12:54:03 krylon>
+// Time-stamp: <2026-07-20 10:28:01 krylon>
 
 package model
 
@@ -135,6 +135,21 @@ func (d DiskSpace) Type() attribute.ID { return attribute.DiskSpace }
 func (d DiskSpace) String() string {
 	return strconv.FormatInt(int64(d), 10)
 } // func (d *DiskSpace) String() string
+
+// Uptime is uptime of Device, and its system load.
+type Uptime struct {
+	Uptime time.Duration
+	Load   [3]float64
+}
+
+func (u *Uptime) Type() attribute.ID { return attribute.Uptime }
+func (u *Uptime) String() string {
+	return fmt.Sprintf("{ Uptime: %s, Load: %.1f/%.1f/%.1f }",
+		u.Uptime,
+		u.Load[0],
+		u.Load[1],
+		u.Load[2])
+}
 
 // Attribute is a property of a Device that we can query/measure.
 type Attribute struct {

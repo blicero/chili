@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 11. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-11 13:51:10 krylon>
+// Time-stamp: <2026-07-20 10:30:59 krylon>
 
 package database
 
@@ -271,6 +271,15 @@ EXEC_QUERY:
 				return nil, err
 			}
 			attr.Value = model.DiskSpace(x)
+		case attribute.Uptime:
+			var u = new(model.Uptime)
+			if err = json.Unmarshal([]byte(vstr), u); err != nil {
+				db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+					vstr,
+					err.Error())
+				return nil, err
+			}
+			attr.Value = u
 		case attribute.Updates:
 			var updates = make([]string, 0, 8)
 			if err = json.Unmarshal([]byte(vstr), &updates); err != nil {

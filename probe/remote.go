@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 10. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-11 10:43:01 krylon>
+// Time-stamp: <2026-07-20 10:42:24 krylon>
 
 package probe
 
@@ -553,56 +553,58 @@ var uptimePat = regexp.MustCompile(
 	`:\s+(\d+[,.]\d+),?\s+(\d+[,.]\d+),?\s+(\d+[,.]\d+)$`)
 
 // QueryUptime attempts to extract the system load average from the given Device.
-// func (p *Probe) QueryUptime(d *model.Device, port int) (*model.Uptime, error) {
-// 	const cmd = "/usr/bin/uptime"
-// 	var (
-// 		err   error
-// 		res   []string
-// 		match []string
-// 		up    = &model.Uptime{
-// 			DevID:     d.ID,
-// 			Timestamp: time.Now(),
-// 		}
-// 	)
+func (p *Probe) QueryUptime(d *model.Device, port int) (*model.Uptime, error) {
+	const cmd = "/usr/bin/uptime"
+	var (
+		err   error
+		res   []string
+		match []string
+		up    = new(model.Uptime)
+	)
 
-// 	if res, err = p.executeCommand(d, port, cmd); err != nil {
-// 		if err == ErrPingOffline {
-// 			return nil, err
-// 		}
-// 		var ex = fmt.Errorf("Failed to query uptime/loadavg on %s: %w",
-// 			d.Name,
-// 			err)
-// 		p.log.Printf("[ERROR] %s\n", ex.Error())
-// 		return nil, ex
-// 	} else if match = uptimePat.FindStringSubmatch(res[0]); match == nil {
-// 		var ex = fmt.Errorf("Cannot parse the output of uptime(1) from %s: %q",
-// 			d.Name,
-// 			res[0])
-// 		p.log.Printf("[ERROR] %s\n", ex.Error())
-// 		return nil, ex
-// 	} else if len(match) > 0 {
-// 		for idx, val := range match[1:] {
-// 			var (
-// 				s = strings.ReplaceAll(val, ",", ".")
-// 				f float64
-// 			)
+	if res, err = p.executeCommand(d, port, cmd); err != nil {
+		if err == ErrPingOffline {
+			return nil, err
+		}
+		var ex = fmt.Errorf("failed to query uptime/loadavg on %s: %w",
+			d.Name,
+			err)
+		p.log.Printf("[ERROR] %s\n", ex.Error())
+		return nil, ex
+	} else if res == nil {
+		var ex = fmt.Errorf("querying uptime on %s did not return a value",
+			d.Name)
+		p.log.Printf("[CANTHAPPEN] %s\n", ex.Error())
+		return nil, ex
+	} else if match = uptimePat.FindStringSubmatch(res[0]); match == nil {
+		var ex = fmt.Errorf("cannot parse the output of uptime(1) from %s: %q",
+			d.Name,
+			res[0])
+		p.log.Printf("[ERROR] %s\n", ex.Error())
+		return nil, ex
+	} else if len(match) > 0 {
+		for idx, val := range match[1:] {
+			var (
+				s = strings.ReplaceAll(val, ",", ".")
+				f float64
+			)
 
-// 			if f, err = strconv.ParseFloat(s, 64); err != nil {
-// 				var ex = fmt.Errorf("Cannot parse load avg %q: %w",
-// 					s,
-// 					err)
-// 				p.log.Printf("[ERROR] %s\n", ex.Error())
-// 				return nil, ex
-// 			}
+			if f, err = strconv.ParseFloat(s, 64); err != nil {
+				var ex = fmt.Errorf("cannot parse load avg %q: %w",
+					s,
+					err)
+				p.log.Printf("[ERROR] %s\n", ex.Error())
+				return nil, ex
+			}
 
-// 			up.Load[idx] = f
-// 		}
-// 	}
+			up.Load[idx] = f
+		}
+	}
 
-// 	// ...
+	// ...
 
-// 	return up, nil
-// } // func (p *Probe) QueryLoadAvg(d *model.Device, port int) ([3]float64, error)
+	return up, nil
+} // func (p *Probe) QueryLoadAvg(d *model.Device, port int) ([3]float64, error)
 
 var dfPat = regexp.MustCompile(`(\d+)%`)
 
