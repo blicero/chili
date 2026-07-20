@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-11 13:58:44 krylon>
+// Time-stamp: <2026-07-20 11:33:58 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -228,22 +228,16 @@ func (p *Probe) probeDevices() {
 		wg.Go(func() { p.probeWorker(i+1, devQ) })
 	}
 
-	db = p.pool.Get()
-	defer p.pool.Put(db)
-
-	if devices, err = db.DeviceGetAll(); err != nil {
+	if devices, err = p.getAllDevices(); err != nil {
 		p.log.Printf("[ERROR] Failed to load all Devices: %s\n",
 			err.Error())
 		return
 	}
 
 	for _, dev := range devices {
-	SELECT:
 		select {
 		case <-ticker.C:
-			if p.active.Load() && p.scanRunning.Load() {
-				goto SELECT
-			} else {
+			if !(p.active.Load() && p.scanRunning.Load()) {
 				return
 			}
 		case devQ <- dev:
@@ -324,3 +318,22 @@ func (p *Probe) probeOneDevice(dev *model.Device) {
 			err.Error())
 	}
 } // func (p *Probe) probeDevice(dev *model.Device)
+
+func (p *Probe) getAllDevices() ([]*model.Device, error) {
+	var (
+		err  error
+		db   *database.Database
+		devs []*model.Device
+	)
+
+	db = p.pool.Get()
+	defer p.pool.Put(db)
+
+	if devs, err = db.DeviceGetAll(); err != nil {
+		p.log.Printf("[ERROR] Failed to load all Devices: %s\n",
+			err.Error())
+		return nil, err
+	}
+
+	return devs, nil
+} // func (p *Probe) getAllDevices() ([]*model.Device, error)
