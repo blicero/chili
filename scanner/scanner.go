@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 14:03:51 krylon>
+// Time-stamp: <2026-07-20 11:20:48 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -48,13 +48,14 @@ type scanTarget struct {
 }
 
 type Scanner struct {
-	log *log.Logger
-	// scanLock    sync.RWMutex
+	log         *log.Logger
+	scanLock    sync.RWMutex
 	active      atomic.Bool
 	scanRunning atomic.Bool
 	workerCnt   int
 	dbPool      *database.Pool
 	CmdQ        chan control.Message
+	devCache    map[string]*model.Device
 }
 
 // New creates a new Scanner with the given number of worker goroutines.
@@ -65,7 +66,10 @@ func New(wcnt int) (*Scanner, error) {
 
 	var (
 		err error
-		sc  = &Scanner{workerCnt: wcnt}
+		sc  = &Scanner{
+			workerCnt: wcnt,
+			devCache:  make(map[string]*model.Device),
+		}
 	)
 
 	if sc.log, err = common.GetLogger(logdomain.Scanner); err != nil {
@@ -73,6 +77,8 @@ func New(wcnt int) (*Scanner, error) {
 	} else if sc.dbPool, err = database.NewPool(min(wcnt>>1, 2)); err != nil {
 		sc.log.Printf("[ERROR] Failed to create database pool: %s\n",
 			err.Error())
+		return nil, err
+	} else if err = sc.fillDevCache(); err != nil {
 		return nil, err
 	}
 
@@ -106,6 +112,8 @@ func (sc *Scanner) mainLoop() {
 
 	sc.log.Println("[TRACE] Scanner mainloop initiated")
 	defer sc.log.Println("[TRACE] Scanner mainloop finished")
+
+	go sc.runScan()
 
 	for sc.active.Load() {
 		select {
@@ -146,8 +154,6 @@ func (sc *Scanner) runScan() {
 	for i := range sc.workerCnt {
 		wg.Go(func() { sc.scanWorker(i+1, scanQ, devQ) })
 	}
-
-	//sc.feeder(scanQ)
 
 	wg.Wait()
 } // func (sc Scanner) runScan()
@@ -262,9 +268,15 @@ func (sc *Scanner) scanAddr(wid int, target *scanTarget, devQ chan<- *model.Devi
 	var (
 		name  string
 		names []string
+		dev   *model.Device
 	)
 
-	if names, err = net.LookupAddr(target.addr.String()); err != nil {
+	if dev = sc.knownDevice(target.addr.String()); dev != nil {
+		sc.log.Printf("[TRACE] Device %s is already known as %s\n",
+			target.addr,
+			dev.Name)
+		return
+	} else if names, err = net.LookupAddr(target.addr.String()); err != nil {
 		sc.log.Printf("[ERROR] sc#%03d Could not resolve address %s to name: %s\n",
 			wid,
 			target.addr,
@@ -284,7 +296,7 @@ func (sc *Scanner) scanAddr(wid int, target *scanTarget, devQ chan<- *model.Devi
 		name,
 		target.addr)
 
-	var dev = &model.Device{
+	dev = &model.Device{
 		NetID:  target.net.ID,
 		Name:   name,
 		Addr:   target.addr,
@@ -326,6 +338,43 @@ func (sc *Scanner) gatherDevices(devQ <-chan *model.Device) {
 					dev.Name,
 					dev.Addr)
 			}
+			sc.scanLock.Lock()
+			sc.devCache[dev.Addr.String()] = dev
+			sc.scanLock.Unlock()
 		}
 	}
 } // func (sc *Scanner) gatherDevices(devQ <-chan *model.Device)
+
+func (sc *Scanner) fillDevCache() error {
+	var (
+		err  error
+		db   *database.Database
+		devs []*model.Device
+	)
+
+	db = sc.dbPool.Get()
+	defer sc.dbPool.Put(db)
+
+	if devs, err = db.DeviceGetAll(); err != nil {
+		sc.log.Printf("[ERROR] Failed to load all Devices: %s\n",
+			err.Error())
+		return err
+	}
+
+	sc.scanLock.Lock()
+	defer sc.scanLock.Unlock()
+
+	for _, dev := range devs {
+		sc.devCache[dev.Addr.String()] = dev
+	}
+
+	return nil
+} // func (sc *Scanner) fillDevCache() error
+
+func (sc *Scanner) knownDevice(addr string) *model.Device {
+	var dev *model.Device
+	sc.scanLock.RLock()
+	dev = sc.devCache[addr]
+	sc.scanLock.RUnlock()
+	return dev
+} // func (sc *Scanner) knownDevice(addr string) *model.Device
