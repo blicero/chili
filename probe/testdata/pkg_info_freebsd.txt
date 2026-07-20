@@ -1,0 +1,331 @@
+abseil-20250127.1_1            Abseil Common Libraries (C++)
+adwaita-icon-theme-47.0        GNOME Symbolic Icons
+adwaita-icon-theme-legacy-46.2 Full color icon theme for legacy applications
+aom-3.14.1_1                   AV1 reference encoder/decoder
+at-spi2-core-2.60.4            Assistive Technology Service Provider Interface
+avahi-0.8                      "meta-port" for the Avahi service discovery suite
+avahi-app-0.8_6                Service discovery on a local network
+avahi-autoipd-0.8_2            IPv4LL network address configuration daemon
+avahi-gtk3-0.8_2               Gtk+ 3 library to the Avahi mDNS system
+avahi-header-0.8_2             Install an avahi-gtk* header to avoid conflict
+bind-tools-9.20.24_1           Command line tools from BIND: delv, dig, host, nslookup...
+bind920-9.20.24_1              BIND DNS suite with updated DNSSEC and DNS64
+binutils-2.44,1                GNU binary tools
+bmon-4.0_3                     Human-readable bandwidth monitor and rate estimator
+boehm-gc-8.2.10                Garbage collection and memory leak detection for C and C++
+boehm-gc-threaded-8.2.10       Garbage collection and memory leak detection for C and C++
+brotli-1.2.0,1                 Generic-purpose lossless compression algorithm
+btop-1.4.7                     Monitor of resources
+cairo-1.18.2,3                 Vector graphics library with cross-device output support
+checkrestart-0.5.0_1           Find processes that need restarting after an upgrade
+cl-freebsd-asdf-init-20250101  ASDF configuration for FreeBSD Common Lisp ports
+clisp-2.49.95+20241228_3       Common Lisp implementation
+colord-1.4.8_2                 Manage color profiles to accurately color input/output devices
+coreutils-9.9                  Free Software Foundation core utilities
+cups-2.4.19_1                  Common UNIX Printing System
+curl-8.21.0                    Command line tool and library for transferring data with URLs
+dav1d-1.5.3_1                  Small and fast AV1 decoder
+db18-18.1.40_1                 Oracle Berkeley DB, Release 18.1
+dbus-1.16.2_4,1                Message bus system for inter-application communication
+dbus-glib-0.114                GLib bindings for the D-BUS messaging system
+desktop-file-utils-0.28        Couple of command line utilities for working with desktop entries
+diffutils-3.12                 GNU differential compare utilities
+doas-6.4                       Simple sudo alternative to run commands as another user
+duktape-lib-2.7.0_1            Embeddable Javascript engine (shared lib)
+emacs-nox-30.2_4,3             GNU editing macros (No X flavor)
+expat-2.8.2                    XML 1.0 parser written in C
+fish-4.6.0_2                   User friendly command line shell
+fontconfig-2.17.1,1            XML-based font configuration API for X Windows
+fortune-mod-futurama-0.2_4     Compilation of quotes from the TV series "Futurama"
+freetype2-2.14.3               Free and portable TrueType font rendering engine
+fribidi-1.0.16                 Free Implementation of the Unicode Bidirectional Algorithm
+fstrm-0.6.1_1                  Implementation of the Frame Streams data transport protocol in C
+gcc13-13.3.0_5                 GNU Compiler Collection 13
+gcc14-14.2.0_6                 GNU Compiler Collection 14
+gdbm-1.26                      GNU database manager
+gdk-pixbuf2-2.44.1             Graphic library for GTK
+gettext-runtime-1.0_1          GNU gettext runtime libraries and programs
+ghostscript10-10.07.1          PostScript and PDF interpreter
+giflib-5.2.2                   Tools and library routines for working with GIF images
+git-2.54.0                     Distributed source code management tool 
+glib-2.86.4,2                  Some useful routines of C programming (current stable version)
+gmp-6.3.0                      Free library for arbitrary precision arithmetic
+gnome_subr-1.0                 Common startup and shutdown subroutines used by GNOME scripts
+gnu-watch-4.0.6_1              GNU watch command
+gnutls-3.8.13                  GNU Transport Layer Security library
+go-1.25_20,2                   Meta-port for the default version of the Go programming language
+go125-1.25.12                  Go programming language
+gobject-introspection-1.86.0,1 Generate interface introspection data for GObject libraries
+gotop-4.1.4_38                 Terminal based graphical activity monitor inspired by gtop and vtop
+graphite2-1.3.15               Rendering capabilities for complex non-Roman writing systems
+gsettings-desktop-schemas-47.1_2 Collection of globally shared GSetting schemas
+gtk-update-icon-cache-3.24.42  Gtk-update-icon-cache utility from the Gtk+ toolkit
+gtk3-3.24.52                   Graphical UI toolkit (GTK3 library)
+harfbuzz-14.2.1                OpenType text shaping engine
+hicolor-icon-theme-0.18        High-color icon theme shell from the FreeDesktop project
+htop-3.5.1                     Better top(1) - interactive process viewer
+hwdata-0.409,1                 Database of IDs used in PCI, PNP and USB devices
+indexinfo-0.3.1_1              Utility to regenerate the GNU info page index
+isc-dhcp44-server-4.4.3P1_2    ISC Dynamic Host Configuration Protocol server
+jbig2dec-0.20_1                Decoder implementation of the JBIG2 image compression format
+jbigkit-2.1_3                  Lossless compression for bi-level images such as scanned pages, faxes
+jpeg-turbo-3.1.4.1             SIMD-accelerated JPEG codec which replaces libjpeg
+json-c-0.19                    JSON (JavaScript Object Notation) implementation in C
+json-glib-1.10.8               JSON (RFC 4627) interface for Glib
+jsoncpp-1.9.6_1                JSON reader and writer library for C++
+lcms2-2.19.1                   Accurate, fast, and small-footprint color management engine
+lerc-4.1.0                     C++ library for Limited Error Raster Compression
+lftp-4.9.3_1                   Shell-like command-line FTP client
+libICE-1.1.2,1                 Inter Client Exchange library for X11
+libSM-1.2.6,1                  Session Management library for X11
+libX11-1.8.13_1,1              Core X11 protocol client library
+libXScrnSaver-1.2.4_1          The XScrnSaver library
+libXau-1.0.12                  Authentication Protocol library for X11
+libXaw-1.0.16,2                X Athena Widgets library
+libXcomposite-0.4.7,1          X Composite extension library
+libXcursor-1.2.3               X client-side cursor loading library
+libXdamage-1.1.7               X Damage extension library
+libXdmcp-1.1.5                 X Display Manager Control Protocol library
+libXext-1.3.7,1                Xlib-based library for common extensions to the X11 protocol
+libXfixes-6.0.1                X Fixes extension library
+libXft-2.3.8                   Client-sided font API for X applications
+libXi-1.8.3,1                  X Input extension library
+libXinerama-1.1.6,1            X11 Xinerama extension library
+libXmu-1.3.1,1                 X Miscellaneous Utilities libraries
+libXpm-3.5.19                  X Pixmap (XPM) image file format library
+libXrandr-1.5.5                Xlib Resize, Rotate and Reflection extension library
+libXrender-0.9.12              X Render extension library
+libXres-1.2.2_1                X Resource usage library
+libXt-1.3.1,1                  X Toolkit Intrinsics library
+libXtst-1.2.5                  X Test extension
+libavif-1.4.2                  Library for encoding and decoding .avif files
+libconfuse-3.3_2               Configuration file parsing library
+libdaemon-0.14_1               Lightweight C library that eases the writing of UNIX daemons
+libdatrie-0.2.14_1             Double-array trie implementation library
+libdeflate-1.25                Fast, whole-buffer DEFLATE-based compression library
+libedit-3.1.20260512,1         Command line editor library
+libepoll-shim-0.0.20240608     Small epoll implementation using kqueue
+libepoxy-1.5.10                Library to handle OpenGL function pointer management
+libevent-2.1.13                API for executing callback functions on events or timeouts
+libffcall-2.5                  Foreign function call libraries
+libffi-3.6.0                   Foreign Function Interface
+libfontenc-1.1.9               The fontenc Library
+libgcrypt-1.12.2               General purpose cryptographic library based on the code from GnuPG
+libgit2-1.9.4                  Portable, pure C implementation of the Git core
+libglvnd-1.7.0                 GL Vendor-Neutral Dispatch library
+libgpg-error-1.61              Common error values for all GnuPG components
+libgudev-237                   GObject bindings for libudev
+libgusb-0.4.9_1                GUsb is a GObject wrapper for libusb1
+libiconv-1.18_1                Character set conversion library
+libidn-1.43                    Internationalized Domain Names command line tool
+libidn2-2.3.8                  Implementation of IDNA2008 internationalized domain names
+libimagequant-4.4.1_5          Image Quantization Library
+libltdl-2.5.4                  System independent dlopen wrapper
+liblz4-1.10.0_2,1              LZ4 compression library, lossless and very fast
+libnghttp2-1.69.0              HTTP/2 C Library
+libpaper-1.1.28_1              Library providing routines for paper size management
+libpsl-0.22.0                  C library to handle the Public Suffix List
+libraqm-0.10.3                 Library that encapsulates complex text layout logic
+librsvg2-rust-2.62.3           Library for parsing and rendering SVG vector-graphic files
+libsigsegv-2.15                Handling page faults in user mode
+libslang2-2.3.3_2              Routines for rapid alpha-numeric terminal applications development
+libssh2-1.11.1_1,3             Library implementing the SSH2 protocol
+libtasn1-4.21.0                ASN.1 structure parser library
+libthai-0.1.30                 Thai language support library
+libudev-devd-0.6.0             libudev-compatible interface for devd
+libunistring-1.4.2             Unicode string library
+libunwind-20250904             Generic stack unwinding library
+liburcu-0.15.3                 Userspace read-copy-update (RCU) data synchronization library
+libuv-1.52.1                   Multi-platform support library with a focus on asynchronous I/O
+libxcb-1.17.0                  The X protocol C-language Binding (XCB) library
+libxkbcommon-1.13.2            Keymap handling library for toolkits and window systems
+libxml2-2.15.3                 XML parser library for GNOME
+libxslt-1.1.45                 XML stylesheet transformation library
+libyuv-0.0.1903                Library for freeswitch yuv graphics manipulation
+llhttp-9.4.2                   Port of http_parser to llparse
+lmdb0-0.9.35                   OpenLDAP Lightning Memory-Mapped Database (legacy)
+lnav-0.14.0                    Terminal-based log file navigator
+lscpu-1.3.0                    Display information about the CPU architecture
+lzo2-2.10_2                    Portable speedy, lossless data compression library
+mailutils-3.21                 Utilities, daemons, and filters for processing e-mail
+mc-4.8.32                      Midnight Commander, a free Norton Commander clone
+mg-20260519,1                  Small, fast Emacs-like editor
+microsoft-edit-2.0.0_1         Console text editor written in Rust
+mkfontscale-1.2.4              Creates an index of scalable font files for X
+mosh-1.4.0_10                  Mobile terminal that supports intermittent connectivity
+mpc-1.4.1                      Library of complex numbers with arbitrarily high precision
+mpdecimal-4.0.1                C/C++ arbitrary precision decimal floating point libraries
+mpfr-4.2.2,1                   Library for multiple-precision floating-point computations
+ncftp-3.2.6_3                  FTP client with advanced user interface
+nettle-3.10.2                  Low-level cryptographic library
+nmap-7.99_1                    Port scanning utility for large networks
+openblas-0.3.33,2              Optimized BLAS library based on GotoBLAS2
+openjpeg-2.5.4_2               Open-source JPEG 2000 codec
+p11-kit-0.26.2                 Library for loading and enumerating of PKCS#11 modules
+p5-Authen-SASL-2.1900          Perl5 module for SASL authentication
+p5-Crypt-URandom-0.54          Perl extension to provide non blocking randomness
+p5-Digest-HMAC-1.05            Perl5 interface to HMAC Message-Digest Algorithms
+p5-Error-0.17030               Error/exception handling in object-oriented programming style
+p5-IO-Socket-SSL-2.099         Perl5 interface to SSL sockets
+p5-MIME-Base32-1.303           Perl5 module for Base32 encodings
+p5-MIME-Base64-3.16            Perl5 module for Base64 and Quoted-Printable encodings
+p5-Mozilla-CA-20250602         Perl extension for Mozilla CA cert bundle in PEM format
+p5-Net-SSLeay-1.94             Perl5 interface to SSL
+p5-URI-5.34                    Perl5 interface to Uniform Resource Identifier (URI) references
+pango-1.57.1                   Open-source framework for the layout and rendering of i18n text
+pcre-8.45_4                    Perl Compatible Regular Expressions library
+pcre2-10.47_1                  Perl Compatible Regular Expressions library, version 2
+perl5-5.42.2                   Practical Extraction and Report Language
+pixman-0.46.4                  Low-level pixel manipulation library
+pkg-2.7.5                      Package manager
+pkgconf-2.4.3_1,1              Utility to help to configure compiler and linker flags
+png-1.6.58                     Library for manipulating PNG images
+polkit-127                     Framework for controlling access to system-wide components
+poppler-data-0.4.12            Poppler encoding data
+portconfig-0.6.2_2             Utility to set up FreeBSD port options
+portfind-1.6.3_1               Search the ports tree
+protobuf-29.6,1                Data interchange format library
+protobuf-c-1.5.1_4             Code generator and libraries to use Protocol Buffers from pure C
+pstree-2.40_1                  List processes as a tree
+py311-Babel-2.18.0             Collection of tools for internationalizing Python applications
+py311-Jinja2-3.1.6             Fast and easy to use stand-alone template engine
+py311-SecretStorage-3.3.3      Store passwords using the SecretService DBus API
+py311-anyio-4.13.0             High level compatibility layer for multiple asynchronous event loop implementations
+py311-asttokens-3.0.1          Annotate AST trees with source code positions
+py311-backports.tarfile-1.0.0  Backport of CPython tarfile module
+py311-backports.zstd-1.5.0     Backport of compression.zstd
+py311-bottle-0.13.4            Fast and simple WSGI-framework for small web-applications
+py311-brotli-1.2.0             Generic-purpose lossless compression algorithm
+py311-build-1.5.0              Simple, correct Python build frontend
+py311-cachecontrol-0.14.0      Caching algorithms in httplib2 for use with requests session object
+py311-certifi-2026.5.20        Mozilla SSL certificates
+py311-cffi-2.0.0               Foreign Function Interface for Python calling C code
+py311-charset-normalizer-3.4.7 Real First Universal Charset Detector
+py311-cleo-2.2.1               Create beautiful and testable command-line interfaces
+py311-contourpy-1.3.3_2        Python library for calculating contours of 2D quadrilateral grids
+py311-crashtest-0.4.1_1        Manage Python errors with ease
+py311-cryptography-48.0.0_1,1  Cryptographic recipes and primitives for Python developers
+py311-cycler-0.12.1            Composable style cycles
+py311-dbus-1.4.0               Python bindings for the D-BUS messaging system
+py311-decorator-5.3.1          Decorators for Humans
+py311-distlib-0.4.3            Low-level components of distutils2 and higher-level APIs
+py311-dulwich-1.2.4_1          Python Git Library
+py311-executing-2.2.1          Get the currently executing AST node of a frame, and other information
+py311-fastjsonschema-2.21.2    Fastest Python implementation of JSON schema
+py311-filelock-3.29.4          Platform independent file lock
+py311-findpython-0.8.0         Utility to find python versions on your system
+py311-fonttools-4.63.0         Open source library for manipulating fonts, written in Python
+py311-h11-0.16.0               Pure-Python, bring-your-own-I/O implementation of HTTP/1.1
+py311-h2-4.3.0                 Pure-Python HTTP/2 protocol implementation
+py311-hpack-4.1.0              Pure-Python HPACK header encoding
+py311-httpcore-1.0.9           Minimal low-level HTTP client
+py311-httpx-0.28.1_2           Next generation HTTP client
+py311-hyperframe-6.1.0         Pure-Python HTTP/2 framing
+py311-idna-3.16                Internationalized Domain Names in Applications (IDNA)
+py311-importlib-metadata-8.7.0 Read metadata from Python packages
+py311-installer-1.0.1          Library for installing Python wheels
+py311-ipython-9.13.0           Enhanced Interactive Python shell
+py311-ipython-pygments-lexers-1.1.1 Define a variety of Pygments lexers for highlighting IPython code
+py311-jaraco.classes-3.4.0     Python class routines
+py311-jaraco.context-6.1.2     Useful decorators and context managers
+py311-jaraco.functools-4.5.0   Additional functools for Python
+py311-jedi-0.19.1_1            Autocompletion tool for Python
+py311-jeepney-0.9.0            Low-level, pure Python DBus protocol wrapper
+py311-jsonpickle-4.1.2         Python library for serializing any arbitrary object graph into JSON
+py311-keyring-25.6.0,1         Store and access your passwords safely
+py311-kiwisolver-1.5.0,1       Fast implementation of the Cassowary constraint solver
+py311-lxml-6.1.1               Pythonic binding for the libxml2 and libxslt libraries
+py311-markupsafe-3.0.3         Implements XML/HTML/XHTML Markup safe string for Python
+py311-matplotlib-3.10.8_2      Plotting library uses a syntax familiar to MATLAB users
+py311-matplotlib-inline-0.1.6_1 Matplotlib Inline Back-end for IPython and Jupyter
+py311-more-itertools-11.1.0    More routines for operating on iterables, beyond itertools
+py311-msgpack-1.1.2            MessagePack (de)serializer for Python
+py311-numpy-2.4.6_1,1          Fundamental package for array computing in Python
+py311-olefile-0.46_1           Python module to read MS OLE2 files
+py311-packaging-26.2           Core utilities for Python packages
+py311-parso-0.8.4_1            Python Parser
+py311-pbs-installer-2026.5.10  Installer for Python Build Standalone
+py311-pexpect-4.9.0_1          Python module for controlling interactive programs in pseudo-terminal
+py311-pillow-11.3.0_2          Fork of the Python Imaging Library (PIL)
+py311-pkginfo-1.12.1.2         Query metadatdata from sdists / bdists / installed packages
+py311-platformdirs-4.9.2       Python module for determining appropriate platform-specific dirs
+py311-plotly-5.24.1_1          Library for collaborative, interactive, publication-quality graphs
+py311-poetry-2.4.1_1           Python dependency management and packaging made easy
+py311-poetry-core-2.4.1        Poetry PEP 517 Build Backend
+py311-prompt-toolkit-3.0.52    Library for building powerful interactive command lines in Python
+py311-psutil-7.2.2_1           Process utilities module for Python
+py311-ptyprocess-0.7.0_1       Run a subprocess in a pseudo terminal
+py311-pure-eval-0.2.3          Safely evaluate AST nodes without side effects
+py311-py-cpuinfo-9.0.0_1       Module for getting CPU info with pure Python
+py311-pycairo-1.29.0           Python bindings for Cairo
+py311-pycparser-2.23           C parser in Python
+py311-pygments-2.20.0          Syntax highlighter written in Python
+py311-pygobject-3.54.5_1       Python bindings for GObject Introspection
+py311-pyparsing-3.3.2          General parsing module for Python
+py311-pyproject-hooks-1.2.0    Wrappers to call pyproject.toml-based build backend hooks
+py311-pysocks-1.7.1_1          Python SOCKS module
+py311-python-dateutil-2.9.0    Extensions to the standard Python datetime module
+py311-python-discovery-1.4.2   Python interpreter discovery
+py311-rapidfuzz-3.14.5         Rapid fuzzy string matching in Python
+py311-requests-2.34.2          Python HTTP for Humans
+py311-requests-toolbelt-1.0.0_1 Utility belt for advanced users of python-requests
+py311-shellingham-1.5.4_1      Detect what shell the current Python executable is running in
+py311-six-1.17.0               Python 2 and 3 compatibility utilities
+py311-socksio-1.0.0_1          Sans-I/O implementation of SOCKS4, SOCKS4A, and SOCKS5
+py311-sqlite3-3.11.15_10       Standard Python binding to the SQLite3 library (Python 3.11)
+py311-stack-data-0.6.3_1       Extract data from python stack frames and tracebacks for informative displays
+py311-tenacity-9.1.4           Retry code until it succeeds
+py311-tkinter-3.11.15_11       Python bindings to the Tk widget set (Python 3.11)
+py311-tomlkit-0.15.0           Style-preserving TOML library
+py311-traitlets-5.14.3         Configuration system for Python applications
+py311-trove-classifiers-2026.5.22.10 Canonical source for classifiers on PyPI
+py311-truststore-0.10.4        Verify certificates using native system trust stores
+py311-typing-extensions-4.15.0 Backported and Experimental Type Hints for Python 3.5+
+py311-unicodedata2-17.0.1      Unicodedata backport updated to the latest Unicode version
+py311-urllib3-2.7.0,1          HTTP library with thread-safe connection pooling, file post, and more
+py311-virtualenv-21.2.3        Tool for creating isolated Python environments
+py311-wcwidth-0.7.0            Measure the displayed width of unicode strings in a terminal
+py311-zipp-3.21.0              Backport of pathlib-compatible object wrapper for zip files
+py311-zopfli-0.4.1             Zopfli module for python
+py312-packaging-26.2           Core utilities for Python packages
+py312-setuptools-63.1.0_3      Python packages installer
+pygobject-common-3.54.5_1      Common files for Python bindings for GObject Introspection
+python311-3.11.15_4            Interpreted object-oriented programming language
+python312-3.12.13_3            Interpreted object-oriented programming language
+qhull-8.0.2_3,1                Qhull computes convex hulls, Delaunay triangulations, and halfspaces
+racket-9.2                     Interactive, integrated, graphical Scheme programming environment
+readline-8.3.3                 Library for editing command lines as they are typed
+redis-8.8.0                    Persistent key-value database with built-in net interface
+redisearch-8.8.0_1             Querying secondary indexing and full-text search for Redis
+redisjson-8.8.0_2              JSON data type for Redis
+ripgrep-15.1.0_6               Command line search tool
+rsync-3.4.4_1                  Network file distribution/synchronization utility
+shared-mime-info-2.4_2         MIME types database from the freedesktop.org project
+sqlite3-3.53.3,1               SQL database engine in a C library
+starship-1.26.0                Cross-shell prompt for astronauts
+tcl86-8.6.18_1                 Tool Command Language
+terminfo-db-20250719           Terminal Description database
+tiff-4.7.1_1                   Tools and library routines for working with TIFF images
+tk86-8.6.18                    Graphical toolkit for Tcl
+tmux-3.7b                      Terminal Multiplexer
+tnftp-20260211                 Enhanced FTP client from NetBSD
+tree-sitter-0.26.10            Incremental parser generator
+unnethack-5.1.0.20131208_2     New variant of NetHack
+urw-base35-fonts-20200910      URW core35 fonts in various formats
+vile-9.8z_1                    VI Like Emacs -- console version
+vmaf-3.2.0                     Perceptual video quality assessment based on multi-method fusion
+w3m-0.5.6_1                    Pager/text-based WWW browser
+wayland-1.25.0                 Core Wayland window system code and protocol
+webp-1.6.0                     Google WebP image format conversion tool
+xkeyboard-config-2.48          X Keyboard Configuration Database
+xload-1.2.0                    System load average display for X
+xorgproto-2025.1               X Window System unified protocol definitions
+xvile-9.8z_1                   VI Like Emacs -- X11 version
+xxhash-0.8.3                   Extremely fast non-cryptographic hash algorithm
+zip-3.0_5                      Create/update ZIP files compatible with PKZIP
+zopfli-1.0.3_1                 Zopfli Compression Algorithm
+zsh-5.9.1                      The Z shell
+zsh-autosuggestions-0.7.1      Fish-like autosuggestions for Zsh
+zsh-completions-0.36.0         Additional completion definitions for Zsh
+zsh-syntax-highlighting-0.8.0,1 Fish shell syntax highlighting for Zsh
+zstd-1.5.7_2                   Fast real-time compression algorithm
