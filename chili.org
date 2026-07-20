@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-07-11 14:06:37 krylon>
+# Time-stamp: <2026-07-20 11:22:59 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -15,24 +15,26 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-07-11 Sa 14:06]
-   | Headline                    | Time      |           |       |      |
-   |-----------------------------+-----------+-----------+-------+------|
-   | *Total time*                | *1d 7:21* |           |       |      |
-   |-----------------------------+-----------+-----------+-------+------|
-   | *Chili [1/1]*               | *1d 7:21* |           |       |      |
-   | \_  /Components [1/1]/      |           | /1d 7:21/ |       |      |
-   | \_    Data model [0/0]      |           |           |  8:50 |      |
-   | \_    Database [0/0]        |           |           |  6:53 |      |
-   | \_      Pool                |           |           |       | 0:02 |
-   | \_      Testing             |           |           |       | 0:44 |
-   | \_    Network Scanner [0/0] |           |           | 11:41 |      |
-   | \_    Host Probe [0/0]      |           |           |  1:53 |      |
-   | \_    Nexus [0/0]           |           |           |  1:17 |      |
-   | \_    Main [1/1]            |           |           |  0:47 |      |
-   | \_      Profiling           |           |           |       | 0:44 |
+   #+CAPTION: Clock summary at [2026-07-20 Mo 11:22]
+   | Headline                                     | Time      |           |       |      |
+   |----------------------------------------------+-----------+-----------+-------+------|
+   | *Total time*                                 | *1d 8:35* |           |       |      |
+   |----------------------------------------------+-----------+-----------+-------+------|
+   | *Chili [1/1]*                                | *1d 8:35* |           |       |      |
+   | \_  /Components [2/3]/                       |           | /1d 8:35/ |       |      |
+   | \_    Data model [0/0]                       |           |           |  8:50 |      |
+   | \_    Database [0/0]                         |           |           |  6:53 |      |
+   | \_      Pool                                 |           |           |       | 0:02 |
+   | \_      Testing                              |           |           |       | 0:44 |
+   | \_    Network Scanner [1/1]                  |           |           | 12:14 |      |
+   | \_      Avoid adding devices we already know |           |           |       | 0:33 |
+   | \_    Host Probe [0/1]                       |           |           |  2:34 |      |
+   | \_      Uptime                               |           |           |       | 0:13 |
+   | \_    Nexus [0/0]                            |           |           |  1:17 |      |
+   | \_    Main [1/1]                             |           |           |  0:47 |      |
+   | \_      Profiling                            |           |           |       | 0:44 |
    #+END:
-** Components [1/1]
+** Components [2/3]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -82,7 +84,7 @@
      CLOCK: [2026-07-08 Mi 12:38]--[2026-07-08 Mi 13:12] =>  0:34
      CLOCK: [2026-01-09 Fr 15:40]--[2026-01-09 Fr 15:50] =>  0:10
      :END:
-*** Network Scanner [0/0]
+*** Network Scanner [1/1]
     :LOGBOOK:
     CLOCK: [2026-07-10 Fr 10:34]--[2026-07-10 Fr 10:48] =>  0:14
     CLOCK: [2026-07-09 Do 10:19]--[2026-07-09 Do 13:34] =>  3:15
@@ -94,15 +96,28 @@
     CLOCK: [2026-01-09 Fr 18:36]--[2026-01-09 Fr 18:45] =>  0:09
     CLOCK: [2026-01-09 Fr 16:14]--[2026-01-09 Fr 18:28] =>  2:14
     :END:
-*** Host Probe [0/0]
+**** DONE Avoid adding devices we already know
+     CLOSED: [2026-07-20 Mo 11:22]
+     :LOGBOOK:
+     CLOCK: [2026-07-20 Mo 10:49]--[2026-07-20 Mo 11:22] =>  0:33
+     :END:
+*** Host Probe [0/1]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
     :END:
     :LOGBOOK:
+    CLOCK: [2026-07-20 Mo 10:26]--[2026-07-20 Mo 10:36] =>  0:10
+    CLOCK: [2026-07-19 So 16:17]--[2026-07-19 So 16:35] =>  0:18
     CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
+**** TODO Uptime
+     :LOGBOOK:
+     CLOCK: [2026-07-20 Mo 10:36]--[2026-07-20 Mo 10:49] =>  0:13
+     :END:
+     I should attempt to disentangle the communication with the Device from
+     the processing of the data, so I can more easily test the latter part.
 *** Nexus [0/0]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
