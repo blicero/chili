@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-20 11:20:48 krylon>
+// Time-stamp: <2026-07-21 10:40:34 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -113,7 +113,7 @@ func (sc *Scanner) mainLoop() {
 	sc.log.Println("[TRACE] Scanner mainloop initiated")
 	defer sc.log.Println("[TRACE] Scanner mainloop finished")
 
-	go sc.runScan()
+	// go sc.runScan()
 
 	for sc.active.Load() {
 		select {
