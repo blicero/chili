@@ -187,7 +187,9 @@ func (p *Probe) mainLoop() {
 		case <-heartbeat.C:
 			continue
 		case <-probeTicker.C:
-			go p.probeDevices()
+			if !p.scanRunning.Load() {
+				go p.probeDevices()
+			}
 		case cmd := <-p.CmdQ:
 			switch cmd {
 			case control.Stop:
