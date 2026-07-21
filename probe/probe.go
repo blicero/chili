@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-20 11:33:58 krylon>
+// Time-stamp: <2026-07-21 10:47:40 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -214,7 +214,6 @@ func (p *Probe) probeDevices() {
 
 	var (
 		err     error
-		db      *database.Database
 		devices []*model.Device
 		wg      sync.WaitGroup
 		devQ    chan *model.Device
@@ -223,29 +222,32 @@ func (p *Probe) probeDevices() {
 
 	defer ticker.Stop()
 
-	devQ = make(chan *model.Device)
-	defer close(devQ) // nolint: errcheck
-
-	for i := range p.parCnt {
-		wg.Go(func() { p.probeWorker(i+1, devQ) })
-	}
-
 	if devices, err = p.getAllDevices(); err != nil {
 		p.log.Printf("[ERROR] Failed to load all Devices: %s\n",
 			err.Error())
 		return
 	}
 
+	devQ = make(chan *model.Device)
+
+	for i := range p.parCnt {
+		wg.Go(func() { p.probeWorker(i+1, devQ) })
+	}
+
 	for _, dev := range devices {
 		select {
 		case <-ticker.C:
-			if !(p.active.Load() && p.scanRunning.Load()) {
+			if !p.active.Load() || !p.scanRunning.Load() {
+				close(devQ) // nolint: errcheck
 				return
 			}
 		case devQ <- dev:
 			continue
 		}
 	}
+
+	close(devQ)
+	wg.Wait()
 } // func (p *Probe) probeDevices()
 
 func (p *Probe) probeWorker(id int, devQ <-chan *model.Device) {
@@ -317,6 +319,32 @@ func (p *Probe) probeOneDevice(dev *model.Device) {
 		p.log.Printf("[ERROR] Cannot add %s of %s to Database: %s\n",
 			attr.Type,
 			dev.Name,
+			err.Error())
+	}
+
+	// FIXME I should really organize these steps more sensibly, but
+	//       to get me going, I will just perform them one after another,
+	//       each time.
+	var packages []string
+
+	if packages, err = p.QueryPackages(dev, portSSH); err != nil {
+		p.log.Printf("[ERROR] Failed to query packages on %s: %s\n",
+			dev.Name,
+			err.Error())
+	} else if len(packages) == 0 {
+		p.log.Printf("[TRACE] Did not find any installed packages on %s\n",
+			dev.Name)
+	}
+
+	attr = &model.Attribute{
+		DevID:     dev.ID,
+		Timestamp: time.Now().Truncate(time.Second),
+		Type:      attribute.Packages,
+		Value:     model.Packages(packages),
+	}
+
+	if err = db.AttributeAdd(attr); err != nil {
+		p.log.Printf("[ERROR] Failed to add list of installed packages to database: %s\n",
 			err.Error())
 	}
 } // func (p *Probe) probeDevice(dev *model.Device)

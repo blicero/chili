@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-20 13:18:24 krylon>
+// Time-stamp: <2026-07-21 10:28:58 krylon>
 
 package probe
 
@@ -83,3 +83,94 @@ func (p *Probe) QueryPackagesFreeBSD(d *model.Device, port int) ([]string, error
 
 	return updates, nil
 } // func (p *Probe) QueryPackagesFreeBSD(d *model.Device, port int) ([]string, error)
+
+// QueryPackagesOpenBSD attempts to get the installed packages from an OpenBSD device.
+func (p *Probe) QueryPackagesOpenBSD(d *model.Device, port int) ([]string, error) {
+	const cmd = "/usr/sbin/pkg_info"
+	var (
+		err     error
+		output  []string
+		match   []string
+		updates []string
+	)
+
+	if output, err = p.executeCommand(d, port, cmd); err != nil {
+		if err == ErrPingOffline {
+			return nil, err
+		}
+		_ = p.disconnect(d)
+		p.log.Printf("[ERROR] Failed to execute command %q on %s: %s\n",
+			cmd,
+			d.Name,
+			err.Error())
+		return nil, err
+	}
+
+	updates = make([]string, 0)
+
+	for _, l := range output {
+		if match = patPkgDebian.FindStringSubmatch(l); len(match) > 0 {
+			var upd = strings.Join(match[1:], pkgSep)
+			updates = append(updates, upd)
+		}
+	}
+
+	return updates, nil
+} // func (p *Probe) QueryPackagesOpenBSD(d *model.Device, port int) ([]string, error)
+
+func (p *Probe) QueryPackagesSuse(d *model.Device, port int) ([]string, error) {
+	const cmd = "/usr/bin/zypper pa -i"
+	var (
+		err      error
+		output   []string
+		packages []string
+	)
+
+	if output, err = p.executeCommand(d, port, cmd); err != nil {
+		if err == ErrPingOffline {
+			return nil, err
+		}
+		_ = p.disconnect(d)
+		p.log.Printf("[ERROR] Failed to execute command %q on %s: %s\n",
+			cmd,
+			d.Name,
+			err.Error())
+		return nil, err
+	} else if output == nil {
+		p.log.Printf("[ERROR] Querying updates on %s did not return an error, but no output either\n",
+			d.Name)
+		return nil, ErrNoData
+	}
+
+	packages = make([]string, 0)
+
+	for _, l := range output[4:] {
+		l = strings.Trim(l, " \t\n")
+		var pieces = patUpdateSuse.Split(l, -1)
+		if len(pieces) > 0 {
+			var upd = strings.Join(pieces[1:], pkgSep)
+			packages = append(packages, upd)
+		}
+	}
+
+	return packages, nil
+} // func (p *Probe) QueryPackagesSuse(d *model.Device, port int) ([]string, error)
+
+// QueryPackages attempts to query a list of installed packages from a Device.
+func (p *Probe) QueryPackages(d *model.Device, port int) ([]string, error) {
+	switch d.OS {
+	case "Debian GNU/Linux", "Raspbian GNU/Linux":
+		return p.QueryPackagesDebian(d, port)
+	case "openSUSE Leap", "openSUSE Tumbleweed":
+		return p.QueryPackagesSuse(d, port)
+	case "FreeBSD":
+		return p.QueryPackagesFreeBSD(d, port)
+	case "OpenBSD":
+		return p.QueryPackagesOpenBSD(d, port)
+	default:
+		p.log.Printf("[INFO] Don't know how to query installed packages from %s (%s)\n",
+			d.Name,
+			d.OS)
+		return nil, nil
+	}
+} // func (p *Probe) QueryPackages(d *model.Device, port int) ([]string, error)
