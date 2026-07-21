@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-07-20 13:34:41 krylon>
+# Time-stamp: <2026-07-21 11:23:39 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,35 +8,39 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [4/6]
+* Chili [9/14]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-07-20 Mo 13:34]
-   | Headline                                     | Time      |           |       |      |
-   |----------------------------------------------+-----------+-----------+-------+------|
-   | *Total time*                                 | *1d 9:26* |           |       |      |
-   |----------------------------------------------+-----------+-----------+-------+------|
-   | *Chili [4/6]*                                | *1d 9:26* |           |       |      |
-   | \_  /Components [4/6]/                       |           | /1d 9:26/ |       |      |
-   | \_    Data model [0/0]                       |           |           |  8:50 |      |
-   | \_    Database [0/0]                         |           |           |  6:53 |      |
-   | \_      Pool                                 |           |           |       | 0:02 |
-   | \_      Testing                              |           |           |       | 0:44 |
-   | \_    Network Scanner [1/1]                  |           |           | 12:14 |      |
-   | \_      Avoid adding devices we already know |           |           |       | 0:33 |
-   | \_    Host Probe [2/4]                       |           |           |  3:25 |      |
-   | \_      Packages                             |           |           |       | 0:22 |
-   | \_      Uptime                               |           |           |       | 0:13 |
-   | \_      Refactor for easier testing          |           |           |       | 0:29 |
-   | \_    Nexus [0/0]                            |           |           |  1:17 |      |
-   | \_    Main [1/1]                             |           |           |  0:47 |      |
-   | \_      Profiling                            |           |           |       | 0:44 |
+   #+CAPTION: Clock summary at [2026-07-21 Di 11:23]
+   | Headline                                     | Time       |            |       |      |      |
+   |----------------------------------------------+------------+------------+-------+------+------|
+   | *Total time*                                 | *1d 10:51* |            |       |      |      |
+   |----------------------------------------------+------------+------------+-------+------+------|
+   | *Chili [9/14]*                               | *1d 10:51* |            |       |      |      |
+   | \_  /Components [9/14]/                      |            | /1d 10:51/ |       |      |      |
+   | \_    Data model [0/0]                       |            |            |  8:50 |      |      |
+   | \_    Database [1/1]                         |            |            |  7:11 |      |      |
+   | \_      De-serialize attributes              |            |            |       | 0:18 |      |
+   | \_      Pool                                 |            |            |       | 0:02 |      |
+   | \_      Testing                              |            |            |       | 0:44 |      |
+   | \_    Network Scanner [1/1]                  |            |            | 12:14 |      |      |
+   | \_      Avoid adding devices we already know |            |            |       | 0:33 |      |
+   | \_    Host Probe [3/11]                      |            |            |  4:32 |      |      |
+   | \_      Packages [4/7]                       |            |            |       | 1:29 |      |
+   | \_        Debian                             |            |            |       |      | 0:20 |
+   | \_        OpenBSD                            |            |            |       |      | 0:07 |
+   | \_        openSUSE                           |            |            |       |      | 0:40 |
+   | \_      Uptime                               |            |            |       | 0:13 |      |
+   | \_      Refactor for easier testing          |            |            |       | 0:29 |      |
+   | \_    Nexus [0/0]                            |            |            |  1:17 |      |      |
+   | \_    Main [1/1]                             |            |            |  0:47 |      |      |
+   | \_      Profiling                            |            |            |       | 0:44 |      |
    #+END:
-** Components [4/6]
+** Components [9/14]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -60,7 +64,7 @@
      for each kind of property, or one table that stores JSON data? I've been
      meaning to play around with SQLite's JSON support, and this would be a
      good use case. So, JSON it is.
-*** Database [0/0]
+*** Database [1/1]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -74,6 +78,11 @@
     CLOCK: [2026-01-07 Mi 15:55]--[2026-01-07 Mi 16:24] =>  0:29
     CLOCK: [2026-01-07 Mi 15:07]--[2026-01-07 Mi 15:45] =>  0:38
     :END:
+**** DONE De-serialize attributes
+     CLOSED: [2026-07-21 Di 11:18]
+     :LOGBOOK:
+     CLOCK: [2026-07-21 Di 11:00]--[2026-07-21 Di 11:18] =>  0:18
+     :END:
 **** Pool
      :LOGBOOK:
      CLOCK: [2026-01-09 Fr 16:09]--[2026-01-09 Fr 16:11] =>  0:02
@@ -103,7 +112,7 @@
      :LOGBOOK:
      CLOCK: [2026-07-20 Mo 10:49]--[2026-07-20 Mo 11:22] =>  0:33
      :END:
-*** Host Probe [2/4]
+*** Host Probe [3/11]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -117,7 +126,11 @@
 **** TODO Device Info
      I should attempt to query as much as I can about the hardware, as well as
      the installed software.
-**** TODO Packages
+**** TODO Packages [4/7]
+     :PROPERTIES:
+     :COOKIE_DATA: todo recursive
+     :VISIBILITY: children
+     :END:
      :LOGBOOK:
      CLOCK: [2026-07-20 Mo 13:12]--[2026-07-20 Mo 13:34] =>  0:22
      :END:
@@ -127,6 +140,26 @@
      I have access to, the most esoteric incantation is need for Arch, but
      Debian and the BSD systems are relatively straightforward, more tedious
      than complex.
+***** DONE Debian
+      CLOSED: [2026-07-21 Di 10:10]
+      :LOGBOOK:
+      CLOCK: [2026-07-21 Di 09:50]--[2026-07-21 Di 10:10] =>  0:20
+      :END:
+***** DONE FreeBSD
+      CLOSED: [2026-07-21 Di 10:11]
+***** DONE OpenBSD
+      CLOSED: [2026-07-21 Di 10:18]
+      :LOGBOOK:
+      CLOCK: [2026-07-21 Di 10:11]--[2026-07-21 Di 10:18] =>  0:07
+      :END:
+***** TODO NetBSD
+***** TODO Arch Linux
+***** TODO Fedora
+***** DONE openSUSE
+      CLOSED: [2026-07-21 Di 10:59]
+      :LOGBOOK:
+      CLOCK: [2026-07-21 Di 10:19]--[2026-07-21 Di 10:59] =>  0:40
+      :END:
 **** CANCELLED Uptime
      CLOSED: [2026-07-20 Mo 12:10]
      :LOGBOOK:
