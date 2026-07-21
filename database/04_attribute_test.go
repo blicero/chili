@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 11. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-11 13:33:57 krylon>
+// Time-stamp: <2026-07-21 11:17:35 krylon>
 
 package database
 
@@ -134,3 +134,27 @@ func TestAttributeGetByDevice(t *testing.T) {
 		}
 	}
 } // func TestAttributeGetByDevice(t *testing.T)
+
+func TestAttributeGetByType(t *testing.T) {
+	if tdb == nil ||
+		tnet == nil ||
+		tnet.ID == 0 ||
+		len(tdevs) == 0 ||
+		len(tattr) == 0 {
+		t.SkipNow()
+	}
+
+	var (
+		err  error
+		attr []*model.Attribute
+	)
+
+	if attr, err = tdb.AttributeGetByType(attribute.DiskSpace); err != nil {
+		t.Fatalf("Failed to load attributes DiskSpace: %s",
+			err.Error())
+	} else if len(attr) == 0 {
+		t.Fatalf("Unexpected nummber of attributes %d (expected %d)",
+			len(attr),
+			len(tdevs)*atCnt)
+	}
+} // func TestAttributeGetByType(t *testing.T)

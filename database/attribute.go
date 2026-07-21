@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 11. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-20 10:30:59 krylon>
+// Time-stamp: <2026-07-21 11:11:46 krylon>
 
 package database
 
@@ -16,6 +16,58 @@ import (
 	"github.com/blicero/chili/model"
 	"github.com/blicero/chili/model/attribute"
 )
+
+func (db *Database) unpackPayload(attr *model.Attribute, val string) (bool, error) {
+	var (
+		err error
+	)
+	switch attr.Type {
+	case attribute.DiskSpace:
+		var x int64
+		if err = json.Unmarshal([]byte(val), &x); err != nil {
+			db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+				val,
+				err.Error())
+			return false, err
+		}
+		attr.Value = model.DiskSpace(x)
+	case attribute.Uptime:
+		var u = new(model.Uptime)
+		if err = json.Unmarshal([]byte(val), u); err != nil {
+			db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+				val,
+				err.Error())
+			return false, err
+		}
+		attr.Value = u
+	case attribute.Updates:
+		var updates = make([]string, 0, 8)
+		if err = json.Unmarshal([]byte(val), &updates); err != nil {
+			db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+				val,
+				err.Error())
+			return false, err
+		}
+		attr.Value = model.Updates(updates)
+	case attribute.Packages:
+		var pkg = make([]string, 0, 8)
+		if err = json.Unmarshal([]byte(val), &pkg); err != nil {
+			db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+				val,
+				err.Error())
+			return false, err
+		}
+		attr.Value = model.Updates(pkg)
+	default:
+		err = fmt.Errorf("don't know how to decode %s",
+			attr.Type)
+		db.log.Printf("[ERROR] %s\n", err.Error())
+		return false, err
+
+	}
+
+	return true, nil
+} // func (db *Database) unpackPayload(dev *model.Device, attr *model.Attribute, val string) (bool, error)
 
 // AttributeAdd adds an Attribute to the Database.
 func (db *Database) AttributeAdd(a *model.Attribute) error {
@@ -129,7 +181,7 @@ EXEC_QUERY:
 			var ex = fmt.Errorf("failed to scan row: %w", err)
 			db.log.Printf("[ERROR] %s\n", ex.Error())
 			return nil, ex
-		} else if err = json.Unmarshal([]byte(vstr), &attr.Value); err != nil {
+		} else if _, err = db.unpackPayload(attr, vstr); err != nil {
 			var ex = fmt.Errorf("cannot parse JSON value %q: %w",
 				vstr,
 				err)
@@ -191,7 +243,7 @@ EXEC_QUERY:
 			var ex = fmt.Errorf("failed to scan row: %w", err)
 			db.log.Printf("[ERROR] %s\n", ex.Error())
 			return nil, ex
-		} else if err = json.Unmarshal([]byte(vstr), &attr.Value); err != nil {
+		} else if _, err = db.unpackPayload(attr, vstr); err != nil {
 			var ex = fmt.Errorf("cannot parse JSON value %q: %w",
 				vstr,
 				err)
@@ -245,6 +297,7 @@ EXEC_QUERY:
 		var (
 			addstamp int64
 			vstr     string
+			ok       bool
 			attr     = &model.Attribute{
 				DevID: dev.ID,
 			}
@@ -261,40 +314,58 @@ EXEC_QUERY:
 			db.log.Printf("[ERROR] %s\n", ex.Error())
 			return nil, ex
 		}*/
-		switch attr.Type {
-		case attribute.DiskSpace:
-			var x int64
-			if err = json.Unmarshal([]byte(vstr), &x); err != nil {
-				db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
-					vstr,
-					err.Error())
-				return nil, err
-			}
-			attr.Value = model.DiskSpace(x)
-		case attribute.Uptime:
-			var u = new(model.Uptime)
-			if err = json.Unmarshal([]byte(vstr), u); err != nil {
-				db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
-					vstr,
-					err.Error())
-				return nil, err
-			}
-			attr.Value = u
-		case attribute.Updates:
-			var updates = make([]string, 0, 8)
-			if err = json.Unmarshal([]byte(vstr), &updates); err != nil {
-				db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
-					vstr,
-					err.Error())
-				return nil, err
-			}
-			attr.Value = model.Updates(updates)
-		default:
-			err = fmt.Errorf("don't know how to decode %s",
-				attr.Type)
-			db.log.Printf("[ERROR] %s\n", err.Error())
-			return nil, err
+		// switch attr.Type {
+		// case attribute.DiskSpace:
+		// 	var x int64
+		// 	if err = json.Unmarshal([]byte(vstr), &x); err != nil {
+		// 		db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+		// 			vstr,
+		// 			err.Error())
+		// 		return nil, err
+		// 	}
+		// 	attr.Value = model.DiskSpace(x)
+		// case attribute.Uptime:
+		// 	var u = new(model.Uptime)
+		// 	if err = json.Unmarshal([]byte(vstr), u); err != nil {
+		// 		db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+		// 			vstr,
+		// 			err.Error())
+		// 		return nil, err
+		// 	}
+		// 	attr.Value = u
+		// case attribute.Updates:
+		// 	var updates = make([]string, 0, 8)
+		// 	if err = json.Unmarshal([]byte(vstr), &updates); err != nil {
+		// 		db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+		// 			vstr,
+		// 			err.Error())
+		// 		return nil, err
+		// 	}
+		// 	attr.Value = model.Updates(updates)
+		// case attribute.Packages:
+		// 	var pkg = make([]string, 0, 8)
+		// 	if err = json.Unmarshal([]byte(vstr), &pkg); err != nil {
+		// 		db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+		// 			vstr,
+		// 			err.Error())
+		// 		return nil, err
+		// 	}
+		// 	attr.Value = model.Updates(pkg)
+		// default:
+		// 	err = fmt.Errorf("don't know how to decode %s",
+		// 		attr.Type)
+		// 	db.log.Printf("[ERROR] %s\n", err.Error())
+		// 	return nil, err
 
+		// }
+		if ok, err = db.unpackPayload(attr, vstr); err != nil {
+			db.log.Printf("[ERROR] Failed to parse JSON: %s\n",
+				err.Error())
+			return nil, nil
+		} else if !ok {
+			db.log.Printf("[INFO] Did not find attributes for %s\n",
+				dev.Name)
+			return nil, nil
 		}
 
 		attr.Timestamp = time.Unix(addstamp, 0)
