@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-07-21 11:23:39 krylon>
+# Time-stamp: <2026-07-22 13:20:34 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,39 +8,40 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [9/14]
+* Chili [9/15]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-07-21 Di 11:23]
-   | Headline                                     | Time       |            |       |      |      |
-   |----------------------------------------------+------------+------------+-------+------+------|
-   | *Total time*                                 | *1d 10:51* |            |       |      |      |
-   |----------------------------------------------+------------+------------+-------+------+------|
-   | *Chili [9/14]*                               | *1d 10:51* |            |       |      |      |
-   | \_  /Components [9/14]/                      |            | /1d 10:51/ |       |      |      |
-   | \_    Data model [0/0]                       |            |            |  8:50 |      |      |
-   | \_    Database [1/1]                         |            |            |  7:11 |      |      |
-   | \_      De-serialize attributes              |            |            |       | 0:18 |      |
-   | \_      Pool                                 |            |            |       | 0:02 |      |
-   | \_      Testing                              |            |            |       | 0:44 |      |
-   | \_    Network Scanner [1/1]                  |            |            | 12:14 |      |      |
-   | \_      Avoid adding devices we already know |            |            |       | 0:33 |      |
-   | \_    Host Probe [3/11]                      |            |            |  4:32 |      |      |
-   | \_      Packages [4/7]                       |            |            |       | 1:29 |      |
-   | \_        Debian                             |            |            |       |      | 0:20 |
-   | \_        OpenBSD                            |            |            |       |      | 0:07 |
-   | \_        openSUSE                           |            |            |       |      | 0:40 |
-   | \_      Uptime                               |            |            |       | 0:13 |      |
-   | \_      Refactor for easier testing          |            |            |       | 0:29 |      |
-   | \_    Nexus [0/0]                            |            |            |  1:17 |      |      |
-   | \_    Main [1/1]                             |            |            |  0:47 |      |      |
-   | \_      Profiling                            |            |            |       | 0:44 |      |
+   #+CAPTION: Clock summary at [2026-07-22 Mi 13:20]
+   | Headline                                      | Time       |            |       |      |      |
+   |-----------------------------------------------+------------+------------+-------+------+------|
+   | *Total time*                                  | *1d 13:59* |            |       |      |      |
+   |-----------------------------------------------+------------+------------+-------+------+------|
+   | *Chili [9/15]*                                | *1d 13:59* |            |       |      |      |
+   | \_  /Components [9/15]/                       |            | /1d 13:59/ |       |      |      |
+   | \_    Data model [0/0]                        |            |            |  8:50 |      |      |
+   | \_    Database [1/1]                          |            |            |  7:11 |      |      |
+   | \_      De-serialize attributes               |            |            |       | 0:18 |      |
+   | \_      Pool                                  |            |            |       | 0:02 |      |
+   | \_      Testing                               |            |            |       | 0:44 |      |
+   | \_    Network Scanner [1/1]                   |            |            | 12:14 |      |      |
+   | \_      Avoid adding devices we already know  |            |            |       | 0:33 |      |
+   | \_    Host Probe [6/12]                       |            |            |  7:40 |      |      |
+   | \_      The little probe that could... get... |            |            |       | 3:08 |      |
+   | \_      Packages [4/7]                        |            |            |       | 1:29 |      |
+   | \_        Debian                              |            |            |       |      | 0:20 |
+   | \_        OpenBSD                             |            |            |       |      | 0:07 |
+   | \_        openSUSE                            |            |            |       |      | 0:40 |
+   | \_      Uptime                                |            |            |       | 0:13 |      |
+   | \_      Refactor for easier testing           |            |            |       | 0:29 |      |
+   | \_    Nexus [0/0]                             |            |            |  1:17 |      |      |
+   | \_    Main [1/1]                              |            |            |  0:47 |      |      |
+   | \_      Profiling                             |            |            |       | 0:44 |      |
    #+END:
-** Components [9/14]
+** Components [9/15]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -112,7 +113,9 @@
      :LOGBOOK:
      CLOCK: [2026-07-20 Mo 10:49]--[2026-07-20 Mo 11:22] =>  0:33
      :END:
-*** Host Probe [3/11]
+*** Configuration [0/0]
+    At least for configuring the log levels, that would be great.
+*** Host Probe [6/12]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -123,6 +126,15 @@
     CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
+**** TODO The little probe that could... get stuck?
+     :LOGBOOK:
+     CLOCK: [2026-07-22 Mi 10:50]--[2026-07-22 Mi 13:16] =>  2:26
+     CLOCK: [2026-07-21 Di 11:28]--[2026-07-21 Di 12:10] =>  0:42
+     :END:
+     Looking through the log, I don't really see the Probe finishing its
+     work. Something is not quite right.
+     I am throwing my hands in the air. When I run the Probe with but a single
+     worker, it runs fine. 🤡
 **** TODO Device Info
      I should attempt to query as much as I can about the hardware, as well as
      the installed software.
