@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 14:11:32 krylon>
+// Time-stamp: <2026-07-21 14:35:49 krylon>
 
 package main
 
@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/blicero/chili/common"
+	"github.com/blicero/chili/logdomain"
 	"github.com/blicero/chili/probe"
 	"github.com/blicero/chili/scanner"
 )
@@ -93,13 +94,8 @@ func main() {
 
 	pubKeys = []string{filepath.Join(os.Getenv("HOME"), ".ssh")}
 
-	// if pubKeys, err = findKeyFiles(); err != nil {
-	// 	fmt.Fprintf(
-	// 		os.Stderr,
-	// 		"Failed to find SSH keys: %s\n",
-	// 		err.Error())
-	// 	os.Exit(1)
-	// } else
+	common.PackageLevels[logdomain.Scanner] = "INFO"
+
 	if sc, err = scanner.New(scanWorkerCnt); err != nil {
 		fmt.Fprintf(
 			os.Stderr,
