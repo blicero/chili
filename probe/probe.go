@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-21 10:47:40 krylon>
+// Time-stamp: <2026-07-22 12:45:23 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -38,6 +38,7 @@ type Probe struct {
 	parCnt      int
 	active      atomic.Bool
 	scanRunning atomic.Bool
+	pending     atomic.Int32
 	cfg         *ssh.ClientConfig
 	clients     map[int64]*ssh.Client
 }
@@ -57,7 +58,7 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 		return nil, err
 	} else if err = p.initConfig(userName, keyPath...); err != nil {
 		return nil, err
-	} else if p.pool, err = database.NewPool(max(cnt-2, 1)); err != nil {
+	} else if p.pool, err = database.NewPool(max(cnt+2, 4)); err != nil {
 		p.log.Printf("[CRITICAL] Cannot open database connection pool: %s\n",
 			err.Error())
 		return nil, err
@@ -145,6 +146,7 @@ func (p *Probe) initConfig(userName string, keyPath ...string) error {
 			ssh.PublicKeys(keys...),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout:         common.PingTimeout,
 	}
 
 	return nil
@@ -175,6 +177,8 @@ func (p *Probe) Stop() {
 } // func (p *Probe) Stop()
 
 func (p *Probe) mainLoop() {
+	var cnt uint64
+
 	p.log.Println("[TRACE] Probe main loop starting up")
 	defer p.log.Println("[TRACE] Probe main loop quitting")
 
@@ -187,6 +191,10 @@ func (p *Probe) mainLoop() {
 	for p.IsActive() {
 		select {
 		case <-heartbeat.C:
+			if cnt++; cnt%5 == 0 && p.scanRunning.Load() {
+				p.log.Printf("[DEBUG] Pending probes: %d\n",
+					p.pending.Load())
+			}
 			continue
 		case <-probeTicker.C:
 			if !p.scanRunning.Load() {
@@ -228,7 +236,12 @@ func (p *Probe) probeDevices() {
 		p.log.Printf("[ERROR] Failed to load all Devices: %s\n",
 			err.Error())
 		return
+	} else if len(devices) == 0 {
+		p.log.Printf("[INFO] No Devices were found in database. Bye.\n")
+		return
 	}
+
+	p.log.Printf("[TRACE] About to probe %d Devices\n", len(devices))
 
 	devQ = make(chan *model.Device)
 
@@ -237,18 +250,22 @@ func (p *Probe) probeDevices() {
 	}
 
 	for _, dev := range devices {
+		p.log.Printf("[TRACE] Enqueueing %s for a Probing\n", dev.Name)
 		select {
 		case <-ticker.C:
 			if !p.active.Load() || !p.scanRunning.Load() {
+				p.log.Printf("[TRACE] Probe Feeder quitting prematurely\n")
 				close(devQ) // nolint: errcheck
 				return
 			}
 		case devQ <- dev:
-			continue
+			p.pending.Add(1)
 		}
 	}
 
+	p.log.Printf("[TRACE] That's enough probing for now!\n")
 	close(devQ)
+	p.log.Printf("[TRACE] Closed device queue, waiting for workers to finish.\n")
 	wg.Wait()
 } // func (p *Probe) probeDevices()
 
@@ -257,14 +274,18 @@ func (p *Probe) probeWorker(id int, devQ <-chan *model.Device) {
 	defer p.log.Printf("[TRACE] Probe worker %02d quitting", id)
 
 	for dev := range devQ {
-		p.probeOneDevice(dev)
+		p.probeOneDevice(id, dev)
 	}
 } // func (p *Probe) probeWorker(id int, devQ <-chan *model.Device)
 
-func (p *Probe) probeOneDevice(dev *model.Device) {
+func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 	p.log.Printf("[TRACE] Probing %s (%s)\n",
 		dev.Name,
 		dev.Addr)
+	defer p.log.Printf("[TRACE] Finished probing %s (%s)\n",
+		dev.Name,
+		dev.Addr)
+	defer p.pending.Add(-1)
 
 	var (
 		err    error
@@ -277,6 +298,9 @@ func (p *Probe) probeOneDevice(dev *model.Device) {
 			dev.Name)
 		return
 	}
+
+	p.log.Printf("[TRACE] Probe#%d getting Database from pool\n",
+		id)
 
 	db = p.pool.Get()
 	defer p.pool.Put(db)
@@ -297,7 +321,15 @@ func (p *Probe) probeOneDevice(dev *model.Device) {
 		}
 	}
 
+	// FIXME I should really organize these steps more sensibly, but
+	//       to get me going, I will just perform them one after another,
+	//       each time.
+
 	var updates []string
+
+	p.log.Printf("[TRACE] Probe#%d about to query updates on %s\n",
+		id,
+		dev.Name)
 
 	if updates, err = p.QueryUpdates(dev, portSSH); err != nil {
 		p.log.Printf("[ERROR] Querying %s for updates failed: %s\n",
@@ -324,15 +356,21 @@ func (p *Probe) probeOneDevice(dev *model.Device) {
 			err.Error())
 	}
 
-	// FIXME I should really organize these steps more sensibly, but
-	//       to get me going, I will just perform them one after another,
-	//       each time.
+	// FIXME Querying for installed software runs into some sort of tar pit.
+	//       At first I thought I had gotten too clever with concurrency, but
+	//       it appears the problem is a timeout?
+
+	p.log.Printf("[TRACE] Probe#%d about to query installed packages on %s\n",
+		id,
+		dev.Name)
+
 	var packages []string
 
 	if packages, err = p.QueryPackages(dev, portSSH); err != nil {
 		p.log.Printf("[ERROR] Failed to query packages on %s: %s\n",
 			dev.Name,
 			err.Error())
+		return
 	} else if len(packages) == 0 {
 		p.log.Printf("[TRACE] Did not find any installed packages on %s\n",
 			dev.Name)
