@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 10. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-20 11:58:32 krylon>
+// Time-stamp: <2026-07-22 11:20:28 krylon>
 
 package probe
 
@@ -45,7 +45,7 @@ func (p *Probe) pingDevice(dev *model.Device) bool {
 	pinger = probing.New(dev.Addr.String())
 	pinger.Count = common.PingCount
 	pinger.Interval = common.PingInterval
-	pinger.Timeout = common.PingCount * common.PingInterval * 2
+	pinger.Timeout = common.PingTimeout
 
 	if err = pinger.Run(); err != nil {
 		p.log.Printf("[ERROR] Error pinging %s: %s\n",
