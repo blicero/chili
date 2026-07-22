@@ -131,11 +131,13 @@ func (p *Probe) initConfig(userName string, keyPath ...string) error {
 	}
 
 	// XXX The documentation for the ssh package says very explicitly to NOT use
-	//     InsecureIgnoreHostKey in production code, which makes sense for obvious reasons.
-	//     But I intend to only run this application on my local network, where I own and
-	//     administer all the devices.
-	//     But if anyone ever intends to use this code (or parts of it) for any other purpose,
-	//     please, PLEASE rectify this!!! You have been warned.
+	//     InsecureIgnoreHostKey in production code, which makes sense
+	//     for obvious reasons.
+	//     But I intend to only run this application on my local network,
+	//     where I own and administer all the devices.
+	//     But if anyone ever intends to use this code
+	//     (or parts of it) for any other purpose, please, PLEASE rectify
+	//     this!!! You have been warned.
 	p.cfg = &ssh.ClientConfig{
 		User: userName,
 		// Auth: make([]ssh.AuthMethod, 0, len(keys)),
