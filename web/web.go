@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-24 09:49:31 krylon>
+// Time-stamp: <2026-07-24 13:55:35 krylon>
 
 package web
 
@@ -136,7 +136,7 @@ func Create(addr string) (*Server, error) {
 	srv.router.NotFoundHandler = http.HandlerFunc(srv.handleNotFound)
 	srv.router.HandleFunc("/favicon.ico", srv.handleFavIco)
 	srv.router.HandleFunc("/static/{file}", srv.handleStaticFile)
-	// srv.router.HandleFunc("/{index:(?i:index|main|start)$}", srv.handleMain)
+	srv.router.HandleFunc("/{index:(?i:index|main|start)$}", srv.handleMain)
 	// srv.router.HandleFunc("/host/all", srv.handleHostsView)
 	// srv.router.HandleFunc("/host/{name}/chart", srv.handleHostChart)
 	// srv.router.HandleFunc("/host/{name}", srv.handleSingleHostView)
@@ -194,6 +194,43 @@ func (srv *Server) Run() {
 //////////////////////////////////////////////////////////////////////////////
 /// Handle requests //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
+
+func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request) {
+	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
+	const tmplName = "main"
+
+	var (
+		err  error
+		msg  string
+		db   *database.Database
+		tmpl *template.Template
+		data = tmplDataIndex{
+			tmplDataBase: tmplDataBase{
+				Title: "Main",
+				Debug: common.Debug,
+				URL:   r.URL.String(),
+			},
+		}
+	)
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
+		msg = fmt.Sprintf("Could not find template %q", tmplName)
+		srv.log.Println("[CRITICAL] " + msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	w.Header().Set("Cache-Control", noCache)
+	if err = tmpl.Execute(w, &data); err != nil {
+		msg = fmt.Sprintf("Error rendering template %q: %s",
+			tmplName,
+			err.Error())
+		srv.sendErrorMessage(w, msg)
+	}
+} // func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request)
 
 func (srv *Server) handleNotFound(w http.ResponseWriter, r *http.Request) {
 	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
