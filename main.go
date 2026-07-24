@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-21 14:35:49 krylon>
+// Time-stamp: <2026-07-24 14:26:05 krylon>
 
 package main
 
@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"runtime/pprof"
-	"strings"
 	"syscall"
 	"time"
 
@@ -22,6 +21,7 @@ import (
 	"github.com/blicero/chili/logdomain"
 	"github.com/blicero/chili/probe"
 	"github.com/blicero/chili/scanner"
+	"github.com/blicero/chili/web"
 )
 
 func main() {
@@ -34,8 +34,9 @@ func main() {
 		err                           error
 		sc                            *scanner.Scanner
 		p                             *probe.Probe
+		srv                           *web.Server
 		scanWorkerCnt, probeWorkerCnt int
-		profOut, username             string
+		profOut, username, webAddr    string
 		ticker                        *time.Ticker
 		sigQ                          chan os.Signal
 		pubKeys                       []string
@@ -61,6 +62,11 @@ func main() {
 		"user",
 		os.Getenv("USER"),
 		"the user name to use for SSH connections")
+	flag.StringVar(
+		&webAddr,
+		"addr",
+		fmt.Sprintf("[::1]:%d", common.DefaultPort),
+		"the addr the web server listens on")
 
 	flag.Parse()
 
@@ -108,6 +114,13 @@ func main() {
 			"Failed to create Probe: %s\n",
 			err.Error())
 		os.Exit(1)
+	} else if srv, err = web.Create(webAddr); err != nil {
+		fmt.Fprintf(
+			os.Stderr,
+			"Failed to create web server on %s: %s\n",
+			webAddr,
+			err.Error())
+		os.Exit(1)
 	}
 
 	ticker = time.NewTicker(common.ActiveTimeout)
@@ -118,6 +131,7 @@ func main() {
 
 	sc.Start()
 	p.Start()
+	go srv.Run()
 
 	for {
 		select {
@@ -135,36 +149,36 @@ func main() {
 	}
 } // func main()
 
-func findKeyFiles() ([]string, error) {
-	var (
-		err   error
-		dh    *os.File
-		path  string
-		names []string
-		files = make([]string, 0, 8)
-	)
+// func findKeyFiles() ([]string, error) {
+// 	var (
+// 		err   error
+// 		dh    *os.File
+// 		path  string
+// 		names []string
+// 		files = make([]string, 0, 8)
+// 	)
 
-	path = filepath.Join(
-		os.Getenv("HOME"),
-		".ssh")
+// 	path = filepath.Join(
+// 		os.Getenv("HOME"),
+// 		".ssh")
 
-	if dh, err = os.Open(path); err != nil {
-		return nil, err
-	}
+// 	if dh, err = os.Open(path); err != nil {
+// 		return nil, err
+// 	}
 
-	defer dh.Close()
+// 	defer dh.Close()
 
-	if names, err = dh.Readdirnames(-1); err != nil {
-		return nil, err
-	}
+// 	if names, err = dh.Readdirnames(-1); err != nil {
+// 		return nil, err
+// 	}
 
-	for _, file := range names {
-		if strings.HasPrefix(file, "id_") && !strings.HasSuffix(file, ".pub") {
-			files = append(
-				files,
-				filepath.Join(path, file))
-		}
-	}
+// 	for _, file := range names {
+// 		if strings.HasPrefix(file, "id_") && !strings.HasSuffix(file, ".pub") {
+// 			files = append(
+// 				files,
+// 				filepath.Join(path, file))
+// 		}
+// 	}
 
-	return files, nil
-} // func findKeyFiles() ([]string, error)
+// 	return files, nil
+// } // func findKeyFiles() ([]string, error)
