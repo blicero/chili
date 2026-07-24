@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 05. 2020 by Benjamin Walkenhorst
 // (c) 2020 Benjamin Walkenhorst
-// Time-stamp: <2026-07-24 09:49:04 krylon>
+// Time-stamp: <2026-07-24 15:38:19 krylon>
 //
 // This file contains data structures to be passed to HTML templates.
 
@@ -16,12 +16,13 @@ type tmplDataBase struct {
 	Debug    bool
 	URL      string
 	Messages []string
-	Devices  []*model.Device
 }
 
 // nolint: unused
 type tmplDataIndex struct {
 	tmplDataBase
+	Networks []*model.Network
+	Devices  []*model.Device
 }
 
 // nolint: unused

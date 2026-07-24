@@ -1,18 +1,74 @@
 {{ define "main" }}
 {{/* Created on 10. 06. 2024 */}}
-{{/* Time-stamp: <2026-07-24 13:29:21 krylon> */}}
+{{/* Time-stamp: <2026-07-24 15:55:25 krylon> */}}
 <!DOCTYPE html>
 <html>
-    {{ template "head" . }}
+  {{ template "head" . }}
 
-    <body>
-        {{ template "intro" . }}
+  <body>
+    {{ template "intro" . }}
 
-        <div id="content" class="content box">
-          Nothing to see here (yet), move along!
-        </div>
+    <div id="networks" class="content box">
+      <h3>Networks</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Added</th>
+            <th>Last Scan</th>
+          </tr>
+        </thead>
 
-        {{ template "footer" . }}
-    </body>
+        <tbody>
+          {{ range .Networks }}
+          <tr>
+            <td>
+              <a href="/network/{{ .ID }}">{{ .Name }}</a>
+            </td>
+            <td>{{ .Addr }}</td>
+            <td>{{ fmt_time_minute .Added }}</td>
+            <td>{{ fmt_time .LastScan }}</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+
+    <div id="devices" class="content box">
+      <h3>Devices</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>OS</th>
+            <th>Added</th>
+            <th>Last Seen</th>
+            <th>Class</th>
+            <th>Active</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{ range .Devices }}
+          <tr>
+            <td>
+              <a href="/device/{{ .ID }}">{{ .Name }}</a>
+            </td>
+            <td>{{ .Addr }}</td>
+            <td>{{ .OS }}</td>
+            <td>{{ fmt_time_minute .Added }}</td>
+            <td>{{ fmt_time .LastContact }}</td>
+            <td>{{ .Class }}</td>
+            <td>{{ if .Active }}Yes{{ else }}No{{ end }}</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+
+    {{ template "footer" . }}
+  </body>
 </html>
 {{ end }}

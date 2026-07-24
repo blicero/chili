@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-24 13:55:35 krylon>
+// Time-stamp: <2026-07-24 16:23:18 krylon>
 
 package web
 
@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -26,6 +27,7 @@ import (
 	"github.com/blicero/chili/common"
 	"github.com/blicero/chili/database"
 	"github.com/blicero/chili/logdomain"
+	"github.com/blicero/chili/model"
 	"github.com/gorilla/mux"
 )
 
@@ -221,7 +223,26 @@ func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request) {
 		srv.log.Println("[CRITICAL] " + msg)
 		srv.sendErrorMessage(w, msg)
 		return
+	} else if data.Networks, err = db.NetGetAll(); err != nil {
+		msg = fmt.Sprintf("failed to load Networks: %s", err.Error())
+		srv.log.Println("[CRITICAL] " + msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if data.Devices, err = db.DeviceGetAll(); err != nil {
+		msg = fmt.Sprintf("failed to load Devices: %s", err.Error())
+		srv.log.Println("[CRITICAL] " + msg)
+		srv.sendErrorMessage(w, msg)
+		return
 	}
+
+	slices.SortFunc(data.Devices, func(a, b *model.Device) int {
+		if a.Name < b.Name {
+			return -1
+		} else if a.Name > b.Name {
+			return 1
+		}
+		return 0
+	})
 
 	w.Header().Set("Cache-Control", noCache)
 	if err = tmpl.Execute(w, &data); err != nil {
