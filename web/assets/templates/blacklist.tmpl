@@ -1,0 +1,53 @@
+{{ define "blacklist" }}
+{{/* Created on 13. 04. 2026 */}}
+{{/* Time-stamp: <2026-04-14 13:33:22 krylon> */}}
+<!DOCTYPE html>
+<html>
+  {{ template "head" . }}
+
+  <body>
+    {{ template "intro" . }}
+
+    <div>
+      <label for="pattern">Add Blacklist pattern</label>
+      <input type="text" name="pattern" id="bl_pattern" />
+      <button class="btn btn-success btn-sm"
+        onclick="blacklist_add();">
+        Add
+      </button>
+    </div>
+
+    <div>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>&num; Hits</th>
+            <th>Pattern</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+
+        <tbody id="pattern_body">
+          {{ $cnt := dec 1 }}
+          {{ range .Patterns }}
+          {{ $cnt = inc $cnt }}
+          <tr id="pat_{{ $cnt }}">
+            <td>{{ .HitCnt }}</td>
+            <td class="bl_pat">{{ .Pattern }}</td>
+            <td>
+              <button
+                class="btn btn-danger"
+                onclick="blacklist_remove({{ $cnt }}, '{{ .Pattern }}');">
+                Delete
+              </button>
+            </td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+
+    {{ template "footer" . }}
+  </body>
+</html>
+{{ end }}
