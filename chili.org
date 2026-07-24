@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-07-22 13:20:34 krylon>
+# Time-stamp: <2026-07-24 09:58:48 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -15,13 +15,13 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-07-22 Mi 13:20]
+   #+CAPTION: Clock summary at [2026-07-24 Fr 09:58]
    | Headline                                      | Time       |            |       |      |      |
    |-----------------------------------------------+------------+------------+-------+------+------|
-   | *Total time*                                  | *1d 13:59* |            |       |      |      |
+   | *Total time*                                  | *1d 15:12* |            |       |      |      |
    |-----------------------------------------------+------------+------------+-------+------+------|
-   | *Chili [9/15]*                                | *1d 13:59* |            |       |      |      |
-   | \_  /Components [9/15]/                       |            | /1d 13:59/ |       |      |      |
+   | *Chili [9/15]*                                | *1d 15:12* |            |       |      |      |
+   | \_  /Components [9/15]/                       |            | /1d 15:12/ |       |      |      |
    | \_    Data model [0/0]                        |            |            |  8:50 |      |      |
    | \_    Database [1/1]                          |            |            |  7:11 |      |      |
    | \_      De-serialize attributes               |            |            |       | 0:18 |      |
@@ -38,6 +38,7 @@
    | \_      Uptime                                |            |            |       | 0:13 |      |
    | \_      Refactor for easier testing           |            |            |       | 0:29 |      |
    | \_    Nexus [0/0]                             |            |            |  1:17 |      |      |
+   | \_    Web UI [0/0]                            |            |            |  1:13 |      |      |
    | \_    Main [1/1]                              |            |            |  0:47 |      |      |
    | \_      Profiling                             |            |            |       | 0:44 |      |
    #+END:
@@ -200,6 +201,9 @@
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
+    :END:
+    :LOGBOOK:
+    CLOCK: [2026-07-24 Fr 08:45]--[2026-07-24 Fr 09:58] =>  1:13
     :END:
 *** Main [1/1]
     :PROPERTIES:
