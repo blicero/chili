@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-11 13:35:33 krylon>
+// Time-stamp: <2026-07-27 16:31:31 krylon>
 //
 // This files contains the SQL queries we intend to run on the database.
 
@@ -128,6 +128,24 @@ ORDER BY timestamp DESC
 )
 
 SELECT id, dev_id, timestamp, value
+FROM dattribute
+WHERE rid = 1
+`,
+	query.AttributeGetMostRecent: `
+WITH dattribute AS (
+SELECT
+    id,
+    row_number() OVER (PARTITION BY atype ORDER BY timestamp DESC) AS rid,
+    dev_id,
+	atype,
+    timestamp,
+    value
+FROM attribute
+WHERE dev_id = ?
+ORDER BY timestamp DESC
+)
+
+SELECT id, atype, timestamp, value
 FROM dattribute
 WHERE rid = 1
 `,

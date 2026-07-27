@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 11. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-21 11:11:46 krylon>
+// Time-stamp: <2026-07-26 10:04:20 krylon>
 
 package database
 
@@ -375,3 +375,120 @@ EXEC_QUERY:
 
 	return results, nil
 } // func (db *Database) AttributeGetByDevice(dev *model.Device) ([]*model.Attribute, error)
+
+// AttributeGetMostRecent returns the most recent Attribute of each type for
+// the given Device.
+func (db *Database) AttributeGetMostRecent(dev *model.Device) ([]*model.Attribute, error) {
+	const qid query.ID = query.AttributeGetMostRecent
+	var (
+		err  error
+		stmt *sql.Stmt
+	)
+
+	if stmt, err = db.getQuery(qid); err != nil {
+		db.log.Printf("[ERROR] Cannot prepare query %s: %s\n",
+			qid,
+			err.Error())
+		return nil, err
+	} else if db.tx != nil {
+		stmt = db.tx.Stmt(stmt)
+	}
+
+	var rows *sql.Rows
+
+EXEC_QUERY:
+	if rows, err = stmt.Query(dev.ID); err != nil {
+		if worthARetry(err) {
+			waitForRetry()
+			goto EXEC_QUERY
+		}
+
+		return nil, err
+	}
+
+	defer rows.Close() // nolint: errcheck,gosec
+
+	var results = make([]*model.Attribute, 0, 8)
+
+	for rows.Next() {
+		var (
+			addstamp int64
+			vstr     string
+			ok       bool
+			attr     = &model.Attribute{
+				DevID: dev.ID,
+			}
+		)
+
+		if err = rows.Scan(&attr.ID, &attr.Type, &addstamp, &vstr); err != nil {
+			var ex = fmt.Errorf("failed to scan row: %w", err)
+			db.log.Printf("[ERROR] %s\n", ex.Error())
+			return nil, ex
+		} /*else if err = json.Unmarshal([]byte(vstr), &attr.Value); err != nil {
+			var ex = fmt.Errorf("cannot parse JSON value %q: %w",
+				vstr,
+				err)
+			db.log.Printf("[ERROR] %s\n", ex.Error())
+			return nil, ex
+		}*/
+		// switch attr.Type {
+		// case attribute.DiskSpace:
+		// 	var x int64
+		// 	if err = json.Unmarshal([]byte(vstr), &x); err != nil {
+		// 		db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+		// 			vstr,
+		// 			err.Error())
+		// 		return nil, err
+		// 	}
+		// 	attr.Value = model.DiskSpace(x)
+		// case attribute.Uptime:
+		// 	var u = new(model.Uptime)
+		// 	if err = json.Unmarshal([]byte(vstr), u); err != nil {
+		// 		db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+		// 			vstr,
+		// 			err.Error())
+		// 		return nil, err
+		// 	}
+		// 	attr.Value = u
+		// case attribute.Updates:
+		// 	var updates = make([]string, 0, 8)
+		// 	if err = json.Unmarshal([]byte(vstr), &updates); err != nil {
+		// 		db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+		// 			vstr,
+		// 			err.Error())
+		// 		return nil, err
+		// 	}
+		// 	attr.Value = model.Updates(updates)
+		// case attribute.Packages:
+		// 	var pkg = make([]string, 0, 8)
+		// 	if err = json.Unmarshal([]byte(vstr), &pkg); err != nil {
+		// 		db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+		// 			vstr,
+		// 			err.Error())
+		// 		return nil, err
+		// 	}
+		// 	attr.Value = model.Updates(pkg)
+		// default:
+		// 	err = fmt.Errorf("don't know how to decode %s",
+		// 		attr.Type)
+		// 	db.log.Printf("[ERROR] %s\n", err.Error())
+		// 	return nil, err
+
+		// }
+		if ok, err = db.unpackPayload(attr, vstr); err != nil {
+			db.log.Printf("[ERROR] Failed to parse JSON: %s\n",
+				err.Error())
+			return nil, nil
+		} else if !ok {
+			db.log.Printf("[INFO] Did not find attributes for %s\n",
+				dev.Name)
+			return nil, nil
+		}
+
+		attr.Timestamp = time.Unix(addstamp, 0)
+
+		results = append(results, attr)
+	}
+
+	return results, nil
+} // func (db *Database) AttributeGetMostRecent(dev *model.Device) ([]*model.Attribute, error)
