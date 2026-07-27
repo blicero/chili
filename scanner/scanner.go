@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-21 10:40:34 krylon>
+// Time-stamp: <2026-07-27 09:22:52 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -39,7 +39,7 @@ import (
 
 const (
 	// XXX Set to more reasonable value after testing/debugging.
-	scanInterval = time.Second * 30
+	scanInterval = time.Minute * 10
 )
 
 type scanTarget struct {
@@ -74,7 +74,7 @@ func New(wcnt int) (*Scanner, error) {
 
 	if sc.log, err = common.GetLogger(logdomain.Scanner); err != nil {
 		return nil, err
-	} else if sc.dbPool, err = database.NewPool(min(wcnt>>1, 2)); err != nil {
+	} else if sc.dbPool, err = database.NewPool(max(wcnt>>1, 2)); err != nil {
 		sc.log.Printf("[ERROR] Failed to create database pool: %s\n",
 			err.Error())
 		return nil, err
@@ -113,7 +113,7 @@ func (sc *Scanner) mainLoop() {
 	sc.log.Println("[TRACE] Scanner mainloop initiated")
 	defer sc.log.Println("[TRACE] Scanner mainloop finished")
 
-	// go sc.runScan()
+	go sc.runScan()
 
 	for sc.active.Load() {
 		select {
