@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 23. 07. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-07-24 14:11:38 krylon>
+// Time-stamp: <2026-07-25 14:25:45 krylon>
 
 // Package common contains definitions used throughout the application
 package common
@@ -50,7 +50,7 @@ const (
 	PingCount                = 4
 	PingTimeout              = time.Second * 10
 	PingInterval             = time.Millisecond * 250
-	DefaultProbeInterval     = time.Minute
+	DefaultProbeInterval     = time.Minute * 5
 )
 
 // LogLevels are the names of the log levels supported by the logger.
