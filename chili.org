@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-07-24 16:25:21 krylon>
+# Time-stamp: <2026-07-27 16:41:19 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,28 +8,28 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [9/15]
+* Chili [10/17]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-07-24 Fr 16:25]
+   #+CAPTION: Clock summary at [2026-07-27 Mo 16:41]
    | Headline                                      | Time       |            |       |      |      |
    |-----------------------------------------------+------------+------------+-------+------+------|
-   | *Total time*                                  | *1d 16:40* |            |       |      |      |
+   | *Total time*                                  | *1d 18:03* |            |       |      |      |
    |-----------------------------------------------+------------+------------+-------+------+------|
-   | *Chili [9/15]*                                | *1d 16:40* |            |       |      |      |
-   | \_  /Components [9/15]/                       |            | /1d 16:40/ |       |      |      |
+   | *Chili [10/17]*                               | *1d 18:03* |            |       |      |      |
+   | \_  /Components [10/17]/                      |            | /1d 18:03/ |       |      |      |
    | \_    Data model [0/0]                        |            |            |  8:50 |      |      |
-   | \_    Database [1/1]                          |            |            |  7:11 |      |      |
+   | \_    Database [1/1]                          |            |            |  7:34 |      |      |
    | \_      De-serialize attributes               |            |            |       | 0:18 |      |
    | \_      Pool                                  |            |            |       | 0:02 |      |
    | \_      Testing                               |            |            |       | 0:44 |      |
    | \_    Network Scanner [1/1]                   |            |            | 12:14 |      |      |
    | \_      Avoid adding devices we already know  |            |            |       | 0:33 |      |
-   | \_    Host Probe [6/12]                       |            |            |  7:40 |      |      |
+   | \_    Host Probe [7/14]                       |            |            |  7:40 |      |      |
    | \_      The little probe that could... get... |            |            |       | 3:08 |      |
    | \_      Packages [4/7]                        |            |            |       | 1:29 |      |
    | \_        Debian                              |            |            |       |      | 0:20 |
@@ -38,11 +38,11 @@
    | \_      Uptime                                |            |            |       | 0:13 |      |
    | \_      Refactor for easier testing           |            |            |       | 0:29 |      |
    | \_    Nexus [0/0]                             |            |            |  1:17 |      |      |
-   | \_    Web UI [0/0]                            |            |            |  2:41 |      |      |
+   | \_    Web UI [0/0]                            |            |            |  3:41 |      |      |
    | \_    Main [1/1]                              |            |            |  0:47 |      |      |
    | \_      Profiling                             |            |            |       | 0:44 |      |
    #+END:
-** Components [9/15]
+** Components [10/17]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -72,6 +72,7 @@
     :VISIBILITY: children
     :END:
     :LOGBOOK:
+    CLOCK: [2026-07-24 Fr 20:55]--[2026-07-24 Fr 21:18] =>  0:23
     CLOCK: [2026-01-09 Fr 15:04]--[2026-01-09 Fr 15:40] =>  0:36
     CLOCK: [2026-01-08 Do 15:40]--[2026-01-08 Do 18:19] =>  2:39
     CLOCK: [2026-01-08 Do 14:56]--[2026-01-08 Do 15:06] =>  0:10
@@ -116,7 +117,7 @@
      :END:
 *** Configuration [0/0]
     At least for configuring the log levels, that would be great.
-*** Host Probe [6/12]
+*** Host Probe [7/14]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -127,7 +128,8 @@
     CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
-**** TODO The little probe that could... get stuck?
+**** DONE The little probe that could... get stuck?
+     CLOSED: [2026-07-27 Mo 09:13]
      :LOGBOOK:
      CLOCK: [2026-07-22 Mi 10:50]--[2026-07-22 Mi 13:16] =>  2:26
      CLOCK: [2026-07-21 Di 11:28]--[2026-07-21 Di 12:10] =>  0:42
@@ -136,9 +138,21 @@
      work. Something is not quite right.
      I am throwing my hands in the air. When I run the Probe with but a single
      worker, it runs fine. 🤡
+     [2026-07-27 Mo 09:12] I think the problem has disappeared. I'll just
+     count my blessings and move on.
 **** TODO Device Info
      I should attempt to query as much as I can about the hardware, as well as
      the installed software.
+**** TODO Running services [0/0]
+     :PROPERTIES:
+     :COOKIE_DATA: todo recursive
+     :VISIBILITY: children
+     :END:
+**** TODO SNMP [0/0]
+     :PROPERTIES:
+     :COOKIE_DATA: todo recursive
+     :VISIBILITY: children
+     :END:
 **** TODO Packages [4/7]
      :PROPERTIES:
      :COOKIE_DATA: todo recursive
@@ -203,6 +217,7 @@
     :VISIBILITY: children
     :END:
     :LOGBOOK:
+    CLOCK: [2026-07-27 Mo 15:37]--[2026-07-27 Mo 16:37] =>  1:00
     CLOCK: [2026-07-24 Fr 15:50]--[2026-07-24 Fr 16:25] =>  0:35
     CLOCK: [2026-07-24 Fr 14:15]--[2026-07-24 Fr 15:01] =>  0:46
     CLOCK: [2026-07-24 Fr 10:08]--[2026-07-24 Fr 10:15] =>  0:07
