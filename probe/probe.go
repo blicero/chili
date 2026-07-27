@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-22 13:19:46 krylon>
+// Time-stamp: <2026-07-27 08:57:47 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -188,6 +188,8 @@ func (p *Probe) mainLoop() {
 	var probeTicker = time.NewTicker(p.interval)
 	defer probeTicker.Stop()
 
+	go p.probeDevices()
+
 	for p.IsActive() {
 		select {
 		case <-heartbeat.C:
@@ -243,7 +245,7 @@ func (p *Probe) probeDevices() {
 
 	p.log.Printf("[TRACE] About to probe %d Devices\n", len(devices))
 
-	devQ = make(chan *model.Device)
+	devQ = make(chan *model.Device, 2)
 
 	for i := range p.parCnt {
 		wg.Go(func() { p.probeWorker(i+1, devQ) })
