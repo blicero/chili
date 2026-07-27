@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-24 16:23:18 krylon>
+// Time-stamp: <2026-07-26 10:35:37 krylon>
 
 package web
 
@@ -20,6 +20,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"slices"
+	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -139,6 +140,7 @@ func Create(addr string) (*Server, error) {
 	srv.router.HandleFunc("/favicon.ico", srv.handleFavIco)
 	srv.router.HandleFunc("/static/{file}", srv.handleStaticFile)
 	srv.router.HandleFunc("/{index:(?i:index|main|start)$}", srv.handleMain)
+	srv.router.HandleFunc("/device/{id:(?:\\d+)$}", srv.handleDeviceDetails)
 	// srv.router.HandleFunc("/host/all", srv.handleHostsView)
 	// srv.router.HandleFunc("/host/{name}/chart", srv.handleHostChart)
 	// srv.router.HandleFunc("/host/{name}", srv.handleSingleHostView)
@@ -252,6 +254,75 @@ func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request) {
 		srv.sendErrorMessage(w, msg)
 	}
 } // func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request)
+
+func (srv *Server) handleDeviceDetails(w http.ResponseWriter, r *http.Request) {
+	const tmplName = "device_details"
+	var (
+		err        error
+		msg, idStr string
+		devID      int64
+		vars       map[string]string
+		db         *database.Database
+		tmpl       *template.Template
+		data       = tmplDataDeviceDetails{
+			tmplDataBase: tmplDataBase{
+				Debug: common.Debug,
+				URL:   r.URL.String(),
+			},
+		}
+	)
+
+	vars = mux.Vars(r)
+	idStr = vars["id"]
+
+	if devID, err = strconv.ParseInt(idStr, 10, 64); err != nil {
+		msg = fmt.Sprintf("Could not parse ID %q", idStr)
+		srv.log.Println("[ERROR] " + msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if data.Device, err = db.DeviceGetByID(devID); err != nil {
+		msg = fmt.Sprintf("Error looking up device %d: %s",
+			devID,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if data.Device == nil {
+		msg = fmt.Sprintf("Did not find Device %d in database",
+			devID)
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if data.Attributes, err = db.AttributeGetMostRecent(data.Device); err != nil {
+		msg = fmt.Sprintf("Error looking for Attributes of %s: %s",
+			data.Device.Name,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
+		msg = fmt.Sprintf("Could not find template %q", tmplName)
+		srv.log.Println("[CRITICAL] " + msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	data.Title = fmt.Sprintf("Device Details for %s",
+		data.Device.Name)
+
+	w.Header().Set("Cache-Control", noCache)
+	if err = tmpl.Execute(w, &data); err != nil {
+		msg = fmt.Sprintf("Error rendering template %q: %s",
+			tmplName,
+			err.Error())
+		srv.sendErrorMessage(w, msg)
+	}
+} // func (srv *Server) handleDeviceDetails(w http.ResponseWriter, r *http.Request)
 
 func (srv *Server) handleNotFound(w http.ResponseWriter, r *http.Request) {
 	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)

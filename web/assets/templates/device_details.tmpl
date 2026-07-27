@@ -1,0 +1,55 @@
+{{ define "device_details" }}
+{{/* Created on 27. 07. 2026 */}}
+{{/* Time-stamp: <2026-07-27 16:40:35 krylon> */}}
+<!DOCTYPE html>
+<html>
+  {{ template "head" . }}
+
+  <body>
+    {{ template "intro" . }}
+
+    <table>
+      <tr>
+        <th>Name</th>
+        <td>{{ .Device.Name }}</td>
+
+        <th>Address</th>
+        <td>{{ .Device.Addr }}</td>
+
+        <th>OS</th>
+        <td>{{ .Device.OS }}</td>
+
+        <th>Last Contact</th>
+        <td>{{ fmt_time_minute .Device.LastContact }}</td>
+      </tr>
+    </table>
+
+    <hr />
+
+    <details>
+      <summary>Attributes</summary>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Timestamp</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{ range .Attributes }}
+          <tr>
+            <td>{{ .Type.String }}</td>
+            <td>{{ fmt_time_minute .Timestamp }}</td>
+            <td>{{ .Value.String }}</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+
+    {{ template "footer" . }}
+  </body>
+</html>
+{{ end }}
