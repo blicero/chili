@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-31 11:38:23 krylon>
+// Time-stamp: <2026-07-31 12:18:50 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -24,6 +24,7 @@ import (
 	"github.com/blicero/chili/logdomain"
 	"github.com/blicero/chili/model"
 	"github.com/blicero/chili/model/attribute"
+	"github.com/blicero/chili/model/device"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -262,6 +263,13 @@ func (p *Probe) probeDevices() {
 	}
 
 	for _, dev := range devices {
+		switch dev.Class {
+		case device.Entertainment, device.Router:
+			p.log.Printf("[TRACE] Won't probe %s, it is a %s\n",
+				dev.Name,
+				dev.Class)
+			continue
+		}
 		p.log.Printf("[TRACE] Enqueueing %s for a Probing\n", dev.Name)
 		select {
 		case <-ticker.C:
