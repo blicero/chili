@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 10. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-22 11:20:28 krylon>
+// Time-stamp: <2026-07-31 11:47:08 krylon>
 
 package probe
 
@@ -219,6 +219,7 @@ func (p *Probe) connect(d *model.Device, port int) (*ssh.Client, error) {
 		d.Addr,
 		port)
 
+	// TODO "connection refused" should not count as an error, should it?
 	if client, err = ssh.Dial("tcp", addr, p.cfg); err != nil {
 		p.log.Printf("[ERROR] Failed to connect to %s at %s: %s\n",
 			d.Name,

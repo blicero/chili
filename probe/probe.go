@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-27 08:57:47 krylon>
+// Time-stamp: <2026-07-31 11:38:23 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -26,6 +26,16 @@ import (
 	"github.com/blicero/chili/model/attribute"
 	"golang.org/x/crypto/ssh"
 )
+
+// Schedule defines how often we query each attribute on each Device.
+//
+// TODO Adjust intervals, make them configurable.
+var Schedule = map[attribute.ID]time.Duration{
+	attribute.Updates:   time.Second * 3600,
+	attribute.DiskSpace: time.Second * 900,
+	attribute.Uptime:    time.Second * 60,
+	attribute.Packages:  time.Second * 7200,
+}
 
 // Probe queries Devices about their OS, installed software, hardware,
 // pending updates, etc...
@@ -245,7 +255,7 @@ func (p *Probe) probeDevices() {
 
 	p.log.Printf("[TRACE] About to probe %d Devices\n", len(devices))
 
-	devQ = make(chan *model.Device, 2)
+	devQ = make(chan *model.Device, p.parCnt)
 
 	for i := range p.parCnt {
 		wg.Go(func() { p.probeWorker(i+1, devQ) })
@@ -323,11 +333,36 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 		}
 	}
 
+	var (
+		knownAttr         []*model.Attribute
+		lastProbed        map[attribute.ID]time.Time
+		now               = time.Now().Truncate(time.Second)
+		updates, packages []string
+		uptime            *model.Uptime
+		attr              *model.Attribute
+		diskSpace         int64
+	)
+
+	if knownAttr, err = db.AttributeGetMostRecent(dev); err != nil {
+		p.log.Printf("[ERROR] Failed to load attributes for %s: %s\n",
+			dev.Name,
+			err.Error())
+		return
+	}
+
+	lastProbed = make(map[attribute.ID]time.Time, len(knownAttr))
+
+	for _, a := range knownAttr {
+		lastProbed[a.Type] = a.Timestamp
+	}
+
 	// FIXME I should really organize these steps more sensibly, but
 	//       to get me going, I will just perform them one after another,
 	//       each time.
 
-	var updates []string
+	if stamp, ok := lastProbed[attribute.Updates]; ok && stamp.Add(Schedule[attribute.Updates]).After(now) {
+		goto INSTALLED
+	}
 
 	p.log.Printf("[TRACE] Probe#%d about to query updates on %s\n",
 		id,
@@ -344,7 +379,7 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 			len(updates))
 	}
 
-	var attr = &model.Attribute{
+	attr = &model.Attribute{
 		DevID:     dev.ID,
 		Timestamp: time.Now().Truncate(time.Second),
 		Type:      attribute.Updates,
@@ -358,15 +393,17 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 			err.Error())
 	}
 
+INSTALLED:
 	// FIXME Querying for installed software runs into some sort of tar pit.
 	//       At first I thought I had gotten too clever with concurrency, but
 	//       it appears the problem is a timeout?
+	if stamp, ok := lastProbed[attribute.Packages]; ok && stamp.Add(Schedule[attribute.Packages]).After(now) {
+		goto UPTIME
+	}
 
 	p.log.Printf("[TRACE] Probe#%d about to query installed packages on %s\n",
 		id,
 		dev.Name)
-
-	var packages []string
 
 	if packages, err = p.QueryPackages(dev, portSSH); err != nil {
 		p.log.Printf("[ERROR] Failed to query packages on %s: %s\n",
@@ -389,6 +426,72 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 		p.log.Printf("[ERROR] Failed to add list of installed packages to database: %s\n",
 			err.Error())
 	}
+
+UPTIME:
+	if stamp, ok := lastProbed[attribute.Uptime]; ok && stamp.Add(Schedule[attribute.Uptime]).After(now) {
+		goto DISKSPACE
+	}
+
+	p.log.Printf("[TRACE] Probe#%d about to query uptime/sysload on %s\n",
+		id,
+		dev.Name)
+
+	if uptime, err = p.QueryUptime(dev, portSSH); err != nil {
+		p.log.Printf("[ERROR] Probe#%d failed to query uptime on %s: %s\n",
+			id,
+			dev.Name,
+			err.Error())
+		return
+	}
+
+	attr = &model.Attribute{
+		DevID:     dev.ID,
+		Timestamp: time.Now().Truncate(time.Second),
+		Type:      attribute.Uptime,
+		Value:     uptime,
+	}
+
+	if err = db.AttributeAdd(attr); err != nil {
+		p.log.Printf("[ERROR] Failed to add Uptime of %s to database: %s\n",
+			dev.Name,
+			err.Error())
+		return
+	}
+
+DISKSPACE:
+	if stamp, ok := lastProbed[attribute.DiskSpace]; ok && stamp.Add(Schedule[attribute.DiskSpace]).After(now) {
+		goto END
+	}
+
+	p.log.Printf("[TRACE] Probe%d about to query disk space on %s\n",
+		id,
+		dev.Name)
+
+	if diskSpace, err = p.QueryDiskFree(dev, portSSH); err != nil {
+		p.log.Printf("[ERROR] Probe#%d failed to query free disk space on %s: %s\n",
+			id,
+			dev.Name,
+			err.Error())
+		goto END
+	}
+
+	attr = &model.Attribute{
+		DevID:     dev.ID,
+		Timestamp: time.Now().Truncate(time.Second),
+		Type:      attribute.DiskSpace,
+		Value:     model.DiskSpace(diskSpace),
+	}
+
+	if err = db.AttributeAdd(attr); err != nil {
+		p.log.Printf("[ERROR] Failed to add DiskSpace for %s: %s\n",
+			dev.Name,
+			err.Error())
+	}
+
+END:
+	p.log.Printf("[TRACE] Probe#%d finished probing %s\n",
+		id,
+		dev.Name)
 } // func (p *Probe) probeDevice(dev *model.Device)
 
 func (p *Probe) getAllDevices() ([]*model.Device, error) {
