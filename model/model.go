@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-20 12:16:31 krylon>
+// Time-stamp: <2026-07-31 11:40:52 krylon>
 
 package model
 
@@ -162,8 +162,8 @@ type Uptime struct {
 
 func (u *Uptime) Type() attribute.ID { return attribute.Uptime }
 func (u *Uptime) String() string {
-	return fmt.Sprintf("{ Uptime: %s, Load: %.1f/%.1f/%.1f }",
-		u.Uptime,
+	return fmt.Sprintf(`{ "Uptime": %d, "Load": [ %.1f, %.1f, %.1f ] }`,
+		int64(u.Uptime),
 		u.Load[0],
 		u.Load[1],
 		u.Load[2])
