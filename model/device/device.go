@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-10 16:00:54 krylon>
+// Time-stamp: <2026-07-31 12:13:13 krylon>
 
 package device
 
@@ -15,10 +15,9 @@ const (
 	Unknown Class = iota
 	PC
 	Server
-	SBC
 	VM
 	Jail
-	VPS
 	Mobile
 	Entertainment
+	Router
 )
