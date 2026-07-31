@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-24 14:26:05 krylon>
+// Time-stamp: <2026-07-31 13:00:31 krylon>
 
 package main
 
@@ -114,7 +114,7 @@ func main() {
 			"Failed to create Probe: %s\n",
 			err.Error())
 		os.Exit(1)
-	} else if srv, err = web.Create(webAddr); err != nil {
+	} else if srv, err = web.Create(webAddr, p.CmdQ); err != nil {
 		fmt.Fprintf(
 			os.Stderr,
 			"Failed to create web server on %s: %s\n",

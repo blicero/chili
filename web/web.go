@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-26 10:35:37 krylon>
+// Time-stamp: <2026-07-31 13:14:11 krylon>
 
 package web
 
@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"github.com/blicero/chili/common"
+	"github.com/blicero/chili/control"
 	"github.com/blicero/chili/database"
 	"github.com/blicero/chili/logdomain"
 	"github.com/blicero/chili/model"
@@ -54,6 +55,7 @@ var assets embed.FS
 // Server wraps the http.Server and associated state.
 type Server struct {
 	addr      string
+	probeQ    chan<- control.Message
 	log       *log.Logger
 	pool      *database.Pool
 	active    atomic.Bool
@@ -65,12 +67,13 @@ type Server struct {
 }
 
 // Create returns a new web Server.
-func Create(addr string) (*Server, error) {
+func Create(addr string, pq chan<- control.Message) (*Server, error) {
 	var (
 		err error
 		msg string
 		srv = &Server{
-			addr: addr,
+			addr:   addr,
+			probeQ: pq,
 			mimeTypes: map[string]string{
 				".css":  "text/css",
 				".map":  "application/json",
@@ -149,6 +152,8 @@ func Create(addr string) (*Server, error) {
 	srv.router.HandleFunc(
 		"/ajax/beacon",
 		srv.handleBeacon)
+
+	srv.router.HandleFunc("/ajax/run-probe", srv.handleRunProbe)
 
 	// Web service endpoints
 	// srv.router.HandleFunc("/ws/get_timestamp/{name:(?:\\w+)$}",
@@ -339,6 +344,35 @@ func (srv *Server) handleNotFound(w http.ResponseWriter, r *http.Request) {
 /// Handle AJAX //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
+func (srv *Server) handleRunProbe(w http.ResponseWriter, r *http.Request) {
+	var (
+		err  error
+		buf  []byte
+		data = ajaxBeaconData{
+			ajaxData: ajaxData{
+				Timestamp: time.Now(),
+			},
+			Hostname: hostname(),
+		}
+	)
+
+	srv.probeQ <- control.Scan
+	data.Status = true
+	data.Message = "Sent message to Probe to start another run"
+
+	if buf, err = json.Marshal(&data); err != nil {
+		var msg = fmt.Sprintf("Failed to serialize payload for AJAX response: %s",
+			err.Error())
+		srv.log.Printf("[CANTHAPPEN] %s\n", msg)
+		buf = errJSON(msg)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", noCache)
+	w.WriteHeader(200)
+	w.Write(buf) // nolint: errcheck,gosec
+} // // func (srv *Server) handleRunProbe(w http.ResponseWriter, r *http.Request)
+
 func (srv *Server) handleBeacon(w http.ResponseWriter, r *http.Request) {
 	var (
 		err  error
@@ -427,7 +461,7 @@ func (srv *Server) handleStaticFile(w http.ResponseWriter, request *http.Request
 	}
 
 	w.Header().Set("Content-Type", mimeType)
-	w.Header().Set("Cache-Control", cacheSeconds(900))
+	w.Header().Set("Cache-Control", noCache)
 
 	// if common.Debug {
 	// 	w.Header().Set("Cache-Control", noCache)
