@@ -1,6 +1,6 @@
 {{ define "device_details" }}
 {{/* Created on 27. 07. 2026 */}}
-{{/* Time-stamp: <2026-07-27 16:40:35 krylon> */}}
+{{/* Time-stamp: <2026-07-31 11:55:16 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -43,7 +43,7 @@
           <tr>
             <td>{{ .Type.String }}</td>
             <td>{{ fmt_time_minute .Timestamp }}</td>
-            <td>{{ .Value.String }}</td>
+            <td><pre>{{ .Value.String }}</pre></td>
           </tr>
           {{ end }}
         </tbody>
