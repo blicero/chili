@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-21 10:28:58 krylon>
+// Time-stamp: <2026-07-31 11:17:09 krylon>
 
 package probe
 
@@ -15,7 +15,7 @@ import (
 
 var patPkgDebian = regexp.MustCompile(`^([^/]+)/(\S+)\s+(\S+)\s+(\S+)`)
 
-// QueryUpdatesDebian asks a Debian-ish system for a list of available updates.
+// QueryPackagesDebian asks a Debian-ish system for a list of available updates.
 func (p *Probe) QueryPackagesDebian(d *model.Device, port int) ([]string, error) {
 	const cmd = "/usr/bin/apt list --installed"
 	var (
@@ -118,6 +118,7 @@ func (p *Probe) QueryPackagesOpenBSD(d *model.Device, port int) ([]string, error
 	return updates, nil
 } // func (p *Probe) QueryPackagesOpenBSD(d *model.Device, port int) ([]string, error)
 
+// QueryPackagesSuse attempts to get the installed packages from an openSuse device.
 func (p *Probe) QueryPackagesSuse(d *model.Device, port int) ([]string, error) {
 	const cmd = "/usr/bin/zypper pa -i"
 	var (
