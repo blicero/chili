@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-07-31 11:50:19 krylon>
+# Time-stamp: <2026-07-31 13:23:49 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [11/18]
+* Chili [14/20]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-07-31 Fr 11:50]
+   #+CAPTION: Clock summary at [2026-07-31 Fr 13:23]
    | Headline                                     | Time       |            |       |      |      |
    |----------------------------------------------+------------+------------+-------+------+------|
-   | *Total time*                                 | *1d 19:16* |            |       |      |      |
+   | *Total time*                                 | *1d 20:40* |            |       |      |      |
    |----------------------------------------------+------------+------------+-------+------+------|
-   | *Chili [11/18]*                              | *1d 19:16* |            |       |      |      |
-   | \_  /Components [10/17]/                     |            | /1d 16:08/ |       |      |      |
+   | *Chili [14/20]*                              | *1d 20:40* |            |       |      |      |
+   | \_  /Components [13/19]/                     |            | /1d 17:32/ |       |      |      |
    | \_    Data model [0/0]                       |            |            |  8:50 |      |      |
    | \_    Database [1/1]                         |            |            |  7:34 |      |      |
    | \_      De-serialize attributes              |            |            |       | 0:18 |      |
@@ -29,22 +29,25 @@
    | \_      Testing                              |            |            |       | 0:44 |      |
    | \_    Network Scanner [1/1]                  |            |            | 12:14 |      |      |
    | \_      Avoid adding devices we already know |            |            |       | 0:33 |      |
-   | \_    Host Probe [7/14]                      |            |            |  5:45 |      |      |
+   | \_    Host Probe [9/15]                      |            |            |  6:16 |      |      |
+   | \_      Consider device class                |            |            |       | 0:20 |      |
    | \_      Scheduling                           |            |            |       | 1:13 |      |
-   | \_      Packages [4/7]                       |            |            |       | 1:29 |      |
+   | \_      Packages [6/7]                       |            |            |       | 1:40 |      |
    | \_        Debian                             |            |            |       |      | 0:20 |
    | \_        OpenBSD                            |            |            |       |      | 0:07 |
+   | \_        Fedora                             |            |            |       |      | 0:11 |
    | \_        openSUSE                           |            |            |       |      | 0:40 |
    | \_      Uptime                               |            |            |       | 0:13 |      |
    | \_      Refactor for easier testing          |            |            |       | 0:29 |      |
    | \_    Nexus [0/0]                            |            |            |  1:17 |      |      |
-   | \_    Web UI [0/0]                           |            |            |  3:41 |      |      |
+   | \_    Web UI [1/1]                           |            |            |  4:34 |      |      |
+   | \_      Trigger Probe run                    |            |            |       | 0:37 |      |
    | \_    Main [1/1]                             |            |            |  0:47 |      |      |
    | \_      Profiling                            |            |            |       | 0:44 |      |
    | \_  /Bugs [0/0]/                             |            | /3:08/     |       |      |      |
    | \_    The little probe that could... get...  |            |            |  3:08 |      |      |
    #+END:
-** Components [10/17]
+** Components [13/19]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -119,7 +122,7 @@
      :END:
 *** Configuration [0/0]
     At least for configuring the log levels, that would be great.
-*** Host Probe [7/14]
+*** Host Probe [9/15]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -130,6 +133,13 @@
     CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
+**** DONE Consider device class
+     CLOSED: [2026-07-31 Fr 12:24]
+     :LOGBOOK:
+     CLOCK: [2026-07-31 Fr 12:05]--[2026-07-31 Fr 12:25] =>  0:20
+     :END:
+     Some devices (smart TV, Fritz!Box) do not run ssh, so probing them is
+     futile.
 **** SUSPENDED Scheduling
      CLOSED: [2026-07-31 Fr 11:49]
      :LOGBOOK:
@@ -152,7 +162,7 @@
      :COOKIE_DATA: todo recursive
      :VISIBILITY: children
      :END:
-**** TODO Packages [4/7]
+**** TODO Packages [6/7]
      :PROPERTIES:
      :COOKIE_DATA: todo recursive
      :VISIBILITY: children
@@ -179,8 +189,13 @@
       CLOCK: [2026-07-21 Di 10:11]--[2026-07-21 Di 10:18] =>  0:07
       :END:
 ***** TODO NetBSD
-***** TODO Arch Linux
-***** TODO Fedora
+***** DONE Arch Linux
+      CLOSED: [2026-07-31 Fr 12:27]
+***** DONE Fedora
+      CLOSED: [2026-07-31 Fr 13:18]
+      :LOGBOOK:
+      CLOCK: [2026-07-31 Fr 12:29]--[2026-07-31 Fr 12:40] =>  0:11
+      :END:
 ***** DONE openSUSE
       CLOSED: [2026-07-21 Di 10:59]
       :LOGBOOK:
@@ -210,18 +225,24 @@
     :END:
     I need something vaguely resembling a message bus
     ... On second thought, I may have been overly ambitious here. Stay tuned.
-*** Web UI [0/0]
+*** Web UI [1/1]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
     :END:
     :LOGBOOK:
+    CLOCK: [2026-07-31 Fr 11:55]--[2026-07-31 Fr 12:11] =>  0:16
     CLOCK: [2026-07-27 Mo 15:37]--[2026-07-27 Mo 16:37] =>  1:00
     CLOCK: [2026-07-24 Fr 15:50]--[2026-07-24 Fr 16:25] =>  0:35
     CLOCK: [2026-07-24 Fr 14:15]--[2026-07-24 Fr 15:01] =>  0:46
     CLOCK: [2026-07-24 Fr 10:08]--[2026-07-24 Fr 10:15] =>  0:07
     CLOCK: [2026-07-24 Fr 08:45]--[2026-07-24 Fr 09:58] =>  1:13
     :END:
+**** DONE Trigger Probe run
+     CLOSED: [2026-07-31 Fr 13:17]
+     :LOGBOOK:
+     CLOCK: [2026-07-31 Fr 12:40]--[2026-07-31 Fr 13:17] =>  0:37
+     :END:
 *** Main [1/1]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
