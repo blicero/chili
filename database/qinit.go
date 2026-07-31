@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-11 11:17:02 krylon>
+// Time-stamp: <2026-07-31 14:11:41 krylon>
 //
 // This file contains the SQL queries to initialize an empty database.
 
@@ -57,4 +57,12 @@ CREATE TABLE attribute (
 	"CREATE INDEX att_dev_idx ON attribute (dev_id)",
 	"CREATE INDEX att_time_idx ON attribute (timestamp)",
 	"CREATE INDEX att_type_idx ON attribute (atype)",
+	`
+CREATE TRIGGER IF NOT EXISTS dev_contact_tr
+AFTER INSERT ON attribute
+BEGIN
+    UPDATE device SET last_contact = new.timestamp
+    WHERE id = new.dev_id;
+END;
+`,
 }
