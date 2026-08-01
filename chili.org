@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-08-01 06:21:21 krylon>
+# Time-stamp: <2026-08-01 07:14:58 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [17/20]
+* Chili [18/21]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-08-01 Sa 06:21]
+   #+CAPTION: Clock summary at [2026-08-01 Sa 07:14]
    | Headline                                     | Time       |            |       |      |      |
    |----------------------------------------------+------------+------------+-------+------+------|
-   | *Total time*                                 | *1d 20:57* |            |       |      |      |
+   | *Total time*                                 | *1d 21:28* |            |       |      |      |
    |----------------------------------------------+------------+------------+-------+------+------|
-   | *Chili [17/20]*                              | *1d 20:57* |            |       |      |      |
-   | \_  /Components [16/19]/                     |            | /1d 17:49/ |       |      |      |
+   | *Chili [18/21]*                              | *1d 21:28* |            |       |      |      |
+   | \_  /Components [17/20]/                     |            | /1d 18:20/ |       |      |      |
    | \_    Data model [0/0]                       |            |            |  8:50 |      |      |
    | \_    Database [1/1]                         |            |            |  7:34 |      |      |
    | \_      De-serialize attributes              |            |            |       | 0:18 |      |
@@ -41,14 +41,15 @@
    | \_      Uptime                               |            |            |       | 0:13 |      |
    | \_      Refactor for easier testing          |            |            |       | 0:29 |      |
    | \_    Nexus [0/0]                            |            |            |  1:17 |      |      |
-   | \_    Web UI [1/1]                           |            |            |  4:34 |      |      |
+   | \_    Web UI [2/2]                           |            |            |  5:05 |      |      |
+   | \_      Render attributes properly           |            |            |       | 0:31 |      |
    | \_      Trigger Probe run                    |            |            |       | 0:37 |      |
    | \_    Main [1/1]                             |            |            |  0:47 |      |      |
    | \_      Profiling                            |            |            |       | 0:44 |      |
    | \_  /Bugs [0/0]/                             |            | /3:08/     |       |      |      |
    | \_    The little probe that could... get...  |            |            |  3:08 |      |      |
    #+END:
-** Components [16/19]
+** Components [17/20]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -231,7 +232,7 @@
     :END:
     I need something vaguely resembling a message bus
     ... On second thought, I may have been overly ambitious here. Stay tuned.
-*** Web UI [1/1]
+*** Web UI [2/2]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -244,6 +245,14 @@
     CLOCK: [2026-07-24 Fr 10:08]--[2026-07-24 Fr 10:15] =>  0:07
     CLOCK: [2026-07-24 Fr 08:45]--[2026-07-24 Fr 09:58] =>  1:13
     :END:
+**** DONE [#B] Render attributes properly
+     CLOSED: [2026-08-01 Sa 07:14]
+     :LOGBOOK:
+     CLOCK: [2026-08-01 Sa 06:43]--[2026-08-01 Sa 07:14] =>  0:31
+     :END:
+     Should I do this with a method on the Model or do I put the logic in the
+     web interface?
+     Model, obviously. The presentation layer should be as stupid as possible.
 **** DONE Trigger Probe run
      CLOSED: [2026-07-31 Fr 13:17]
      :LOGBOOK:
