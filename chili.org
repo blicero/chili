@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-07-31 13:23:49 krylon>
+# Time-stamp: <2026-08-01 06:21:21 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [14/20]
+* Chili [17/20]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-07-31 Fr 13:23]
+   #+CAPTION: Clock summary at [2026-08-01 Sa 06:21]
    | Headline                                     | Time       |            |       |      |      |
    |----------------------------------------------+------------+------------+-------+------+------|
-   | *Total time*                                 | *1d 20:40* |            |       |      |      |
+   | *Total time*                                 | *1d 20:57* |            |       |      |      |
    |----------------------------------------------+------------+------------+-------+------+------|
-   | *Chili [14/20]*                              | *1d 20:40* |            |       |      |      |
-   | \_  /Components [13/19]/                     |            | /1d 17:32/ |       |      |      |
+   | *Chili [17/20]*                              | *1d 20:57* |            |       |      |      |
+   | \_  /Components [16/19]/                     |            | /1d 17:49/ |       |      |      |
    | \_    Data model [0/0]                       |            |            |  8:50 |      |      |
    | \_    Database [1/1]                         |            |            |  7:34 |      |      |
    | \_      De-serialize attributes              |            |            |       | 0:18 |      |
@@ -29,12 +29,13 @@
    | \_      Testing                              |            |            |       | 0:44 |      |
    | \_    Network Scanner [1/1]                  |            |            | 12:14 |      |      |
    | \_      Avoid adding devices we already know |            |            |       | 0:33 |      |
-   | \_    Host Probe [9/15]                      |            |            |  6:16 |      |      |
+   | \_    Host Probe [12/15]                     |            |            |  6:33 |      |      |
    | \_      Consider device class                |            |            |       | 0:20 |      |
    | \_      Scheduling                           |            |            |       | 1:13 |      |
-   | \_      Packages [6/7]                       |            |            |       | 1:40 |      |
+   | \_      Packages [7/7]                       |            |            |       | 1:57 |      |
    | \_        Debian                             |            |            |       |      | 0:20 |
    | \_        OpenBSD                            |            |            |       |      | 0:07 |
+   | \_        NetBSD                             |            |            |       |      | 0:17 |
    | \_        Fedora                             |            |            |       |      | 0:11 |
    | \_        openSUSE                           |            |            |       |      | 0:40 |
    | \_      Uptime                               |            |            |       | 0:13 |      |
@@ -47,7 +48,7 @@
    | \_  /Bugs [0/0]/                             |            | /3:08/     |       |      |      |
    | \_    The little probe that could... get...  |            |            |  3:08 |      |      |
    #+END:
-** Components [13/19]
+** Components [16/19]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -122,7 +123,7 @@
      :END:
 *** Configuration [0/0]
     At least for configuring the log levels, that would be great.
-*** Host Probe [9/15]
+*** Host Probe [12/15]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -162,7 +163,8 @@
      :COOKIE_DATA: todo recursive
      :VISIBILITY: children
      :END:
-**** TODO Packages [6/7]
+**** DONE Packages [7/7]
+     CLOSED: [2026-08-01 Sa 06:21]
      :PROPERTIES:
      :COOKIE_DATA: todo recursive
      :VISIBILITY: children
@@ -188,7 +190,11 @@
       :LOGBOOK:
       CLOCK: [2026-07-21 Di 10:11]--[2026-07-21 Di 10:18] =>  0:07
       :END:
-***** TODO NetBSD
+***** DONE NetBSD
+      CLOSED: [2026-08-01 Sa 06:19]
+      :LOGBOOK:
+      CLOCK: [2026-08-01 Sa 06:02]--[2026-08-01 Sa 06:19] =>  0:17
+      :END:
 ***** DONE Arch Linux
       CLOSED: [2026-07-31 Fr 12:27]
 ***** DONE Fedora
