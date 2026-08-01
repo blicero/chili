@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-31 12:36:38 krylon>
+// Time-stamp: <2026-08-01 06:05:57 krylon>
 
 package probe
 
@@ -120,6 +120,40 @@ func (p *Probe) QueryPackagesOpenBSD(d *model.Device, port int) ([]string, error
 
 	return updates, nil
 } // func (p *Probe) QueryPackagesOpenBSD(d *model.Device, port int) ([]string, error)
+
+// QueryPackagesNetBSD attempts to get the installed packages from an NetBSD device.
+func (p *Probe) QueryPackagesNetBSD(d *model.Device, port int) ([]string, error) {
+	const cmd = "/usr/pkg/bin/pkgin list"
+	var (
+		err     error
+		output  []string
+		match   []string
+		updates []string
+	)
+
+	if output, err = p.executeCommand(d, port, cmd); err != nil {
+		if err == ErrPingOffline {
+			return nil, err
+		}
+		_ = p.disconnect(d)
+		p.log.Printf("[ERROR] Failed to execute command %q on %s: %s\n",
+			cmd,
+			d.Name,
+			err.Error())
+		return nil, err
+	}
+
+	updates = make([]string, 0)
+
+	for _, l := range output {
+		if match = patPkgDebian.FindStringSubmatch(l); len(match) > 0 {
+			var upd = strings.Join(match[1:], pkgSep)
+			updates = append(updates, upd)
+		}
+	}
+
+	return updates, nil
+} // func (p *Probe) QueryPackagesNetBSD(d *model.Device, port int) ([]string, error)
 
 // QueryPackagesSuse attempts to get the installed packages from an openSuse device.
 func (p *Probe) QueryPackagesSuse(d *model.Device, port int) ([]string, error) {
@@ -249,6 +283,8 @@ func (p *Probe) QueryPackages(d *model.Device, port int) ([]string, error) {
 		return p.QueryPackagesFreeBSD(d, port)
 	case "OpenBSD":
 		return p.QueryPackagesOpenBSD(d, port)
+	case "NetBSD":
+		return p.QueryPackagesNetBSD(d, port)
 	case "Arch Linux":
 		return p.QueryPackagesArch(d, port)
 	default:
