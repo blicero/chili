@@ -1,6 +1,6 @@
 {{ define "main" }}
 {{/* Created on 10. 06. 2024 */}}
-{{/* Time-stamp: <2026-07-24 15:55:25 krylon> */}}
+{{/* Time-stamp: <2026-07-31 16:54:19 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -58,8 +58,20 @@
             </td>
             <td>{{ .Addr }}</td>
             <td>{{ .OS }}</td>
-            <td>{{ fmt_time_minute .Added }}</td>
-            <td>{{ fmt_time .LastContact }}</td>
+            <td>
+              {{ if not (is_epoch .Added) }}
+              {{ fmt_time_minute .Added }}
+              {{ else }}
+              ./.
+              {{ end }}
+            </td>
+            <td>
+              {{ if not (is_epoch .LastContact) }}
+              {{ fmt_time .LastContact }}
+              {{ else }}
+              ./.
+              {{ end }}
+            </td>
             <td>{{ .Class }}</td>
             <td>{{ if .Active }}Yes{{ else }}No{{ end }}</td>
           </tr>

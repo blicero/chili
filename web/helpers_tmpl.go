@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 12. 12. 2018 by Benjamin Walkenhorst
 // (c) 2018 Benjamin Walkenhorst
-// Time-stamp: <2026-07-24 08:24:22 krylon>
+// Time-stamp: <2026-07-31 16:51:55 krylon>
 
 package web
 
@@ -61,6 +61,7 @@ var funcmap = template.FuncMap{
 	"since":            since,
 	"twice":            twice,
 	"tag_advice_id":    tagAdviceID,
+	"is_epoch":         isEpoch,
 }
 
 type generator struct {
@@ -354,3 +355,8 @@ func tagAdviceID(tagID, itemID int64) string {
 		tagID,
 		itemID)
 } // func tag_advice_id(tagID, itemID int64) string
+
+func isEpoch(t time.Time) bool {
+	var ix = t.Unix()
+	return ix < 7200
+} // func isEpoch(t time.Time) bool
