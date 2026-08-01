@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 11. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-20 12:15:41 krylon>
+// Time-stamp: <2026-08-01 10:34:05 krylon>
 
 package attribute
 
@@ -16,4 +16,5 @@ const (
 	DiskSpace
 	Uptime
 	Packages
+	SNMP
 )

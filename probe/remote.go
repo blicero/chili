@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 10. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-31 11:47:08 krylon>
+// Time-stamp: <2026-08-01 20:49:48 krylon>
 
 package probe
 
@@ -66,7 +66,7 @@ func (p *Probe) executeCommand(d *model.Device, port int, cmd string) ([]string,
 		session *ssh.Session
 	)
 
-	// 05. 08. 2025
+	// 2025-08-05
 	// I get a panic originating in NewSession when connecting to a Device that is offline.
 	if session, err = p.getSession(d, port); err != nil {
 		if err == ErrPingOffline {

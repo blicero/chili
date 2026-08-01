@@ -14,6 +14,8 @@ require (
 )
 
 require (
+	github.com/alouca/gologger v0.0.0-20120904114645-7d4b7291de9c // indirect
+	github.com/alouca/gosnmp v0.0.0-20170620005048-04d83944c9ab // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect

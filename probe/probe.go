@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-01 06:15:15 krylon>
+// Time-stamp: <2026-08-01 11:17:43 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -36,6 +36,7 @@ var Schedule = map[attribute.ID]time.Duration{
 	attribute.DiskSpace: time.Second * 900,
 	attribute.Uptime:    time.Second * 60,
 	attribute.Packages:  time.Second * 7200,
+	attribute.SNMP:      time.Minute * 5,
 }
 
 // Probe queries Devices about their OS, installed software, hardware,
@@ -349,6 +350,7 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 		uptime            *model.Uptime
 		attr              *model.Attribute
 		diskSpace         int64
+		snmp              model.SNMPInfo
 	)
 
 	if knownAttr, err = db.AttributeGetMostRecent(dev); err != nil {
@@ -468,7 +470,7 @@ UPTIME:
 
 DISKSPACE:
 	if stamp, ok := lastProbed[attribute.DiskSpace]; ok && stamp.Add(Schedule[attribute.DiskSpace]).After(now) {
-		goto END
+		goto SNMP
 	}
 
 	p.log.Printf("[TRACE] Probe%d about to query disk space on %s\n",
@@ -480,7 +482,7 @@ DISKSPACE:
 			id,
 			dev.Name,
 			err.Error())
-		goto END
+		goto SNMP
 	}
 
 	attr = &model.Attribute{
@@ -494,6 +496,40 @@ DISKSPACE:
 		p.log.Printf("[ERROR] Failed to add DiskSpace for %s: %s\n",
 			dev.Name,
 			err.Error())
+	}
+
+SNMP:
+	if stamp, ok := lastProbed[attribute.SNMP]; ok && stamp.Add(Schedule[attribute.SNMP]).After(now) {
+		goto END
+	}
+
+	p.log.Printf("[TRACE] Probe#%d about to query SNMP data from %s\n",
+		id,
+		dev.Name)
+
+	// TODO I should try to minimize hammering devices that aren't running
+	//      an SNMP agent.
+	if snmp, err = p.QuerySNMP(dev, portSNMP); err != nil {
+		p.log.Printf("[ERROR] Probe#%d failed to query %s via SNMP: %s\n",
+			id,
+			dev.Name,
+			err.Error())
+		goto END
+	}
+
+	attr = &model.Attribute{
+		DevID:     dev.ID,
+		Timestamp: time.Now().Truncate(time.Second),
+		Type:      attribute.SNMP,
+		Value:     snmp,
+	}
+
+	if err = db.AttributeAdd(attr); err != nil {
+		p.log.Printf("[ERROR] Failed to save %s data for %s: %s\n",
+			attr.Type,
+			dev.Name,
+			err.Error())
+		goto END
 	}
 
 END:

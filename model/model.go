@@ -2,13 +2,14 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-01 07:05:50 krylon>
+// Time-stamp: <2026-08-01 19:41:31 krylon>
 
 package model
 
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net"
 	"strconv"
 	"strings"
@@ -43,6 +44,7 @@ type Network struct {
 	LastScan time.Time
 }
 
+// NewNet creates a new Network with the given name and IP address.
 func NewNet(name, addr string) (*Network, error) {
 	var err error
 	var n = &Network{
@@ -114,6 +116,7 @@ type Payload interface {
 // Updates is a list of software packages that updates are available for.
 type Updates []string
 
+// Type returns the receiver's attribute type.
 func (u Updates) Type() attribute.ID { return attribute.Updates }
 
 func (u Updates) String() string {
@@ -147,6 +150,7 @@ func (u Updates) HTML() string {
 // Packages is a list of software packages that are installed on a Device.
 type Packages []string
 
+// Type returns the receiver's attribute type.
 func (p Packages) Type() attribute.ID { return attribute.Packages }
 
 func (p Packages) String() string {
@@ -180,6 +184,7 @@ func (p Packages) HTML() string {
 // DiskSpace is the number of free bytes on a Device's root filesystem.
 type DiskSpace int64
 
+// Type returns the receiver's attribute type.
 func (d DiskSpace) Type() attribute.ID { return attribute.DiskSpace }
 
 func (d DiskSpace) String() string {
@@ -197,6 +202,7 @@ type Uptime struct {
 	Load   [3]float64
 }
 
+// Type returns the receiver's attribute type.
 func (u *Uptime) Type() attribute.ID { return attribute.Uptime }
 func (u *Uptime) String() string {
 	return fmt.Sprintf(`{ "Uptime": %d, "Load": [ %.1f, %.1f, %.1f ] }`,
@@ -227,6 +233,61 @@ func (u *Uptime) HTML() string {
 
 	return sb.String()
 } // func (u *Uptime) HTML() string
+
+// SNMPInfo represents data obtained via SNMP.
+type SNMPInfo map[string]string
+
+// Type returns the receiver's attribute type.
+func (i SNMPInfo) Type() attribute.ID { return attribute.SNMP }
+func (i SNMPInfo) String() string {
+	var (
+		sb     strings.Builder
+		fields = make([]string, 0, len(i))
+	)
+
+	// XXX I naively assume that none of the strings we encounter here
+	//     will be dangerous/malformed to be valid JSON.
+	//     If/When I find out that was overly optimistic, I will look into
+	//     properly handling that. I think html/template has a helper
+	//     function to deal with this.
+
+	sb.WriteString("{\n")
+	for k, v := range i {
+		var s = fmt.Sprintf(
+			`"%s": "%s"`,
+			k,
+			v)
+		fields = append(fields, s)
+	}
+
+	var body = strings.Join(fields, ",\n")
+	sb.WriteString(body)
+	sb.WriteString("\n}\n")
+
+	return sb.String()
+} // func (i SNMPInfo) String() string
+
+// HTML returns a HTML representation of the receiver.
+func (i SNMPInfo) HTML() string {
+	var sb strings.Builder
+
+	// ...
+	sb.WriteString(`<table class="horizontal table table-striped">`)
+	sb.WriteString("\n")
+
+	for k, v := range i {
+		fmt.Fprintf(
+			&sb,
+			"<tr>\n\t<th>%s</th>\n\t<td>%s</td>\n",
+			template.JSEscapeString(k),
+			template.JSEscapeString(v),
+		)
+	}
+
+	sb.WriteString("</table>\n")
+
+	return sb.String()
+} // func (i SNMPInfo) HTML() string
 
 // Attribute is a property of a Device that we can query/measure.
 type Attribute struct {

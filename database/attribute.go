@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 11. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-31 11:29:03 krylon>
+// Time-stamp: <2026-08-01 20:11:44 krylon>
 
 package database
 
@@ -58,6 +58,15 @@ func (db *Database) unpackPayload(attr *model.Attribute, val string) (bool, erro
 			return false, err
 		}
 		attr.Value = model.Updates(pkg)
+	case attribute.SNMP:
+		var info = make(map[string]string)
+		if err = json.Unmarshal([]byte(val), &info); err != nil {
+			db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+				val,
+				err.Error())
+			return false, err
+		}
+		attr.Value = model.SNMPInfo(info)
 	default:
 		err = fmt.Errorf("don't know how to decode %s",
 			attr.Type)
