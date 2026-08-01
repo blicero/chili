@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-31 11:40:52 krylon>
+// Time-stamp: <2026-08-01 07:05:50 krylon>
 
 package model
 
@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/blicero/chili/model/attribute"
@@ -107,6 +108,7 @@ func NewDevice(netID int64, name, addr string) (*Device, error) {
 type Payload interface {
 	fmt.Stringer
 	Type() attribute.ID
+	HTML() string
 }
 
 // Updates is a list of software packages that updates are available for.
@@ -127,6 +129,21 @@ func (u Updates) String() string {
 	return string(buf)
 } // func (u *Updates) String() string
 
+// HTML renders the value to HTML. Hence the name.
+func (u Updates) HTML() string {
+	var sb strings.Builder
+
+	sb.WriteString("<ol>\n")
+	for _, pkg := range u {
+		sb.WriteString("<li>")
+		sb.WriteString(pkg)
+		sb.WriteString("</li>\n")
+	}
+	sb.WriteString("</ol>\n")
+
+	return sb.String()
+} // func (u *Updates) HTML() string
+
 // Packages is a list of software packages that are installed on a Device.
 type Packages []string
 
@@ -143,7 +160,22 @@ func (p Packages) String() string {
 	}
 
 	return string(buf)
-}
+} // func (p Packages) String() string
+
+// HTML renders the value to HTML. Hence the name.
+func (p Packages) HTML() string {
+	var sb strings.Builder
+
+	sb.WriteString("<ol>\n")
+	for _, pkg := range p {
+		sb.WriteString("<li>")
+		sb.WriteString(pkg)
+		sb.WriteString("</li>\n")
+	}
+	sb.WriteString("</ol>\n")
+
+	return sb.String()
+} // func (u *Updates) HTML() string
 
 // DiskSpace is the number of free bytes on a Device's root filesystem.
 type DiskSpace int64
@@ -153,6 +185,11 @@ func (d DiskSpace) Type() attribute.ID { return attribute.DiskSpace }
 func (d DiskSpace) String() string {
 	return strconv.FormatInt(int64(d), 10)
 } // func (d *DiskSpace) String() string
+
+// HTML renders the value to HTML. Hence the name.
+func (d DiskSpace) HTML() string {
+	return fmt.Sprintf("%3d %%", d)
+} // func (d DiskSpace) HTML() string
 
 // Uptime is uptime of Device, and its system load.
 type Uptime struct {
@@ -168,6 +205,28 @@ func (u *Uptime) String() string {
 		u.Load[1],
 		u.Load[2])
 }
+
+// HTML renders the value to HTML. Hence the name.
+func (u *Uptime) HTML() string {
+	var sb strings.Builder
+
+	sb.WriteString("<ul>\n")
+	sb.WriteString("<li>")
+	sb.WriteString("<b>Uptime:</b> ")
+	sb.WriteString(u.Uptime.String())
+	sb.WriteString("</li>\n")
+	sb.WriteString("<li>")
+	sb.WriteString("<b>Load Average:</b> ")
+	fmt.Fprintf(
+		&sb,
+		"%.1f / %.1f / %1.f</li>\n",
+		u.Load[0],
+		u.Load[1],
+		u.Load[2])
+	sb.WriteString("</ul>\n")
+
+	return sb.String()
+} // func (u *Uptime) HTML() string
 
 // Attribute is a property of a Device that we can query/measure.
 type Attribute struct {

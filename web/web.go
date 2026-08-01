@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-31 13:14:11 krylon>
+// Time-stamp: <2026-08-01 07:10:07 krylon>
 
 package web
 
@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"html/template"
 	"io"
 	"io/fs"
 	"log"
@@ -23,6 +22,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"text/template"
 	"time"
 
 	"github.com/blicero/chili/common"
