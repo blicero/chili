@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-01 07:10:07 krylon>
+// Time-stamp: <2026-08-03 12:47:36 krylon>
 
 package web
 
@@ -34,7 +34,6 @@ import (
 )
 
 const (
-	// cacheControl = "max-age=3600, public"
 	noCache    = "no-store, max-age=0"
 	tmplFolder = "assets/templates"
 	poolSize   = 4
@@ -301,6 +300,11 @@ func (srv *Server) handleDeviceDetails(w http.ResponseWriter, r *http.Request) {
 		msg = fmt.Sprintf("Did not find Device %d in database",
 			devID)
 		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if data.Devices, err = db.DeviceGetAll(); err != nil {
+		msg = fmt.Sprintf("failed to load Devices: %s", err.Error())
+		srv.log.Println("[CRITICAL] " + msg)
 		srv.sendErrorMessage(w, msg)
 		return
 	} else if data.Attributes, err = db.AttributeGetMostRecent(data.Device); err != nil {

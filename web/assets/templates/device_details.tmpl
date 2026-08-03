@@ -1,6 +1,6 @@
 {{ define "device_details" }}
 {{/* Created on 27. 07. 2026 */}}
-{{/* Time-stamp: <2026-08-03 12:20:54 krylon> */}}
+{{/* Time-stamp: <2026-08-03 12:51:29 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -12,13 +12,19 @@
       <tr>
         <th>Name</th>
         <td>{{ .Device.Name }}</td>
+      </tr>
 
+      <tr>
         <th>Address</th>
         <td>{{ .Device.Addr }}</td>
+      </tr>
 
+      <tr>
         <th>OS</th>
         <td>{{ .Device.OS }}</td>
+      </tr>
 
+      <tr>
         <th>Last Contact</th>
         <td>{{ fmt_time_minute .Device.LastContact }}</td>
       </tr>

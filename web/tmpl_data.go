@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 05. 2020 by Benjamin Walkenhorst
 // (c) 2020 Benjamin Walkenhorst
-// Time-stamp: <2026-07-27 15:45:35 krylon>
+// Time-stamp: <2026-08-03 12:46:38 krylon>
 //
 // This file contains data structures to be passed to HTML templates.
 
@@ -10,24 +10,18 @@ package web
 
 import "github.com/blicero/chili/model"
 
-// nolint: unused
 type tmplDataBase struct {
 	Title    string
 	Debug    bool
 	URL      string
 	Messages []string
+	Devices  []*model.Device
 }
 
 type tmplDataIndex struct {
 	tmplDataBase
 	Networks []*model.Network
-	Devices  []*model.Device
 }
-
-// nolint: unused
-// type tmplDataHosts struct {
-// 	tmplDataBase
-// }
 
 // nolint: unused
 type tmplDataDeviceDetails struct {
