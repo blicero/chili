@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-01 19:41:31 krylon>
+// Time-stamp: <2026-08-03 11:35:06 krylon>
 
 package model
 
@@ -240,6 +240,10 @@ type SNMPInfo map[string]string
 // Type returns the receiver's attribute type.
 func (i SNMPInfo) Type() attribute.ID { return attribute.SNMP }
 func (i SNMPInfo) String() string {
+	if len(i) == 0 {
+		return "{}"
+	}
+
 	var (
 		sb     strings.Builder
 		fields = make([]string, 0, len(i))
