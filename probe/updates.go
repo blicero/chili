@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-20 11:39:39 krylon>
+// Time-stamp: <2026-08-03 11:07:37 krylon>
 
 package probe
 
@@ -157,7 +157,7 @@ var patUpdateOpenBSD = regexp.MustCompile(`\w+`)
 
 // QueryUpdatesOpenBSD checks for available updates on OpenBSD.
 func (p *Probe) QueryUpdatesOpenBSD(d *model.Device, port int) ([]string, error) {
-	const cmd = "doas syspatch -c"
+	const cmd = "/usr/bin/doas /usr/sbin/syspatch -c"
 	var (
 		err             error
 		output, updates []string
