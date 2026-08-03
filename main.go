@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-31 13:00:31 krylon>
+// Time-stamp: <2026-08-03 11:13:36 krylon>
 
 package main
 
@@ -29,6 +29,8 @@ func main() {
 		common.AppName,
 		common.Version,
 		common.BuildStamp.Format(common.TimestampFormat))
+
+	time.Sleep(time.Second * 2)
 
 	var (
 		err                           error
