@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-01 11:17:43 krylon>
+// Time-stamp: <2026-08-03 10:58:02 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -35,7 +35,7 @@ var Schedule = map[attribute.ID]time.Duration{
 	attribute.Updates:   time.Second * 3600,
 	attribute.DiskSpace: time.Second * 900,
 	attribute.Uptime:    time.Second * 60,
-	attribute.Packages:  time.Second * 7200,
+	attribute.Packages:  time.Second * 86400,
 	attribute.SNMP:      time.Minute * 5,
 }
 
