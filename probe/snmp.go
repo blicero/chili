@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-01 21:35:32 krylon>
+// Time-stamp: <2026-08-03 12:26:46 krylon>
 
 package probe
 
@@ -49,20 +49,15 @@ func (p *Probe) QuerySNMP(dev *model.Device, port int) (model.SNMPInfo, error) {
 					result[name] = v.Value.(string)
 					break VARLOOP
 				case gosnmp.TimeTicks:
-					p.log.Printf("[DEBUG] Uptime on %s is (%T) %#v\n",
-						dev.Name,
-						v.Value,
-						v.Value)
 					var (
-						tick int64
+						tick int
 						ok   bool
 					)
 
-					if tick, ok = v.Value.(int64); ok {
+					if tick, ok = v.Value.(int); ok {
 						var uptime = time.Millisecond * time.Duration(tick*10)
 						result[name] = uptime.String()
 					}
-					// result[name] =
 				}
 			}
 		}
