@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 10. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-01 20:49:48 krylon>
+// Time-stamp: <2026-08-03 11:56:00 krylon>
 
 package probe
 
@@ -103,6 +103,10 @@ func (p *Probe) executeCommand(d *model.Device, port int, cmd string) ([]string,
 				err,
 				cmd)
 			p.log.Printf("[ERROR] %s\n", ex.Error())
+			if rawOutput != nil {
+				p.log.Printf("[ERROR] Output: %s\n",
+					rawOutput)
+			}
 			return nil, ex
 		}
 	}
