@@ -1,6 +1,6 @@
 {{ define "device_details" }}
 {{/* Created on 27. 07. 2026 */}}
-{{/* Time-stamp: <2026-08-01 07:07:44 krylon> */}}
+{{/* Time-stamp: <2026-08-03 12:20:54 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -26,28 +26,33 @@
 
     <hr />
 
-    <details>
-      <summary>Attributes</summary>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Timestamp</th>
+          <th>Value</th>
+        </tr>
+      </thead>
 
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Timestamp</th>
-            <th>Value</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {{ range .Attributes }}
-          <tr>
-            <td>{{ .Type.String }}</td>
-            <td>{{ fmt_time_minute .Timestamp }}</td>
-            <td>{{ .Value.HTML }}</td>
-          </tr>
-          {{ end }}
-        </tbody>
-      </table>
+      <tbody>
+        {{ range .Attributes }}
+        <tr>
+          <td>{{ .Type.String }}</td>
+          <td>{{ fmt_time_minute .Timestamp }}</td>
+          <td>{{ if (eq .Type 3) }}
+            <details>
+              <summary>{{ .Type.String }}</summary>
+              {{ end }}
+              {{ .Value.HTML }}
+              {{ if (eq .Type 3) }}
+            </details>
+            {{ end }}
+          </td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
 
     {{ template "footer" . }}
   </body>
