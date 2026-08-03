@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-08-01 22:26:08 krylon>
+# Time-stamp: <2026-08-03 12:31:55 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [18/21]
+* Chili [19/21]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-08-01 Sa 22:26]
+   #+CAPTION: Clock summary at [2026-08-03 Mo 12:31]
    | Headline                                     | Time      |            |       |      |      |
    |----------------------------------------------+-----------+------------+-------+------+------|
-   | *Total time*                                 | *2d 1:16* |            |       |      |      |
+   | *Total time*                                 | *2d 2:42* |            |       |      |      |
    |----------------------------------------------+-----------+------------+-------+------+------|
-   | *Chili [18/21]*                              | *2d 1:16* |            |       |      |      |
-   | \_  /Components [17/20]/                     |           | /1d 22:08/ |       |      |      |
+   | *Chili [19/21]*                              | *2d 2:42* |            |       |      |      |
+   | \_  /Components [18/20]/                     |           | /1d 23:34/ |       |      |      |
    | \_    Data model [0/0]                       |           |            |  8:50 |      |      |
    | \_    Database [1/1]                         |           |            |  7:34 |      |      |
    | \_      De-serialize attributes              |           |            |       | 0:18 |      |
@@ -29,10 +29,10 @@
    | \_      Testing                              |           |            |       | 0:44 |      |
    | \_    Network Scanner [1/1]                  |           |            | 12:14 |      |      |
    | \_      Avoid adding devices we already know |           |            |       | 0:33 |      |
-   | \_    Host Probe [12/15]                     |           |            | 10:21 |      |      |
+   | \_    Host Probe [13/15]                     |           |            | 11:47 |      |      |
    | \_      Consider device class                |           |            |       | 0:20 |      |
    | \_      Scheduling                           |           |            |       | 1:13 |      |
-   | \_      SNMP [0/0]                           |           |            |       | 3:48 |      |
+   | \_      SNMP [0/0]                           |           |            |       | 5:14 |      |
    | \_      Packages [7/7]                       |           |            |       | 1:57 |      |
    | \_        Debian                             |           |            |       |      | 0:20 |
    | \_        OpenBSD                            |           |            |       |      | 0:07 |
@@ -50,7 +50,7 @@
    | \_  /Bugs [0/0]/                             |           | /3:08/     |       |      |      |
    | \_    The little probe that could... get...  |           |            |  3:08 |      |      |
    #+END:
-** Components [17/20]
+** Components [18/20]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -125,7 +125,7 @@
      :END:
 *** Configuration [0/0]
     At least for configuring the log levels, that would be great.
-*** Host Probe [12/15]
+*** Host Probe [13/15]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -160,12 +160,14 @@
      :COOKIE_DATA: todo recursive
      :VISIBILITY: children
      :END:
-**** TODO SNMP [0/0]
+**** DONE SNMP [0/0]
+     CLOSED: [2026-08-03 Mo 12:31]
      :PROPERTIES:
      :COOKIE_DATA: todo recursive
      :VISIBILITY: children
      :END:
      :LOGBOOK:
+     CLOCK: [2026-08-03 Mo 11:05]--[2026-08-03 Mo 12:31] =>  1:26
      CLOCK: [2026-08-01 Sa 18:45]--[2026-08-01 Sa 22:25] =>  3:40
      CLOCK: [2026-08-01 Sa 10:17]--[2026-08-01 Sa 10:25] =>  0:08
      :END:
