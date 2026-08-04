@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 23. 07. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-08-01 07:15:55 krylon>
+// Time-stamp: <2026-08-04 11:30:28 krylon>
 
 // Package common contains definitions used throughout the application
 package common
@@ -48,7 +48,7 @@ const (
 	LiveTimeout              = time.Minute * 5
 	ActiveTimeout            = time.Second * 2
 	PingCount                = 4
-	PingTimeout              = time.Second * 10
+	PingTimeout              = time.Second * 30
 	PingInterval             = time.Millisecond * 250
 	DefaultProbeInterval     = time.Minute * 5
 )
