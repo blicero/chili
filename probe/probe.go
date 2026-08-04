@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-03 10:58:02 krylon>
+// Time-stamp: <2026-08-04 12:13:08 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -37,6 +37,7 @@ var Schedule = map[attribute.ID]time.Duration{
 	attribute.Uptime:    time.Second * 60,
 	attribute.Packages:  time.Second * 86400,
 	attribute.SNMP:      time.Minute * 5,
+	attribute.Services:  time.Minute * 10,
 }
 
 // Probe queries Devices about their OS, installed software, hardware,
@@ -158,7 +159,7 @@ func (p *Probe) initConfig(userName string, keyPath ...string) error {
 			ssh.PublicKeys(keys...),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		Timeout:         common.PingTimeout,
+		Timeout:         common.PingTimeout * 4,
 	}
 
 	return nil
@@ -351,6 +352,7 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 		attr              *model.Attribute
 		diskSpace         int64
 		snmp              model.SNMPInfo
+		svc               *model.Services
 	)
 
 	if knownAttr, err = db.AttributeGetMostRecent(dev); err != nil {
@@ -382,7 +384,7 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 		p.log.Printf("[ERROR] Querying %s for updates failed: %s\n",
 			dev.Name,
 			err.Error())
-		return
+		goto INSTALLED
 	} else if len(updates) > 0 {
 		p.log.Printf("[DEBUG] %s has %d pending updates\n",
 			dev.Name,
@@ -419,7 +421,7 @@ INSTALLED:
 		p.log.Printf("[ERROR] Failed to query packages on %s: %s\n",
 			dev.Name,
 			err.Error())
-		return
+		goto UPTIME
 	} else if len(packages) == 0 {
 		p.log.Printf("[TRACE] Did not find any installed packages on %s\n",
 			dev.Name)
@@ -451,7 +453,7 @@ UPTIME:
 			id,
 			dev.Name,
 			err.Error())
-		return
+		goto DISKSPACE
 	}
 
 	attr = &model.Attribute{
@@ -514,7 +516,7 @@ SNMP:
 			id,
 			dev.Name,
 			err.Error())
-		goto END
+		goto SERVICES
 	}
 
 	attr = &model.Attribute{
@@ -529,9 +531,39 @@ SNMP:
 			attr.Type,
 			dev.Name,
 			err.Error())
+		goto SERVICES
+	}
+
+SERVICES:
+	if stamp, ok := lastProbed[attribute.Services]; ok && stamp.Add(Schedule[attribute.Services]).After(now) {
 		goto END
 	}
 
+	p.log.Printf("[TRACE] Probe#%d about to query services on %s\n",
+		id,
+		dev.Name)
+
+	if svc, err = p.QueryServices(dev, portSSH); err != nil {
+		p.log.Printf("[ERROR] Probe#%d failed to query services on %s: %s\n",
+			id,
+			dev.Name,
+			err.Error())
+		goto END
+	}
+
+	attr = &model.Attribute{
+		DevID:     dev.ID,
+		Timestamp: time.Now().Truncate(time.Second),
+		Type:      attribute.Services,
+		Value:     svc,
+	}
+
+	if err = db.AttributeAdd(attr); err != nil {
+		p.log.Printf("[ERROR] Failed to save %s data for %s: %s\n",
+			attr.Type,
+			dev.Name,
+			err.Error())
+	}
 END:
 	p.log.Printf("[TRACE] Probe#%d finished probing %s\n",
 		id,
