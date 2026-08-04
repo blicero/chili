@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-03 11:35:06 krylon>
+// Time-stamp: <2026-08-04 10:01:26 krylon>
 
 package model
 
@@ -292,6 +292,92 @@ func (i SNMPInfo) HTML() string {
 
 	return sb.String()
 } // func (i SNMPInfo) HTML() string
+
+// Services represents running and failed services (aka daemons) on a Device.
+type Services struct {
+	Running []string `json:"running"`
+	Failed  []string `json:"failed"`
+}
+
+func (s *Services) Type() attribute.ID { return attribute.Services }
+func (s *Services) String() string {
+	var (
+		err error
+		buf []byte
+	)
+
+	if buf, err = json.Marshal(s); err != nil {
+		panic(err)
+	}
+
+	return string(buf)
+} // func (s *Services) String() string
+
+// HTML returns a HTML representation of the receiver.
+func (s *Services) HTML() string {
+	var sb strings.Builder
+
+	sb.WriteString(`<div>
+  <table class="table table-striped caption-top">
+    <caption>Running Services</caption>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+`)
+
+	for i, svc := range s.Running {
+		fmt.Fprintf(
+			&sb,
+			`<tr>
+  <td>%d</td>
+  <td>%s</td>
+</tr>
+`,
+			i+1,
+			svc)
+	}
+
+	sb.WriteString(`
+    </tbody>
+  </table>
+</div>
+
+<div>
+  <table class="table table-striped caption-top">
+  <caption>Failed Services</caption>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+    </tr>
+  </thead>
+  <tbody>
+`)
+
+	for i, svc := range s.Failed {
+		fmt.Fprintf(
+			&sb,
+			`<tr>
+  <td>%d</td>
+  <td>%s</td>
+</tr>
+`,
+			i+1,
+			svc)
+	}
+
+	sb.WriteString(`
+    </tbody>
+  </table>
+</div>
+`)
+
+	return sb.String()
+}
 
 // Attribute is a property of a Device that we can query/measure.
 type Attribute struct {
