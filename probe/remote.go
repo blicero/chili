@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 10. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-03 11:56:00 krylon>
+// Time-stamp: <2026-08-05 11:29:03 krylon>
 
 package probe
 
@@ -97,6 +97,9 @@ func (p *Probe) executeCommand(d *model.Device, port int, cmd string) ([]string,
 			// On FreeBSD, "freebsd-update updatesready" exits
 			// with status 2 if no updates are available.
 			return nil, nil
+		} else if d.OS == "OpenBSD" && strings.Contains(cmd, "failed") {
+			// On OpenBSD, "rcctl ls failed" will exit with a 1
+			// if any failed services are detected.
 		} else {
 			var ex = fmt.Errorf("failed to execute command on %s: %w\n>>> Command: %s",
 				d.Name,
