@@ -16,7 +16,10 @@ import (
 	"github.com/blicero/chili/model"
 )
 
-var patSystemDUnits = regexp.MustCompile(`^(\S+)\s+(\w+)\s+(\w+)\s+(\w+)`)
+var (
+	patSystemDUnits    = regexp.MustCompile(`^\s*(\S+)\s+(\w+)\s+(\w+)\s+(\w+)`)
+	patFreeBSDServices = regexp.MustCompile("/([^/]+)$")
+)
 
 // QueryServicesSystemd attempts to query running and failed services on
 // Linux Devices using systemd.
@@ -125,10 +128,66 @@ func (p *Probe) QueryServicesOpenBSD(dev *model.Device, port int) (*model.Servic
 		return nil, err
 	}
 
+	// p.log.Printf("[TRACE] Query %q on %s returned %d lines of output.\n",
+	// 	cmdFail,
+	// 	dev.Name,
+	// 	len(output))
+
 	svc.Failed = functional.Map(chomp, output)
 
 	return svc, nil
 } // func (p *Probe) QueryServicesOpenBSD(dev *model.Device, port int) (*model.Services, error)
+
+// QueryServicesFreeBSD attempts to query the running services on a Device running FreeBSD.
+// I currently have no idea how to query *failed* services on FreeBSD, so for the time
+// being, we'll pretend everything is fine.
+func (p *Probe) QueryServicesFreeBSD(dev *model.Device, port int) (*model.Services, error) {
+	const cmd = "doas service -e"
+
+	var (
+		err    error
+		output []string
+		svc    *model.Services
+	)
+
+	if output, err = p.executeCommand(dev, port, cmd); err != nil {
+		if err == ErrPingOffline {
+			return nil, err
+		}
+		_ = p.disconnect(dev)
+		p.log.Printf("[ERROR] Failed to execute command %q on %s: %s\n",
+			cmd,
+			dev.Name,
+			err.Error())
+		return nil, err
+	}
+
+	svc = &model.Services{
+		Running: make([]string, 0, len(output)),
+		Failed:  make([]string, 0),
+	}
+
+	for _, line := range output {
+		var match []string
+
+		line = strings.Trim(line, "\n\t ")
+
+		if line == "" {
+			continue
+		} else if match = patFreeBSDServices.FindStringSubmatch(line); match == nil {
+			p.log.Printf("[DEBUG] Cannot parse output of %q on %s: %s\n",
+				cmd,
+				dev.Name,
+				line)
+		} else {
+			svc.Running = append(svc.Running, match[1])
+		}
+	}
+
+	// svc = &model.Services{Running: functional.Map(chomp, output)}
+
+	return svc, nil
+} // func (p *Probe) QueryServicesFreeBSD(dev *model.Device, port int) (*model.Services, error)
 
 // QueryServices attempts to query a Device for running and failed services.
 func (p *Probe) QueryServices(dev *model.Device, port int) (*model.Services, error) {
@@ -143,6 +202,8 @@ func (p *Probe) QueryServices(dev *model.Device, port int) (*model.Services, err
 		return p.QueryServicesSystemd(dev, port)
 	case "OpenBSD":
 		return p.QueryServicesOpenBSD(dev, port)
+	case "FreeBSD":
+		return p.QueryServicesFreeBSD(dev, port)
 	default:
 		p.log.Printf("[DEBUG] Don't know how to query %s (on %s) for service status.\n",
 			dev.OS,
