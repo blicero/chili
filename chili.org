@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-08-04 13:23:21 krylon>
+# Time-stamp: <2026-08-05 11:59:03 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [20/22]
+* Chili [21/23]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-08-04 Di 13:23]
+   #+CAPTION: Clock summary at [2026-08-05 Mi 11:58]
    | Headline                                     | Time      |           |       |      |      |
    |----------------------------------------------+-----------+-----------+-------+------+------|
-   | *Total time*                                 | *2d 7:47* |           |       |      |      |
+   | *Total time*                                 | *2d 9:04* |           |       |      |      |
    |----------------------------------------------+-----------+-----------+-------+------+------|
-   | *Chili [20/22]*                              | *2d 7:47* |           |       |      |      |
-   | \_  /Components [19/21]/                     |           | /2d 4:39/ |       |      |      |
+   | *Chili [21/23]*                              | *2d 9:04* |           |       |      |      |
+   | \_  /Components [20/22]/                     |           | /2d 5:56/ |       |      |      |
    | \_    Data model [0/0]                       |           |           |  8:50 |      |      |
    | \_    Database [1/1]                         |           |           |  7:34 |      |      |
    | \_      De-serialize attributes              |           |           |       | 0:18 |      |
@@ -29,10 +29,10 @@
    | \_      Testing                              |           |           |       | 0:44 |      |
    | \_    Network Scanner [1/1]                  |           |           | 12:14 |      |      |
    | \_      Avoid adding devices we already know |           |           |       | 0:33 |      |
-   | \_    Host Probe [13/15]                     |           |           | 15:13 |      |      |
+   | \_    Host Probe [14/16]                     |           |           | 16:08 |      |      |
    | \_      Consider device class                |           |           |       | 0:20 |      |
    | \_      Scheduling                           |           |           |       | 1:13 |      |
-   | \_      Running services [0/0]               |           |           |       | 3:26 |      |
+   | \_      Running services [0/0]               |           |           |       | 4:21 |      |
    | \_      SNMP [0/0]                           |           |           |       | 5:14 |      |
    | \_      Packages [7/7]                       |           |           |       | 1:57 |      |
    | \_        Debian                             |           |           |       |      | 0:20 |
@@ -43,8 +43,8 @@
    | \_      Uptime                               |           |           |       | 0:13 |      |
    | \_      Refactor for easier testing          |           |           |       | 0:29 |      |
    | \_    Nexus [0/0]                            |           |           |  1:17 |      |      |
-   | \_    Web UI [3/3]                           |           |           |  6:44 |      |      |
-   | \_      Menu for Devices                     |           |           |       | 1:39 |      |
+   | \_    Web UI [3/3]                           |           |           |  7:06 |      |      |
+   | \_      Menu for Devices                     |           |           |       | 2:01 |      |
    | \_      Render attributes properly           |           |           |       | 0:31 |      |
    | \_      Trigger Probe run                    |           |           |       | 0:37 |      |
    | \_    Main [1/1]                             |           |           |  0:47 |      |      |
@@ -52,7 +52,7 @@
    | \_  /Bugs [0/0]/                             |           | /3:08/    |       |      |      |
    | \_    The little probe that could... get...  |           |           |  3:08 |      |      |
    #+END:
-** Components [19/21]
+** Components [20/22]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -127,7 +127,7 @@
      :END:
 *** Configuration [0/0]
     At least for configuring the log levels, that would be great.
-*** Host Probe [13/15]
+*** Host Probe [14/16]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -138,6 +138,16 @@
     CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
+**** TODO [#E] Make use of sudo and alternatives flexible
+     On the BSD systems I run, I use doas rather than sudo, and so do I on
+     Arch Linux, because I could never figure out how to make sudo run without
+     a password there.
+     But on a lot of systems, both options are available, plus systemd has
+     introduced something like sytemd-run0 or whatever.
+     It would be nice, in the long term, to choose on a per-device basis which
+     of these to use, and /maybe/ even detect automatically, which one.
+     It's not a big deal for now. But you know... when I run out of other
+     things to do.
 **** DONE Consider device class
      CLOSED: [2026-07-31 Fr 12:24]
      :LOGBOOK:
@@ -159,12 +169,14 @@
      the installed software.
      One tool I can try to use - if installed - is dmidecode. I have yet to
      look at the information it provides, but it sounds promising.
-**** TODO Running services [0/0]
+**** DONE Running services [0/0]
+     CLOSED: [2026-08-05 Mi 11:35]
      :PROPERTIES:
      :COOKIE_DATA: todo recursive
      :VISIBILITY: children
      :END:
      :LOGBOOK:
+     CLOCK: [2026-08-05 Mi 10:40]--[2026-08-05 Mi 11:35] =>  0:55
      CLOCK: [2026-08-04 Di 11:19]--[2026-08-04 Di 13:19] =>  2:00
      CLOCK: [2026-08-04 Di 09:44]--[2026-08-04 Di 11:10] =>  1:26
      :END:
@@ -261,8 +273,9 @@
     CLOCK: [2026-07-24 Fr 08:45]--[2026-07-24 Fr 09:58] =>  1:13
     :END:
 **** DONE Menu for Devices
-     CLOSED: [2026-08-03 Mo 14:17]
+     CLOSED: [2026-08-05 Mi 11:58]
      :LOGBOOK:
+     CLOCK: [2026-08-05 Mi 11:36]--[2026-08-05 Mi 11:58] =>  0:22
      CLOCK: [2026-08-03 Mo 12:38]--[2026-08-03 Mo 14:17] =>  1:39
      :END:
 **** DONE [#B] Render attributes properly
