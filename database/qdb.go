@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-27 16:31:31 krylon>
+// Time-stamp: <2026-08-05 11:36:55 krylon>
 //
 // This files contains the SQL queries we intend to run on the database.
 
@@ -81,6 +81,7 @@ SELECT
     class,
     active
 FROM device
+ORDER BY name
 `,
 	query.AttributeAdd: `
 INSERT INTO attribute (dev_id, timestamp, atype, value)
