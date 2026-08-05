@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 04. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-04 12:05:47 krylon>
+// Time-stamp: <2026-08-05 11:50:00 krylon>
 //
 // query remote devices for running and failed services
 
@@ -55,7 +55,11 @@ func (p *Probe) QueryServicesSystemd(dev *model.Device, port int) (*model.Servic
 		Failed:  make([]string, 0, 4),
 	}
 
-	// ...
+	// p.log.Printf("[TRACE] Query %q on %s returned %d lines of output.\n",
+	// 	cmd,
+	// 	dev.Name,
+	// 	len(output))
+
 	for _, line := range output[1:] {
 		var match []string
 		if match = patSystemDUnits.FindStringSubmatch(line); len(match) > 0 {
@@ -65,7 +69,7 @@ func (p *Probe) QueryServicesSystemd(dev *model.Device, port int) (*model.Servic
 			active = match[3]
 			sub = match[4]
 
-			if loaded != "loaded" || active != "active" {
+			if !strings.HasSuffix(name, ".service") || loaded != "loaded" || active != "active" {
 				continue
 			}
 
@@ -74,6 +78,9 @@ func (p *Probe) QueryServicesSystemd(dev *model.Device, port int) (*model.Servic
 				svc.Running = append(svc.Running, name)
 			case "failed":
 				svc.Failed = append(svc.Failed, name)
+			case "waiting", "exited":
+				// don't do anything
+				continue
 			default:
 				p.log.Printf("[DEBUG] Don't know what to do with %s: %s\n",
 					sub,
@@ -86,7 +93,7 @@ func (p *Probe) QueryServicesSystemd(dev *model.Device, port int) (*model.Servic
 } // func (p *Probe) QueryServicesSystemd(dev *model.Device, port int) (*model.Services, error)
 
 func chomp(s string) string {
-	return strings.Trim(s, "\n")
+	return strings.Trim(s, "\n\t ")
 } // func chomp(s string) string
 
 // QueryServicesOpenBSD attempts to query running and failed services on a device running OpenBSD.
@@ -102,6 +109,8 @@ func (p *Probe) QueryServicesOpenBSD(dev *model.Device, port int) (*model.Servic
 		svc    *model.Services
 	)
 
+	p.log.Printf("[TRACE] Query running services on %s\n", dev.Name)
+
 	if output, err = p.executeCommand(dev, port, cmdRun); err != nil {
 		if err == ErrPingOffline {
 			return nil, err
@@ -114,7 +123,14 @@ func (p *Probe) QueryServicesOpenBSD(dev *model.Device, port int) (*model.Servic
 		return nil, err
 	}
 
+	p.log.Printf("[TRACE] Query %q on %s returned %d lines of output.\n",
+		cmdRun,
+		dev.Name,
+		len(output))
+
 	svc = &model.Services{Running: functional.Map(chomp, output)}
+
+	p.log.Printf("[TRACE] Query dysfunctional services on %s\n", dev.Name)
 
 	if output, err = p.executeCommand(dev, port, cmdFail); err != nil {
 		if err == ErrPingOffline {
