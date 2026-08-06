@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-03 12:47:36 krylon>
+// Time-stamp: <2026-08-06 10:29:08 krylon>
 
 package web
 
@@ -241,6 +241,21 @@ func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	data.Notifications = make(map[int64][]notification)
+
+	for _, dev := range data.Devices {
+		var n []notification
+
+		if n, err = srv.getNotifications(dev); err != nil {
+			srv.log.Printf("[ERROR] Failed to get Notifications for %s: %s\n",
+				dev.Name,
+				err.Error())
+			continue
+		} else if len(n) > 0 {
+			data.Notifications[dev.ID] = n
+		}
+	}
+
 	slices.SortFunc(data.Devices, func(a, b *model.Device) int {
 		if a.Name < b.Name {
 			return -1
@@ -317,6 +332,13 @@ func (srv *Server) handleDeviceDetails(w http.ResponseWriter, r *http.Request) {
 	} else if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
 		msg = fmt.Sprintf("Could not find template %q", tmplName)
 		srv.log.Println("[CRITICAL] " + msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if data.Notifications, err = srv.getNotifications(data.Device); err != nil {
+		msg = fmt.Sprintf("Failed to look up Notifications for %s: %s\n",
+			data.Device.Name,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
 		srv.sendErrorMessage(w, msg)
 		return
 	}

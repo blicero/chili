@@ -1,6 +1,6 @@
 {{ define "main" }}
 {{/* Created on 10. 06. 2024 */}}
-{{/* Time-stamp: <2026-07-31 16:54:19 krylon> */}}
+{{/* Time-stamp: <2026-08-06 10:49:21 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -51,10 +51,23 @@
         </thead>
 
         <tbody>
+          {{ $nall := .Notifications }}
           {{ range .Devices }}
           <tr>
+            {{ $ndev := index $nall .ID }}
             <td>
               <a href="/device/{{ .ID }}">{{ .Name }}</a>
+              {{ range $ndev }}
+              &nbsp;
+              <img
+                src="/static/{{ .Icon }}"
+                width="32"
+                height="32"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="{{ .Text }}"
+                alt="{{ .Text }}" />
+              {{ end }}
             </td>
             <td>{{ .Addr }}</td>
             <td>{{ .OS }}</td>
