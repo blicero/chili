@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-08-05 11:59:03 krylon>
+# Time-stamp: <2026-08-06 10:58:26 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,51 +8,53 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [21/23]
+* Chili [22/26]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-08-05 Mi 11:58]
-   | Headline                                     | Time      |           |       |      |      |
-   |----------------------------------------------+-----------+-----------+-------+------+------|
-   | *Total time*                                 | *2d 9:04* |           |       |      |      |
-   |----------------------------------------------+-----------+-----------+-------+------+------|
-   | *Chili [21/23]*                              | *2d 9:04* |           |       |      |      |
-   | \_  /Components [20/22]/                     |           | /2d 5:56/ |       |      |      |
-   | \_    Data model [0/0]                       |           |           |  8:50 |      |      |
-   | \_    Database [1/1]                         |           |           |  7:34 |      |      |
-   | \_      De-serialize attributes              |           |           |       | 0:18 |      |
-   | \_      Pool                                 |           |           |       | 0:02 |      |
-   | \_      Testing                              |           |           |       | 0:44 |      |
-   | \_    Network Scanner [1/1]                  |           |           | 12:14 |      |      |
-   | \_      Avoid adding devices we already know |           |           |       | 0:33 |      |
-   | \_    Host Probe [14/16]                     |           |           | 16:08 |      |      |
-   | \_      Consider device class                |           |           |       | 0:20 |      |
-   | \_      Scheduling                           |           |           |       | 1:13 |      |
-   | \_      Running services [0/0]               |           |           |       | 4:21 |      |
-   | \_      SNMP [0/0]                           |           |           |       | 5:14 |      |
-   | \_      Packages [7/7]                       |           |           |       | 1:57 |      |
-   | \_        Debian                             |           |           |       |      | 0:20 |
-   | \_        OpenBSD                            |           |           |       |      | 0:07 |
-   | \_        NetBSD                             |           |           |       |      | 0:17 |
-   | \_        Fedora                             |           |           |       |      | 0:11 |
-   | \_        openSUSE                           |           |           |       |      | 0:40 |
-   | \_      Uptime                               |           |           |       | 0:13 |      |
-   | \_      Refactor for easier testing          |           |           |       | 0:29 |      |
-   | \_    Nexus [0/0]                            |           |           |  1:17 |      |      |
-   | \_    Web UI [3/3]                           |           |           |  7:06 |      |      |
-   | \_      Menu for Devices                     |           |           |       | 2:01 |      |
-   | \_      Render attributes properly           |           |           |       | 0:31 |      |
-   | \_      Trigger Probe run                    |           |           |       | 0:37 |      |
-   | \_    Main [1/1]                             |           |           |  0:47 |      |      |
-   | \_      Profiling                            |           |           |       | 0:44 |      |
-   | \_  /Bugs [0/0]/                             |           | /3:08/    |       |      |      |
-   | \_    The little probe that could... get...  |           |           |  3:08 |      |      |
+   #+CAPTION: Clock summary at [2026-08-06 Do 10:58]
+   | Headline                                         | Time       |           |       |      |      |
+   |--------------------------------------------------+------------+-----------+-------+------+------|
+   | *Total time*                                     | *2d 10:06* |           |       |      |      |
+   |--------------------------------------------------+------------+-----------+-------+------+------|
+   | *Chili [22/26]*                                  | *2d 10:06* |           |       |      |      |
+   | \_  /Components [21/25]/                         |            | /2d 6:58/ |       |      |      |
+   | \_    Data model [0/0]                           |            |           |  8:50 |      |      |
+   | \_    Database [1/1]                             |            |           |  7:34 |      |      |
+   | \_      De-serialize attributes                  |            |           |       | 0:18 |      |
+   | \_      Pool                                     |            |           |       | 0:02 |      |
+   | \_      Testing                                  |            |           |       | 0:44 |      |
+   | \_    Network Scanner [1/1]                      |            |           | 12:14 |      |      |
+   | \_      Avoid adding devices we already know     |            |           |       | 0:33 |      |
+   | \_    Host Probe [14/16]                         |            |           | 16:08 |      |      |
+   | \_      Consider device class                    |            |           |       | 0:20 |      |
+   | \_      Scheduling                               |            |           |       | 1:13 |      |
+   | \_      Running services [0/0]                   |            |           |       | 4:21 |      |
+   | \_      SNMP [0/0]                               |            |           |       | 5:14 |      |
+   | \_      Packages [7/7]                           |            |           |       | 1:57 |      |
+   | \_        Debian                                 |            |           |       |      | 0:20 |
+   | \_        OpenBSD                                |            |           |       |      | 0:07 |
+   | \_        NetBSD                                 |            |           |       |      | 0:17 |
+   | \_        Fedora                                 |            |           |       |      | 0:11 |
+   | \_        openSUSE                               |            |           |       |      | 0:40 |
+   | \_      Uptime                                   |            |           |       | 0:13 |      |
+   | \_      Refactor for easier testing              |            |           |       | 0:29 |      |
+   | \_    Nexus [0/0]                                |            |           |  1:17 |      |      |
+   | \_    Web UI [4/6]                               |            |           |  8:08 |      |      |
+   | \_      Display urgent situations prominently... |            |           |       | 1:02 |      |
+   | \_        Overview                               |            |           |       |      | 0:52 |
+   | \_      Menu for Devices                         |            |           |       | 2:01 |      |
+   | \_      Render attributes properly               |            |           |       | 0:31 |      |
+   | \_      Trigger Probe run                        |            |           |       | 0:37 |      |
+   | \_    Main [1/1]                                 |            |           |  0:47 |      |      |
+   | \_      Profiling                                |            |           |       | 0:44 |      |
+   | \_  /Bugs [0/0]/                                 |            | /3:08/    |       |      |      |
+   | \_    The little probe that could... get...      |            |           |  3:08 |      |      |
    #+END:
-** Components [20/22]
+** Components [21/25]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -259,7 +261,7 @@
     :END:
     I need something vaguely resembling a message bus
     ... On second thought, I may have been overly ambitious here. Stay tuned.
-*** Web UI [3/3]
+*** Web UI [4/6]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -272,6 +274,22 @@
     CLOCK: [2026-07-24 Fr 10:08]--[2026-07-24 Fr 10:15] =>  0:07
     CLOCK: [2026-07-24 Fr 08:45]--[2026-07-24 Fr 09:58] =>  1:13
     :END:
+**** TODO Display urgent situations prominently [1/2]
+     :PROPERTIES:
+     :COOKIE_DATA: todo recursive
+     :VISIBILITY: children
+     :END:
+     :LOGBOOK:
+     CLOCK: [2026-08-06 Do 09:53]--[2026-08-06 Do 10:03] =>  0:10
+     :END:
+     When a device has pending updates or failed services, this should be
+     pointed out very loudly.
+***** DONE Overview
+      CLOSED: [2026-08-06 Do 10:55]
+      :LOGBOOK:
+      CLOCK: [2026-08-06 Do 10:03]--[2026-08-06 Do 10:55] =>  0:52
+      :END:
+***** TODO Device Details
 **** DONE Menu for Devices
      CLOSED: [2026-08-05 Mi 11:58]
      :LOGBOOK:
