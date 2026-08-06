@@ -1,32 +1,40 @@
 {{ define "intro" }}
-{{/* Time-stamp: <2026-04-04 14:55:45 krylon> */}}
+{{/* Time-stamp: <2026-08-06 10:47:47 krylon> */}}
 <h1 id="page_title">{{ .Title }}</h1>
 <hr />
 
 {{ if .Debug }}
 <script>
  $(document).ready(function() {
-   if (!settings.beacon.active) {
-     $("#beacon")[0].innerHTML = "Beacon is suspended";
-   }
+         if (!settings.beacon.active) {
+                 $("#beacon")[0].innerHTML = "Beacon is suspended";
+         }
+
+         // XXX I took this from the Bootstrap documentation without having a
+         //     super thorough understanding of what this does and how (if) it
+         //     works. Here Be Dragons!
+         let toolTipTriggers = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+         let toolTips = toolTipTriggers.map((elt) => {
+                 return new bootstrap.Tooltip(elt)
+         })
  });
 </script>
 
 <table>
-    <tr>
-        <td>
-            <div class="debug container-fluid">
-                {{ app_string }} running on {{ hostname }} (built on {{ app_build }})<br />
-                Template rendered on <time>{{ now }}</time><br />
-                <div id="beacon" class="debug" onclick="beaconToggle();">
-                    Beacon
-                </div>
-            </div>
-        </td>
-        <td>
-            {{ template "msg" . }}
-        </td>
-    </tr>
+  <tr>
+    <td>
+      <div class="debug container-fluid">
+        {{ app_string }} running on {{ hostname }} (built on {{ app_build }})<br />
+        Template rendered on <time>{{ now }}</time><br />
+        <div id="beacon" class="debug" onclick="beaconToggle();">
+          Beacon
+        </div>
+      </div>
+    </td>
+    <td>
+      {{ template "msg" . }}
+    </td>
+  </tr>
 </table>
 {{ end }}
 
