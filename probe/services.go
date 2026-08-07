@@ -123,14 +123,14 @@ func (p *Probe) QueryServicesOpenBSD(dev *model.Device, port int) (*model.Servic
 		return nil, err
 	}
 
-	p.log.Printf("[TRACE] Query %q on %s returned %d lines of output.\n",
-		cmdRun,
-		dev.Name,
-		len(output))
+	// p.log.Printf("[TRACE] Query %q on %s returned %d lines of output.\n",
+	// 	cmdRun,
+	// 	dev.Name,
+	// 	len(output))
 
 	svc = &model.Services{Running: functional.Map(chomp, output)}
 
-	p.log.Printf("[TRACE] Query dysfunctional services on %s\n", dev.Name)
+	// p.log.Printf("[TRACE] Query dysfunctional services on %s\n", dev.Name)
 
 	if output, err = p.executeCommand(dev, port, cmdFail); err != nil {
 		if err == ErrPingOffline {
