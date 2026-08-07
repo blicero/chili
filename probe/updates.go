@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-03 11:07:37 krylon>
+// Time-stamp: <2026-08-07 14:54:13 krylon>
 
 package probe
 
@@ -82,8 +82,12 @@ func (p *Probe) QueryUpdatesSuse(d *model.Device, port int) ([]string, error) {
 		l = strings.Trim(l, " \t\n")
 		var pieces = patUpdateSuse.Split(l, -1)
 		if len(pieces) > 0 {
-			var upd = strings.Join(pieces[1:], pkgSep)
-			updates = append(updates, upd)
+			var upd = strings.Trim(
+				strings.Join(pieces[1:], pkgSep),
+				" \n\t")
+			if upd != "" {
+				updates = append(updates, upd)
+			}
 		}
 	}
 
