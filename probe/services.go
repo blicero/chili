@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 04. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-05 11:50:00 krylon>
+// Time-stamp: <2026-08-07 15:18:47 krylon>
 //
 // query remote devices for running and failed services
 
@@ -216,7 +216,7 @@ func (p *Probe) QueryServices(dev *model.Device, port int) (*model.Services, err
 		return p.QueryServicesSystemd(dev, port)
 	case "OpenBSD":
 		return p.QueryServicesOpenBSD(dev, port)
-	case "FreeBSD":
+	case "FreeBSD", "NetBSD":
 		return p.QueryServicesFreeBSD(dev, port)
 	default:
 		p.log.Printf("[DEBUG] Don't know how to query %s (on %s) for service status.\n",
