@@ -1,4 +1,4 @@
-/* Time-stamp: <2026-07-24 13:31:19 krylon> */
+/* Time-stamp: <2026-08-06 11:51:55 krylon> */
 
 body { 
     font-family: Arial,Helvetica,sans-serif;
@@ -25,6 +25,13 @@ h2 {
 
 *.error {
     color: #FF0000;
+}
+
+.failed td {
+    color: #FF0000;
+    font-weight: bold;
+    text-decoration: underline;
+    text-decoration-style: wavy;
 }
 
 *.boring {
