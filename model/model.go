@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-04 10:01:26 krylon>
+// Time-stamp: <2026-08-06 11:54:43 krylon>
 
 package model
 
@@ -317,9 +317,10 @@ func (s *Services) String() string {
 func (s *Services) HTML() string {
 	var sb strings.Builder
 
-	sb.WriteString(`<div>
-  <table class="table table-striped caption-top">
-    <caption>Running Services</caption>
+	if len(s.Failed) > 0 {
+		sb.WriteString(`<div>
+  <table class="table table-striped caption-top failed">
+    <caption>Failed Services</caption>
     <thead>
       <tr>
         <th>#</th>
@@ -329,26 +330,27 @@ func (s *Services) HTML() string {
     <tbody>
 `)
 
-	for i, svc := range s.Running {
-		fmt.Fprintf(
-			&sb,
-			`<tr>
+		for i, svc := range s.Failed {
+			fmt.Fprintf(
+				&sb,
+				`<tr>
   <td>%d</td>
   <td>%s</td>
 </tr>
 `,
-			i+1,
-			svc)
-	}
+				i+1,
+				svc)
+		}
 
-	sb.WriteString(`
+		sb.WriteString(`
     </tbody>
   </table>
-</div>
+</div>`)
+	}
 
-<div>
+	sb.WriteString(`<div>
   <table class="table table-striped caption-top">
-  <caption>Failed Services</caption>
+  <caption>Running Services</caption>
   <thead>
     <tr>
       <th>#</th>
@@ -358,7 +360,7 @@ func (s *Services) HTML() string {
   <tbody>
 `)
 
-	for i, svc := range s.Failed {
+	for i, svc := range s.Running {
 		fmt.Fprintf(
 			&sb,
 			`<tr>
