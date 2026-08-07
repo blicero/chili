@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-09 16:11:07 krylon>
+// Time-stamp: <2026-08-07 15:34:35 krylon>
 
 package database
 
@@ -121,6 +121,8 @@ func (pool *Pool) GetNoWait() (*Database, error) {
 		pool.log.Printf("[ERROR] Error opening new database connection: %s",
 			err.Error())
 		return nil, err
+	} else {
+		pool.log.Println("[INFO] Opened an additional connection.")
 	}
 
 	return db, nil
