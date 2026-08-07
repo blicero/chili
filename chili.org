@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-08-06 10:58:26 krylon>
+# Time-stamp: <2026-08-07 16:07:51 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [22/26]
+* Chili [22/28]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-08-06 Do 10:58]
+   #+CAPTION: Clock summary at [2026-08-07 Fr 16:07]
    | Headline                                         | Time       |           |       |      |      |
    |--------------------------------------------------+------------+-----------+-------+------+------|
-   | *Total time*                                     | *2d 10:06* |           |       |      |      |
+   | *Total time*                                     | *2d 11:03* |           |       |      |      |
    |--------------------------------------------------+------------+-----------+-------+------+------|
-   | *Chili [22/26]*                                  | *2d 10:06* |           |       |      |      |
-   | \_  /Components [21/25]/                         |            | /2d 6:58/ |       |      |      |
+   | *Chili [22/28]*                                  | *2d 11:03* |           |       |      |      |
+   | \_  /Components [21/27]/                         |            | /2d 7:55/ |       |      |      |
    | \_    Data model [0/0]                           |            |           |  8:50 |      |      |
    | \_    Database [1/1]                             |            |           |  7:34 |      |      |
    | \_      De-serialize attributes                  |            |           |       | 0:18 |      |
@@ -29,7 +29,7 @@
    | \_      Testing                                  |            |           |       | 0:44 |      |
    | \_    Network Scanner [1/1]                      |            |           | 12:14 |      |      |
    | \_      Avoid adding devices we already know     |            |           |       | 0:33 |      |
-   | \_    Host Probe [14/16]                         |            |           | 16:08 |      |      |
+   | \_    Host Probe [14/17]                         |            |           | 17:05 |      |      |
    | \_      Consider device class                    |            |           |       | 0:20 |      |
    | \_      Scheduling                               |            |           |       | 1:13 |      |
    | \_      Running services [0/0]                   |            |           |       | 4:21 |      |
@@ -43,7 +43,7 @@
    | \_      Uptime                                   |            |           |       | 0:13 |      |
    | \_      Refactor for easier testing              |            |           |       | 0:29 |      |
    | \_    Nexus [0/0]                                |            |           |  1:17 |      |      |
-   | \_    Web UI [4/6]                               |            |           |  8:08 |      |      |
+   | \_    Web UI [4/7]                               |            |           |  8:08 |      |      |
    | \_      Display urgent situations prominently... |            |           |       | 1:02 |      |
    | \_        Overview                               |            |           |       |      | 0:52 |
    | \_      Menu for Devices                         |            |           |       | 2:01 |      |
@@ -54,7 +54,7 @@
    | \_  /Bugs [0/0]/                                 |            | /3:08/    |       |      |      |
    | \_    The little probe that could... get...      |            |           |  3:08 |      |      |
    #+END:
-** Components [21/25]
+** Components [21/27]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -129,17 +129,22 @@
      :END:
 *** Configuration [0/0]
     At least for configuring the log levels, that would be great.
-*** Host Probe [14/16]
+*** Host Probe [14/17]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
     :END:
     :LOGBOOK:
+    CLOCK: [2026-08-07 Fr 15:10]--[2026-08-07 Fr 16:07] =>  0:57
     CLOCK: [2026-07-20 Mo 10:26]--[2026-07-20 Mo 10:36] =>  0:10
     CLOCK: [2026-07-19 So 16:17]--[2026-07-19 So 16:35] =>  0:18
     CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
+**** TODO Discard empty update on openSUSE
+     I currently see about 20 updates for an openSUSE VM all of which are
+     named "". I should find a way to discard those before they land in the
+     database.
 **** TODO [#E] Make use of sudo and alternatives flexible
      On the BSD systems I run, I use doas rather than sudo, and so do I on
      Arch Linux, because I could never figure out how to make sudo run without
@@ -261,7 +266,7 @@
     :END:
     I need something vaguely resembling a message bus
     ... On second thought, I may have been overly ambitious here. Stay tuned.
-*** Web UI [4/6]
+*** Web UI [4/7]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -274,6 +279,7 @@
     CLOCK: [2026-07-24 Fr 10:08]--[2026-07-24 Fr 10:15] =>  0:07
     CLOCK: [2026-07-24 Fr 08:45]--[2026-07-24 Fr 09:58] =>  1:13
     :END:
+**** TODO Display Device Attributes more prettily
 **** TODO Display urgent situations prominently [1/2]
      :PROPERTIES:
      :COOKIE_DATA: todo recursive
