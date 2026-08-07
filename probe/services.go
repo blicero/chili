@@ -10,6 +10,7 @@ package probe
 
 import (
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/Feralthedogg/go-functional/pkg/functional"
@@ -144,12 +145,9 @@ func (p *Probe) QueryServicesOpenBSD(dev *model.Device, port int) (*model.Servic
 		return nil, err
 	}
 
-	// p.log.Printf("[TRACE] Query %q on %s returned %d lines of output.\n",
-	// 	cmdFail,
-	// 	dev.Name,
-	// 	len(output))
-
-	svc.Failed = functional.Map(chomp, output)
+	svc.Failed = slices.DeleteFunc(
+		functional.Map(chomp, output),
+		func(s string) bool { return s == "" })
 
 	return svc, nil
 } // func (p *Probe) QueryServicesOpenBSD(dev *model.Device, port int) (*model.Services, error)
