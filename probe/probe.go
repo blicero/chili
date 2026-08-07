@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-04 12:13:08 krylon>
+// Time-stamp: <2026-08-07 15:51:23 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -61,7 +61,7 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 	var (
 		err error
 		p   = &Probe{
-			parCnt:   1, //cnt,
+			parCnt:   cnt,
 			clients:  make(map[int64]*ssh.Client),
 			interval: common.DefaultProbeInterval,
 		}
@@ -71,7 +71,7 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 		return nil, err
 	} else if err = p.initConfig(userName, keyPath...); err != nil {
 		return nil, err
-	} else if p.pool, err = database.NewPool(max(2, cnt/2)); err != nil {
+	} else if p.pool, err = database.NewPool(max(2, cnt+1)); err != nil {
 		p.log.Printf("[CRITICAL] Cannot open database connection pool: %s\n",
 			err.Error())
 		return nil, err
@@ -258,7 +258,7 @@ func (p *Probe) probeDevices() {
 
 	p.log.Printf("[TRACE] About to probe %d Devices\n", len(devices))
 
-	devQ = make(chan *model.Device, p.parCnt)
+	devQ = make(chan *model.Device)
 
 	for i := range p.parCnt {
 		wg.Go(func() { p.probeWorker(i+1, devQ) })
@@ -301,10 +301,12 @@ func (p *Probe) probeWorker(id int, devQ <-chan *model.Device) {
 } // func (p *Probe) probeWorker(id int, devQ <-chan *model.Device)
 
 func (p *Probe) probeOneDevice(id int, dev *model.Device) {
-	p.log.Printf("[TRACE] Probing %s (%s)\n",
+	p.log.Printf("[TRACE] Probe#%d querying %s (%s)\n",
+		id,
 		dev.Name,
 		dev.Addr)
-	defer p.log.Printf("[TRACE] Finished probing %s (%s)\n",
+	defer p.log.Printf("[TRACE] Probe#%d finished probing %s (%s)\n",
+		id,
 		dev.Name,
 		dev.Addr)
 	defer p.pending.Add(-1)
@@ -313,6 +315,7 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 		err    error
 		online bool
 		db     *database.Database
+		errcnt int
 	)
 
 	if online = p.pingDevice(dev); !online {
@@ -324,7 +327,21 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 	p.log.Printf("[TRACE] Probe#%d getting Database from pool\n",
 		id)
 
-	db = p.pool.Get()
+OPENDB:
+	if db, err = p.pool.GetNoWait(); err != nil {
+		p.log.Printf("[ERROR] Probe#%d failed to open database: %s\n",
+			id,
+			err.Error())
+		if errcnt < 5 {
+			errcnt++
+			time.Sleep(time.Millisecond * 25)
+			goto OPENDB
+		} else {
+			p.log.Printf("[CRITICAL] Probe#%d could not get a database connection\n",
+				id)
+			return
+		}
+	}
 	defer p.pool.Put(db)
 
 	if dev.OS == "" {
