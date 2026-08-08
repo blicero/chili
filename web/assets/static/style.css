@@ -1,4 +1,4 @@
-/* Time-stamp: <2026-08-06 11:51:55 krylon> */
+/* Time-stamp: <2026-08-08 12:11:33 krylon> */
 
 body { 
     font-family: Arial,Helvetica,sans-serif;
@@ -7,14 +7,12 @@ body {
 }
 
 h1 {
-    text-align: center;
     text-decoration: underline;
     font-size: 36pt;
 }
 
 h2 {
     text-decoration: underline;
-    text-align: center;
     font-size: 24pt;
 }
 
@@ -32,6 +30,12 @@ h2 {
     font-weight: bold;
     text-decoration: underline;
     text-decoration-style: wavy;
+}
+
+div.failed {
+    color: #FF7676;
+    font-weight: 600;
+    font-size: larger;
 }
 
 *.boring {
@@ -205,6 +209,12 @@ div#results {
     text-align: center;
     align-items: center;
     justify-content: center;
+}
+
+.left {
+    text-align: left;
+    align-items: left;
+    justify-content: left;
 }
 
 td.num {
