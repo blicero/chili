@@ -1,6 +1,6 @@
 {{ define "device_details" }}
 {{/* Created on 27. 07. 2026 */}}
-{{/* Time-stamp: <2026-08-03 12:51:29 krylon> */}}
+{{/* Time-stamp: <2026-08-08 14:50:35 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -12,53 +12,130 @@
       <tr>
         <th>Name</th>
         <td>{{ .Device.Name }}</td>
-      </tr>
 
-      <tr>
         <th>Address</th>
         <td>{{ .Device.Addr }}</td>
-      </tr>
 
-      <tr>
         <th>OS</th>
         <td>{{ .Device.OS }}</td>
-      </tr>
 
-      <tr>
         <th>Last Contact</th>
         <td>{{ fmt_time_minute .Device.LastContact }}</td>
       </tr>
+
+      <tr>
+        <th>Free Disk Space</th>
+        <td>
+          {{- with (index .Attributes (attribute "DiskSpace")) }}
+          {{ .Value }} %
+          {{ end -}}
+        </td>
+      </tr>
+
+      <tr>
+        <th>Load Average</th>
+        <td>
+          {{ with (index .Attributes (attribute "Uptime")) }}
+          {{ fmt_float (index .Value.Load 0) }} /
+          {{ fmt_float (index .Value.Load 1) }} /
+          {{ fmt_float (index .Value.Load 2) }}
+          {{ end }}
+        </td>
     </table>
 
     <hr />
 
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Timestamp</th>
-          <th>Value</th>
-        </tr>
-      </thead>
+    <div class="container" id="attributes">
+      <div id="updates" class="row">
+        {{ with (index .Attributes (attribute "Updates")) }}
+        <div class="row-xs">
+          <h2>Pending Updates</h2>
+        </div>
 
-      <tbody>
-        {{ range .Attributes }}
-        <tr>
-          <td>{{ .Type.String }}</td>
-          <td>{{ fmt_time_minute .Timestamp }}</td>
-          <td>{{ if (eq .Type 3) }}
-            <details>
-              <summary>{{ .Type.String }}</summary>
+        <div class="row urgent">
+          {{ range .Value }}
+          {{ . }}<br />
+          {{ end }}
+          {{ else }}
+          (none)
+          {{ end }}
+        </div>
+      </div>
+
+      <div class="row" id="services">
+        <div class="row-xs">
+          <h2>Services</h2>
+        </div>
+
+        <div class="row left">
+          {{ with (index .Attributes (attribute "Services")) }}
+
+          {{ with .Value.Failed }}
+          <h3>Failed</h3>
+          <div class="failed">
+            <p>
+              {{ range . }}
+              {{ . }}<br />
               {{ end }}
-              {{ .Value.HTML }}
-              {{ if (eq .Type 3) }}
-            </details>
+            </p>
+          </div>
+          {{ end }}
+
+          <button class="btn btn-success btn-sm"
+            data-bs-toggle="collapse"
+            href="#svc_running"
+            aria-expanded="false"
+            aria-controls="#svc_running">
+            Running
+          </button>
+
+          <div class="collapse" id="svc_running">
+            {{ range .Value.Running }}
+            {{ . }}<br />
             {{ end }}
-          </td>
-        </tr>
+          </div>
+
+          {{ end }}
+        </div>
+      </div> <!-- end services -->
+
+      <div class="row">
+        &nbsp;
+      </div>
+
+      <div class="row" id="packages">
+        <button class="btn btn-warning btn-sm"
+          data-bs-toggle="collapse"
+          href="#pkg_list"
+          aria-expanded="false"
+          aria-controls="#pkg_list">
+          Installed Software
+        </button>
+
+        <div class="collapse box" id="pkg_list">
+          {{ with (index .Attributes (attribute "Packages")) }}
+          {{ range .Value }}
+          {{ . }} <br />
+          {{ end }}
+          {{ end }}
+        </div>
+      </div>
+    </div> <!-- end packages -->
+
+    <div class="row">
+      &nbsp;
+    </div>
+
+    <div class="row" id="snmp">
+      {{ with (index .Attributes (attribute "SNMP")) }}
+      <dl class="box">
+        {{ range $name, $val :=  .Value }}
+        <dt>{{ $name }}</dt>
+        <dd>{{ $val }}</dd>
         {{ end }}
-      </tbody>
-    </table>
+      </dl>
+      {{ end }}
+    </div>
 
     {{ template "footer" . }}
   </body>

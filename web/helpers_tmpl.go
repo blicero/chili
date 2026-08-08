@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 12. 12. 2018 by Benjamin Walkenhorst
 // (c) 2018 Benjamin Walkenhorst
-// Time-stamp: <2026-07-31 16:51:55 krylon>
+// Time-stamp: <2026-08-08 11:22:35 krylon>
 
 package web
 
@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/blicero/chili/common"
+	"github.com/blicero/chili/model/attribute"
 )
 
 ////////////////////////////////////
@@ -62,6 +63,7 @@ var funcmap = template.FuncMap{
 	"twice":            twice,
 	"tag_advice_id":    tagAdviceID,
 	"is_epoch":         isEpoch,
+	"attribute":        attribute.Parse,
 }
 
 type generator struct {

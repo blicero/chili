@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-06 10:29:08 krylon>
+// Time-stamp: <2026-08-08 11:12:24 krylon>
 
 package web
 
@@ -30,6 +30,7 @@ import (
 	"github.com/blicero/chili/database"
 	"github.com/blicero/chili/logdomain"
 	"github.com/blicero/chili/model"
+	"github.com/blicero/chili/model/attribute"
 	"github.com/gorilla/mux"
 )
 
@@ -283,6 +284,7 @@ func (srv *Server) handleDeviceDetails(w http.ResponseWriter, r *http.Request) {
 		vars       map[string]string
 		db         *database.Database
 		tmpl       *template.Template
+		attr       []*model.Attribute
 		data       = tmplDataDeviceDetails{
 			tmplDataBase: tmplDataBase{
 				Debug: common.Debug,
@@ -322,7 +324,7 @@ func (srv *Server) handleDeviceDetails(w http.ResponseWriter, r *http.Request) {
 		srv.log.Println("[CRITICAL] " + msg)
 		srv.sendErrorMessage(w, msg)
 		return
-	} else if data.Attributes, err = db.AttributeGetMostRecent(data.Device); err != nil {
+	} else if attr, err = db.AttributeGetMostRecent(data.Device); err != nil {
 		msg = fmt.Sprintf("Error looking for Attributes of %s: %s",
 			data.Device.Name,
 			err.Error())
@@ -341,6 +343,12 @@ func (srv *Server) handleDeviceDetails(w http.ResponseWriter, r *http.Request) {
 		srv.log.Printf("[ERROR] %s\n", msg)
 		srv.sendErrorMessage(w, msg)
 		return
+	}
+
+	data.Attributes = make(map[attribute.ID]*model.Attribute, len(attr))
+
+	for _, att := range attr {
+		data.Attributes[att.Type] = att
 	}
 
 	data.Title = fmt.Sprintf("Device Details for %s",
