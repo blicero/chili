@@ -1,6 +1,6 @@
 {{ define "device_details" }}
 {{/* Created on 27. 07. 2026 */}}
-{{/* Time-stamp: <2026-08-08 14:50:35 krylon> */}}
+{{/* Time-stamp: <2026-08-08 16:15:30 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -50,6 +50,7 @@
         {{ with (index .Attributes (attribute "Updates")) }}
         <div class="row-xs">
           <h2>Pending Updates</h2>
+          ({{ fmt_time_minute .Timestamp }})
         </div>
 
         <div class="row urgent">
