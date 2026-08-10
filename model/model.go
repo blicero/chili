@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-06 11:54:43 krylon>
+// Time-stamp: <2026-08-10 13:46:41 krylon>
 
 package model
 
@@ -379,7 +379,28 @@ func (s *Services) HTML() string {
 `)
 
 	return sb.String()
+} // func (s *Services) HTML() string
+
+// DMI contains information extracted from a Device's DMI... yeah.
+type DMI struct {
+	Vendor string `json:"vendor"`
+	Model  string `json:"model"`
+	Serial string `json:"serial"`
+	CPU    string `json:"cpu"`
 }
+
+func (d *DMI) Type() attribute.ID { return attribute.DMI }
+func (d *DMI) String() string {
+	var buf []byte
+
+	buf, _ = json.Marshal(d)
+	return string(buf)
+} // func (d *DMI) String() string
+
+// HTML returns a HTML representation of the receiver.
+func (d *DMI) HTML() string {
+	return d.String()
+} // func (d *DMI) HTML() string
 
 // Attribute is a property of a Device that we can query/measure.
 type Attribute struct {

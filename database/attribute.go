@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 11. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-04 10:03:02 krylon>
+// Time-stamp: <2026-08-10 14:58:26 krylon>
 
 package database
 
@@ -76,6 +76,15 @@ func (db *Database) unpackPayload(attr *model.Attribute, val string) (bool, erro
 			return false, err
 		}
 		attr.Value = svc
+	case attribute.DMI:
+		var dmi = new(model.DMI)
+		if err = json.Unmarshal([]byte(val), dmi); err != nil {
+			db.log.Printf("[ERROR] Cannot parse JSON %q: %s\n",
+				val,
+				err.Error())
+			return false, err
+		}
+		attr.Value = dmi
 	default:
 		err = fmt.Errorf("don't know how to decode %s",
 			attr.Type)
@@ -116,11 +125,11 @@ EXEC_QUERY:
 			waitForRetry()
 			goto EXEC_QUERY
 		} else {
-			err = fmt.Errorf("cannot add Attribute %s of Device %d to Database: %w (%q)",
+			err = fmt.Errorf("cannot add Attribute %s of Device %d to Database: %w (%#v)",
 				a.Type,
 				a.DevID,
 				err,
-				a.Value)
+				a)
 			db.log.Printf("[ERROR] %s\n", err.Error())
 			return err
 		}
