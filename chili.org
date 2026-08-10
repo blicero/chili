@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-08-08 14:52:36 krylon>
+# Time-stamp: <2026-08-10 19:04:02 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [26/28]
+* Chili [27/28]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-08-08 Sa 14:52]
+   #+CAPTION: Clock summary at [2026-08-10 Mo 19:04]
    | Headline                                         | Time       |            |       |      |      |
    |--------------------------------------------------+------------+------------+-------+------+------|
-   | *Total time*                                     | *2d 15:06* |            |       |      |      |
+   | *Total time*                                     | *2d 19:01* |            |       |      |      |
    |--------------------------------------------------+------------+------------+-------+------+------|
-   | *Chili [26/28]*                                  | *2d 15:06* |            |       |      |      |
-   | \_  /Components [25/27]/                         |            | /2d 11:58/ |       |      |      |
+   | *Chili [27/28]*                                  | *2d 19:01* |            |       |      |      |
+   | \_  /Components [26/27]/                         |            | /2d 15:53/ |       |      |      |
    | \_    Data model [0/0]                           |            |            |  8:50 |      |      |
    | \_    Database [1/1]                             |            |            |  7:34 |      |      |
    | \_      De-serialize attributes                  |            |            |       | 0:18 |      |
@@ -29,10 +29,11 @@
    | \_      Testing                                  |            |            |       | 0:44 |      |
    | \_    Network Scanner [1/1]                      |            |            | 12:14 |      |      |
    | \_      Avoid adding devices we already know     |            |            |       | 0:33 |      |
-   | \_    Host Probe [15/17]                         |            |            | 17:56 |      |      |
+   | \_    Host Probe [16/17]                         |            |            | 21:51 |      |      |
+   | \_      Make use of sudo and alternatives...     |            |            |       | 0:37 |      |
    | \_      Consider device class                    |            |            |       | 0:20 |      |
    | \_      Scheduling                               |            |            |       | 1:13 |      |
-   | \_      Device Info                              |            |            |       | 0:51 |      |
+   | \_      Device Info                              |            |            |       | 4:09 |      |
    | \_      Running services [0/0]                   |            |            |       | 4:21 |      |
    | \_      SNMP [0/0]                               |            |            |       | 5:14 |      |
    | \_      Packages [7/7]                           |            |            |       | 1:57 |      |
@@ -56,7 +57,7 @@
    | \_  /Bugs [0/0]/                                 |            | /3:08/     |       |      |      |
    | \_    The little probe that could... get...      |            |            |  3:08 |      |      |
    #+END:
-** Components [25/27]
+** Components [26/27]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -131,7 +132,7 @@
      :END:
 *** Configuration [0/0]
     At least for configuring the log levels, that would be great.
-*** Host Probe [15/17]
+*** Host Probe [16/17]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -148,7 +149,11 @@
      I currently see about 20 updates for an openSUSE VM all of which are
      named "". I should find a way to discard those before they land in the
      database.
-**** TODO [#E] Make use of sudo and alternatives flexible
+**** DONE [#B] Make use of sudo and alternatives flexible
+     CLOSED: [2026-08-10 Mo 19:03]
+     :LOGBOOK:
+     CLOCK: [2026-08-10 Mo 13:24]--[2026-08-10 Mo 14:01] =>  0:37
+     :END:
      On the BSD systems I run, I use doas rather than sudo, and so do I on
      Arch Linux, because I could never figure out how to make sudo run without
      a password there.
@@ -176,6 +181,8 @@
      query each.
 **** TODO Device Info
      :LOGBOOK:
+     CLOCK: [2026-08-10 Mo 14:02]--[2026-08-10 Mo 15:15] =>  1:13
+     CLOCK: [2026-08-10 Mo 11:19]--[2026-08-10 Mo 13:24] =>  2:05
      CLOCK: [2026-08-07 Fr 16:17]--[2026-08-07 Fr 17:08] =>  0:51
      :END:
      I should attempt to query as much as I can about the hardware, as well as
