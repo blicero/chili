@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-07 15:51:23 krylon>
+// Time-stamp: <2026-08-10 14:12:07 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -38,6 +38,7 @@ var Schedule = map[attribute.ID]time.Duration{
 	attribute.Packages:  time.Second * 86400,
 	attribute.SNMP:      time.Minute * 5,
 	attribute.Services:  time.Minute * 10,
+	attribute.DMI:       time.Hour * 168, // DMI data is unlikely to change
 }
 
 // Probe queries Devices about their OS, installed software, hardware,
@@ -54,6 +55,7 @@ type Probe struct {
 	pending     atomic.Int32
 	cfg         *ssh.ClientConfig
 	clients     map[int64]*ssh.Client
+	privCmd     map[int64]string
 }
 
 // Create returns a fresh Probe.
@@ -64,6 +66,7 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 			parCnt:   cnt,
 			clients:  make(map[int64]*ssh.Client),
 			interval: common.DefaultProbeInterval,
+			privCmd:  make(map[int64]string),
 		}
 	)
 
@@ -159,7 +162,7 @@ func (p *Probe) initConfig(userName string, keyPath ...string) error {
 			ssh.PublicKeys(keys...),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		Timeout:         common.PingTimeout * 4,
+		Timeout:         time.Second * 300,
 	}
 
 	return nil
@@ -370,6 +373,7 @@ OPENDB:
 		diskSpace         int64
 		snmp              model.SNMPInfo
 		svc               *model.Services
+		dmi               *model.DMI
 	)
 
 	if knownAttr, err = db.AttributeGetMostRecent(dev); err != nil {
@@ -553,7 +557,7 @@ SNMP:
 
 SERVICES:
 	if stamp, ok := lastProbed[attribute.Services]; ok && stamp.Add(Schedule[attribute.Services]).After(now) {
-		goto END
+		goto DMI
 	}
 
 	p.log.Printf("[TRACE] Probe#%d about to query services on %s\n",
@@ -565,7 +569,7 @@ SERVICES:
 			id,
 			dev.Name,
 			err.Error())
-		goto END
+		goto DMI
 	}
 
 	attr = &model.Attribute{
@@ -581,6 +585,46 @@ SERVICES:
 			dev.Name,
 			err.Error())
 	}
+
+DMI:
+	if stamp, ok := lastProbed[attribute.DMI]; ok && stamp.Add(Schedule[attribute.DMI]).After(now) {
+		goto END
+	}
+
+	switch dev.Class {
+	case device.VM, device.Jail, device.Router, device.Entertainment:
+		p.log.Printf("[DEBUG] %s is a %s, so no DMI\n",
+			dev.Name,
+			dev.Class)
+		goto END
+	}
+
+	p.log.Printf("[TRACE] Probe#%d about to query DMI on %s\n",
+		id,
+		dev.Name)
+
+	if dmi, err = p.QueryDMI(dev, portSSH); err != nil {
+		p.log.Printf("[ERROR] Probe#%d failed to query services on %s: %s\n",
+			id,
+			dev.Name,
+			err.Error())
+		goto END
+	}
+
+	attr = &model.Attribute{
+		DevID:     dev.ID,
+		Timestamp: time.Now().Truncate(time.Second),
+		Type:      attribute.DMI,
+		Value:     dmi,
+	}
+
+	if err = db.AttributeAdd(attr); err != nil {
+		p.log.Printf("[ERROR] Failed to save %s data for %s: %s\n",
+			attr.Type,
+			dev.Name,
+			err.Error())
+	}
+
 END:
 	p.log.Printf("[TRACE] Probe#%d finished probing %s\n",
 		id,
@@ -605,3 +649,32 @@ func (p *Probe) getAllDevices() ([]*model.Device, error) {
 
 	return devs, nil
 } // func (p *Probe) getAllDevices() ([]*model.Device, error)
+
+const (
+	cmdSudo = "sudo"
+	cmdDoas = "doas"
+)
+
+// Some systems use sudo(1) to execute a command with elevated privileges,
+// some use doas(1). There are others, too, that I know nothing about.
+// We attempt to figure out which command to use for a given Device.
+// NB sudo is basically available everywhere as a package, doas is
+// part of the base system on OpenBSD, but it is also available on other
+// platforms. So some Devices might have BOTH sudo(1) and doas(1), and even
+// other similary tools (systemd has its own)
+func (p *Probe) getPrivCmd(dev *model.Device) string {
+	switch dev.OS {
+	case "Debian GNU/Linux", "Raspbian GNU/Linux":
+		fallthrough
+	case "openSUSE Leap", "openSUSE Tumbleweed":
+		return cmdSudo
+	case "FreeBSD", "OpenBSD", "NetBSD", "Arch Linux":
+		return cmdDoas
+	default:
+		return cmdSudo
+	}
+} // func (p *Probe) getPrivCmd(dev *model.Device) string
+
+func trim(s string) string {
+	return strings.Trim(s, "\n\t ")
+}

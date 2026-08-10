@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 04. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-07 15:18:47 krylon>
+// Time-stamp: <2026-08-08 19:57:06 krylon>
 //
 // query remote devices for running and failed services
 
@@ -156,7 +156,7 @@ func (p *Probe) QueryServicesOpenBSD(dev *model.Device, port int) (*model.Servic
 // I currently have no idea how to query *failed* services on FreeBSD, so for the time
 // being, we'll pretend everything is fine.
 func (p *Probe) QueryServicesFreeBSD(dev *model.Device, port int) (*model.Services, error) {
-	const cmd = "doas service -e"
+	const cmd = "doas /usr/sbin/service -e"
 
 	var (
 		err    error
