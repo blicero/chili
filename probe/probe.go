@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-10 14:12:07 krylon>
+// Time-stamp: <2026-08-11 12:45:56 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -259,7 +259,9 @@ func (p *Probe) probeDevices() {
 		return
 	}
 
-	p.log.Printf("[TRACE] About to probe %d Devices\n", len(devices))
+	p.log.Printf("[TRACE] About to probe %d Devices using %d workers\n",
+		len(devices),
+		p.parCnt)
 
 	devQ = make(chan *model.Device)
 
@@ -299,6 +301,7 @@ func (p *Probe) probeWorker(id int, devQ <-chan *model.Device) {
 	defer p.log.Printf("[TRACE] Probe worker %02d quitting", id)
 
 	for dev := range devQ {
+		p.pending.Add(-1)
 		p.probeOneDevice(id, dev)
 	}
 } // func (p *Probe) probeWorker(id int, devQ <-chan *model.Device)
@@ -312,7 +315,7 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 		id,
 		dev.Name,
 		dev.Addr)
-	defer p.pending.Add(-1)
+	// defer p.pending.Add(-1)
 
 	var (
 		err    error
@@ -523,7 +526,7 @@ DISKSPACE:
 
 SNMP:
 	if stamp, ok := lastProbed[attribute.SNMP]; ok && stamp.Add(Schedule[attribute.SNMP]).After(now) {
-		goto END
+		goto SERVICES
 	}
 
 	p.log.Printf("[TRACE] Probe#%d about to query SNMP data from %s\n",
@@ -552,7 +555,6 @@ SNMP:
 			attr.Type,
 			dev.Name,
 			err.Error())
-		goto SERVICES
 	}
 
 SERVICES:
@@ -588,6 +590,8 @@ SERVICES:
 
 DMI:
 	if stamp, ok := lastProbed[attribute.DMI]; ok && stamp.Add(Schedule[attribute.DMI]).After(now) {
+		p.log.Printf("[TRACE] Skipping DMI probe for %s\n",
+			dev.Name)
 		goto END
 	}
 
