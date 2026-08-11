@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 23. 07. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-08-08 14:54:26 krylon>
+// Time-stamp: <2026-08-11 12:48:14 krylon>
 
 // Package common contains definitions used throughout the application
 package common
@@ -35,7 +35,7 @@ import (
 // application.
 const (
 	AppName                  = "Chili"
-	Version                  = "0.4.0"
+	Version                  = "0.5.0"
 	Debug                    = true
 	DefaultPort              = 4001
 	TimestampFormatMinute    = "2006-01-02 15:04"
