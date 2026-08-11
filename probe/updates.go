@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-07 14:54:13 krylon>
+// Time-stamp: <2026-08-11 11:40:25 krylon>
 
 package probe
 
@@ -53,7 +53,7 @@ var patUpdateSuse = regexp.MustCompile(`\s+\|\s+`)
 
 // QueryUpdatesSuse asks an openSuse system for a list of available updates.
 func (p *Probe) QueryUpdatesSuse(d *model.Device, port int) ([]string, error) {
-	const cmd = "zypper lu"
+	const cmd = "zypper --no-refresh lu"
 	var (
 		err     error
 		output  []string
