@@ -1,6 +1,6 @@
 {{ define "device_details" }}
 {{/* Created on 27. 07. 2026 */}}
-{{/* Time-stamp: <2026-08-08 16:15:30 krylon> */}}
+{{/* Time-stamp: <2026-08-11 12:32:44 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -24,15 +24,42 @@
       </tr>
 
       <tr>
+        {{ $dmi := (index .Attributes (attribute "DMI")) }}
+        {{ if ne $dmi nil }}
+        <th>Vendor</th>
+        <td>{{ $dmi.Value.Vendor }}</td>
+
+        <th>Model</th>
+        <td>{{ $dmi.Value.Model }}</td>
+
+        <th>Serial number</th>
+        <td>{{ $dmi.Value.Serial }}</td>
+
+        <th>CPU</th>
+        <td>{{ $dmi.Value.CPU }}</td>
+        {{ else }}
+        <th>Vendor</th>
+        <td>&nbsp;</td>
+
+        <th>Model</th>
+        <td>&nbsp;</td>
+
+        <th>Serial number</th>
+        <td>&nbsp;</td>
+
+        <th>CPU</th>
+        <td>&nbsp;</td>
+        {{ end }}
+      </tr>
+
+      <tr>
         <th>Free Disk Space</th>
         <td>
           {{- with (index .Attributes (attribute "DiskSpace")) }}
           {{ .Value }} %
           {{ end -}}
         </td>
-      </tr>
 
-      <tr>
         <th>Load Average</th>
         <td>
           {{ with (index .Attributes (attribute "Uptime")) }}
@@ -41,6 +68,8 @@
           {{ fmt_float (index .Value.Load 2) }}
           {{ end }}
         </td>
+      </tr>
+
     </table>
 
     <hr />
@@ -105,37 +134,48 @@
       </div>
 
       <div class="row" id="packages">
-        <button class="btn btn-warning btn-sm"
-          data-bs-toggle="collapse"
-          href="#pkg_list"
-          aria-expanded="false"
-          aria-controls="#pkg_list">
-          Installed Software
-        </button>
+        <div class="row-xs">
+          <h2>Installed Software</h2>
+        </div>
 
-        <div class="collapse box" id="pkg_list">
-          {{ with (index .Attributes (attribute "Packages")) }}
-          {{ range .Value }}
-          {{ . }} <br />
-          {{ end }}
+        <div class="row">
+          <button class="btn btn-warning btn-sm"
+            data-bs-toggle="collapse"
+            href="#pkg_list"
+            aria-expanded="false"
+            aria-controls="#pkg_list">
+            Installed Software
+          </button>
+
+          <div class="collapse box" id="pkg_list">
+            {{ with (index .Attributes (attribute "Packages")) }}
+            {{ range .Value }}
+            {{ . }} <br />
+            {{ end }}
+            {{ end }}
+          </div>
+        </div>
+      </div><!-- end packages -->
+
+      <div class="row">
+        &nbsp;
+      </div>
+
+      <div class="row" id="snmp">
+        <div class="row-xs">
+          <h2>SNMP</h2>
+        </div>
+        <div class="row">
+          {{ with (index .Attributes (attribute "SNMP")) }}
+          <dl class="box">
+            {{ range $name, $val :=  .Value }}
+            <dt>{{ $name }}</dt>
+            <dd>{{ $val }}</dd>
+            {{ end }}
+          </dl>
           {{ end }}
         </div>
-      </div>
-    </div> <!-- end packages -->
-
-    <div class="row">
-      &nbsp;
-    </div>
-
-    <div class="row" id="snmp">
-      {{ with (index .Attributes (attribute "SNMP")) }}
-      <dl class="box">
-        {{ range $name, $val :=  .Value }}
-        <dt>{{ $name }}</dt>
-        <dd>{{ $val }}</dd>
-        {{ end }}
-      </dl>
-      {{ end }}
+      </div><!-- end snmp -->
     </div>
 
     {{ template "footer" . }}
