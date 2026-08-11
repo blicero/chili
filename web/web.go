@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-08 11:12:24 krylon>
+// Time-stamp: <2026-08-11 17:23:26 krylon>
 
 package web
 
@@ -15,6 +15,7 @@ import (
 	"io"
 	"io/fs"
 	"log"
+	"net"
 	"net/http"
 	"path/filepath"
 	"regexp"
@@ -144,6 +145,7 @@ func Create(addr string, pq chan<- control.Message) (*Server, error) {
 	srv.router.HandleFunc("/static/{file}", srv.handleStaticFile)
 	srv.router.HandleFunc("/{index:(?i:index|main|start)$}", srv.handleMain)
 	srv.router.HandleFunc("/device/{id:(?:\\d+)$}", srv.handleDeviceDetails)
+	srv.router.HandleFunc("/network/all", srv.handleNetworkAll)
 	// srv.router.HandleFunc("/host/all", srv.handleHostsView)
 	// srv.router.HandleFunc("/host/{name}/chart", srv.handleHostChart)
 	// srv.router.HandleFunc("/host/{name}", srv.handleSingleHostView)
@@ -152,6 +154,11 @@ func Create(addr string, pq chan<- control.Message) (*Server, error) {
 	srv.router.HandleFunc(
 		"/ajax/beacon",
 		srv.handleBeacon)
+
+	srv.router.HandleFunc(
+		"/ajax/net/create",
+		srv.handleAjaxNetAdd,
+	)
 
 	srv.router.HandleFunc("/ajax/run-probe", srv.handleRunProbe)
 
@@ -363,6 +370,56 @@ func (srv *Server) handleDeviceDetails(w http.ResponseWriter, r *http.Request) {
 	}
 } // func (srv *Server) handleDeviceDetails(w http.ResponseWriter, r *http.Request)
 
+func (srv *Server) handleNetworkAll(w http.ResponseWriter, r *http.Request) {
+	const tmplName = "network_all"
+	srv.log.Printf("[TRACE] Handling request for %s from %s\n",
+		r.RequestURI,
+		r.RemoteAddr)
+	var (
+		err  error
+		msg  string
+		db   *database.Database
+		tmpl *template.Template
+		data = tmplDataNetworkAll{
+			tmplDataBase: tmplDataBase{
+				Title: "All Networks",
+				Debug: common.Debug,
+				URL:   r.URL.String(),
+			},
+		}
+	)
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if data.Devices, err = db.DeviceGetAll(); err != nil {
+		msg = fmt.Sprintf("Failed to load all Devices: %s",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if data.Networks, err = db.NetGetAll(); err != nil {
+		msg = fmt.Sprintf("Failed to load all Networks: %s",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
+		msg = fmt.Sprintf("Could not find template %q", tmplName)
+		srv.log.Println("[CRITICAL] " + msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	w.Header().Set("Cache-Control", noCache)
+	if err = tmpl.Execute(w, &data); err != nil {
+		msg = fmt.Sprintf("Error rendering template %q: %s",
+			tmplName,
+			err.Error())
+		srv.sendErrorMessage(w, msg)
+	}
+} // func (srv *Server) handleNetworkAll(w http.ResponseWriter, r *http.Request)
+
 func (srv *Server) handleNotFound(w http.ResponseWriter, r *http.Request) {
 	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
 	srv.log.Printf("[ERROR] 404 - %s\n", r.RequestURI)
@@ -405,7 +462,78 @@ func (srv *Server) handleRunProbe(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", noCache)
 	w.WriteHeader(200)
 	w.Write(buf) // nolint: errcheck,gosec
-} // // func (srv *Server) handleRunProbe(w http.ResponseWriter, r *http.Request)
+} // func (srv *Server) handleRunProbe(w http.ResponseWriter, r *http.Request)
+
+func (srv *Server) handleAjaxNetAdd(w http.ResponseWriter, r *http.Request) {
+	srv.log.Printf("[TRACE] Handling request for %s from %s\n",
+		r.RequestURI,
+		r.RemoteAddr)
+	var (
+		err             error
+		db              *database.Database
+		buf             []byte
+		network         model.Network
+		msg, name, addr string
+		data            = ajaxResponseNetAdd{
+			ajaxData: ajaxData{
+				Timestamp: time.Now(),
+			},
+		}
+	)
+
+	if err = r.ParseForm(); err != nil {
+		msg = fmt.Sprintf("cannot parse form data: %s",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		buf = errJSON(msg)
+		goto SEND
+	}
+
+	name = r.FormValue("name")
+	addr = r.FormValue("addr")
+
+	if _, network.Addr, err = net.ParseCIDR(addr); err != nil {
+		msg = fmt.Sprintf("cannot parse network address %q: %s",
+			addr,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		buf = errJSON(msg)
+		goto SEND
+	}
+
+	network.Name = name
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if err = db.NetAdd(&network); err != nil {
+		msg = fmt.Sprintf("adding new network %s failed: %s",
+			name,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		buf = errJSON(msg)
+		goto SEND
+	}
+
+	data.Network = &network
+
+	data.Status = true
+	data.Message = fmt.Sprintf("network %s was added successfully",
+		name)
+	if buf, err = json.Marshal(&data); err != nil {
+		msg = fmt.Sprintf("Failed to serialize response: %s",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		buf = errJSON(msg)
+		goto SEND
+	}
+
+SEND:
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", noCache)
+	w.WriteHeader(200)
+	w.Write(buf) // nolint: errcheck,gosec
+} // func (srv *Server) handleAjaxNetAdd(w http.ResponseWriter, r *http.Request)
 
 func (srv *Server) handleBeacon(w http.ResponseWriter, r *http.Request) {
 	var (
@@ -472,10 +600,7 @@ func (srv *Server) handleFavIco(w http.ResponseWriter, request *http.Request) {
 } // func (srv *Server) handleFavIco(w http.ResponseWriter, request *http.Request)
 
 func (srv *Server) handleStaticFile(w http.ResponseWriter, request *http.Request) {
-	// srv.log.Printf("[TRACE] Handle request for %s\n",
-	// 	request.URL.EscapedPath())
-
-	// Since we controll what static files the server has available, we
+	// Since we control what static files the server has available, we
 	// can easily map MIME type to slice. Soon.
 
 	vars := mux.Vars(request)
@@ -496,12 +621,6 @@ func (srv *Server) handleStaticFile(w http.ResponseWriter, request *http.Request
 
 	w.Header().Set("Content-Type", mimeType)
 	w.Header().Set("Cache-Control", noCache)
-
-	// if common.Debug {
-	// 	w.Header().Set("Cache-Control", noCache)
-	// } else {
-	// 	w.Header().Set("Cache-Control", cacheControl)
-	// }
 
 	var (
 		err error

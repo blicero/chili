@@ -1,0 +1,97 @@
+{{ define "network_all" }}
+{{/* Created on 11. 08. 2026 */}}
+{{/* Time-stamp: <2026-08-11 16:35:04 krylon> */}}
+<!DOCTYPE html>
+<html>
+  {{ template "head" . }}
+
+  <body>
+    {{ template "intro" . }}
+
+    <div class="container content">
+      <div class="row">
+        <button class="btn btn-success"
+          data-bs-toggle="collapse"
+          href="#network_form"
+          aria-expanded="false"
+          aria-controls="#network_form">
+          Add Network
+        </button>
+
+        <div class="collapse" id="network_form">
+          <table class="table caption-top" >
+            <caption>Add Network</caption>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Address</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>
+                  <input type="text" class="net_form" name="name" id="net_name" />
+                </td>
+
+                <td>
+                  <input type="text" class="net_form" name="addr" id="net_addr" />
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <button
+                    type="btn btn-danger"
+                    onclick="net_form_reset();">
+                    Cancel
+                  </button>
+                </td>
+                <td>
+                  <button
+                    type="btn btn-success"
+                    onclick="net_form_submit();">
+                    OK
+                  </button>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="row">
+        <table class="table table-striped caption-top">
+          <caption>Networks</caption>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Last Scanned</th>
+            </tr>
+          </thead>
+
+          <tbody id="net_list">
+            {{ range .Networks }}
+            <tr>
+              <td>{{ .ID }}</td>
+              <td>
+                <a href="/network/{{ .ID }}">
+                  {{ .Name }}
+                </a>
+              </td>
+              <td>{{ .Addr }}</td>
+              <td>{{ fmt_time_minute .LastScan }}</td>
+            </tr>
+            {{ end }}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {{ template "footer" . }}
+  </body>
+</html>
+{{ end }}
