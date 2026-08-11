@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-10 13:46:41 krylon>
+// Time-stamp: <2026-08-11 17:06:58 krylon>
 
 package model
 
@@ -37,11 +37,11 @@ func clone(ip net.IP) net.IP {
 
 // Network defines a range of IP addresses where our devices live.
 type Network struct {
-	ID       int64
-	Name     string
-	Addr     *net.IPNet
-	Added    time.Time
-	LastScan time.Time
+	ID       int64      `json:"id"`
+	Name     string     `json:"name"`
+	Addr     *net.IPNet `json:"addr"`
+	Added    time.Time  `json:"added"`
+	LastScan time.Time  `json:"last_scan"`
 }
 
 // NewNet creates a new Network with the given name and IP address.
