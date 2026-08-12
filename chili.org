@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-08-11 18:12:36 krylon>
+# Time-stamp: <2026-08-12 11:46:05 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,26 +8,27 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [28/30]
+* Chili [29/32]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-08-11 Di 18:12]
+   #+CAPTION: Clock summary at [2026-08-12 Mi 11:46]
    | Headline                                         | Time      |            |       |      |      |
    |--------------------------------------------------+-----------+------------+-------+------+------|
-   | *Total time*                                     | *3d 0:38* |            |       |      |      |
+   | *Total time*                                     | *3d 2:10* |            |       |      |      |
    |--------------------------------------------------+-----------+------------+-------+------+------|
-   | *Chili [28/30]*                                  | *3d 0:38* |            |       |      |      |
-   | \_  /Components [27/29]/                         |           | /2d 21:30/ |       |      |      |
+   | *Chili [29/32]*                                  | *3d 2:10* |            |       |      |      |
+   | \_  /Components [28/31]/                         |           | /2d 23:02/ |       |      |      |
    | \_    Data model [0/0]                           |           |            |  8:50 |      |      |
    | \_    Database [1/1]                             |           |            |  7:34 |      |      |
    | \_      De-serialize attributes                  |           |            |       | 0:18 |      |
    | \_      Pool                                     |           |            |       | 0:02 |      |
    | \_      Testing                                  |           |            |       | 0:44 |      |
-   | \_    Network Scanner [1/1]                      |           |            | 12:14 |      |      |
+   | \_    Network Scanner [2/2]                      |           |            | 13:05 |      |      |
+   | \_      Set LastScan timestamp on Network        |           |            |       | 0:51 |      |
    | \_      Avoid adding devices we already know     |           |            |       | 0:33 |      |
    | \_    Host Probe [17/17]                         |           |            | 23:22 |      |      |
    | \_      Make use of sudo and alternatives...     |           |            |       | 0:37 |      |
@@ -45,8 +46,8 @@
    | \_      Uptime                                   |           |            |       | 0:13 |      |
    | \_      Refactor for easier testing              |           |            |       | 0:29 |      |
    | \_    Nexus [0/0]                                |           |            |  1:17 |      |      |
-   | \_    Web UI [7/9]                               |           |            | 15:26 |      |      |
-   | \_      Edit Networks [0/0]                      |           |            |       | 4:06 |      |
+   | \_    Web UI [7/9]                               |           |            | 16:07 |      |      |
+   | \_      Edit Networks [0/0]                      |           |            |       | 4:47 |      |
    | \_      Display Device Attributes more prettily  |           |            |       | 3:12 |      |
    | \_      Display urgent situations prominently... |           |            |       | 1:02 |      |
    | \_        Overview                               |           |            |       |      | 0:52 |
@@ -58,7 +59,7 @@
    | \_  /Bugs [0/0]/                                 |           | /3:08/     |       |      |      |
    | \_    The little probe that could... get...      |           |            |  3:08 |      |      |
    #+END:
-** Components [27/29]
+** Components [28/31]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -114,7 +115,7 @@
      CLOCK: [2026-07-08 Mi 12:38]--[2026-07-08 Mi 13:12] =>  0:34
      CLOCK: [2026-01-09 Fr 15:40]--[2026-01-09 Fr 15:50] =>  0:10
      :END:
-*** Network Scanner [1/1]
+*** Network Scanner [2/2]
     :LOGBOOK:
     CLOCK: [2026-07-10 Fr 10:34]--[2026-07-10 Fr 10:48] =>  0:14
     CLOCK: [2026-07-09 Do 10:19]--[2026-07-09 Do 13:34] =>  3:15
@@ -126,12 +127,17 @@
     CLOCK: [2026-01-09 Fr 18:36]--[2026-01-09 Fr 18:45] =>  0:09
     CLOCK: [2026-01-09 Fr 16:14]--[2026-01-09 Fr 18:28] =>  2:14
     :END:
+**** DONE Set LastScan timestamp on Network
+     CLOSED: [2026-08-12 Mi 11:45]
+     :LOGBOOK:
+     CLOCK: [2026-08-12 Mi 10:16]--[2026-08-12 Mi 11:07] =>  0:51
+     :END:
 **** DONE Avoid adding devices we already know
      CLOSED: [2026-07-20 Mo 11:22]
      :LOGBOOK:
      CLOCK: [2026-07-20 Mo 10:49]--[2026-07-20 Mo 11:22] =>  0:33
      :END:
-*** Configuration [0/0]
+*** TODO Configuration [0/0]
     At least for configuring the log levels, that would be great.
 *** Host Probe [17/17]
     :PROPERTIES:
@@ -306,6 +312,7 @@
      :VISIBILITY: children
      :END:
      :LOGBOOK:
+     CLOCK: [2026-08-12 Mi 09:34]--[2026-08-12 Mi 10:15] =>  0:41
      CLOCK: [2026-08-11 Di 14:06]--[2026-08-11 Di 18:12] =>  4:06
      :END:
 **** TODO Edit Devices [0/0]
