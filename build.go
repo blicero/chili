@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-07-11 11:02:07 krylon>
+// Time-stamp: <2026-08-12 12:13:37 krylon>
 
 //go:build ignore
 // +build ignore
@@ -109,6 +109,7 @@ var candidates = map[string][]string{
 		"nexus/event",
 	},
 	"test": {
+		"web",
 		"database",
 		"probe",
 	},
@@ -227,10 +228,8 @@ This flag is not case-sensitive.`, strings.Join(orderedSteps, ", ")))
 				err.Error())
 			os.Exit(1)
 		}
-		// os.Exit(0)
 	}
 
-	dbg.Printf("[DEBUG] orderedSteps = %s\n", orderedSteps)
 	for idx, s := range orderedSteps {
 		dbg.Printf("[TRACE] Do we run go %s? %t\n",
 			s,
