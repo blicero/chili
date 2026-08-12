@@ -1,4 +1,4 @@
-/* Time-stamp: <2026-08-08 12:11:33 krylon> */
+/* Time-stamp: <2026-08-12 09:58:56 krylon> */
 
 body { 
     font-family: Arial,Helvetica,sans-serif;
@@ -157,7 +157,7 @@ table.notes * td {
     border-style: solid;
 }
 
-*.small { font-size: 9pt; }
+*.small * { font-size: 9pt; }
 
 div.messages {
     font-size: 10pt;
