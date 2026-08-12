@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-11 17:23:26 krylon>
+// Time-stamp: <2026-08-12 09:43:00 krylon>
 
 package web
 
@@ -146,6 +146,7 @@ func Create(addr string, pq chan<- control.Message) (*Server, error) {
 	srv.router.HandleFunc("/{index:(?i:index|main|start)$}", srv.handleMain)
 	srv.router.HandleFunc("/device/{id:(?:\\d+)$}", srv.handleDeviceDetails)
 	srv.router.HandleFunc("/network/all", srv.handleNetworkAll)
+	srv.router.HandleFunc("/network/{id:(?:\\d+)$}", srv.handleNetworkDetails)
 	// srv.router.HandleFunc("/host/all", srv.handleHostsView)
 	// srv.router.HandleFunc("/host/{name}/chart", srv.handleHostChart)
 	// srv.router.HandleFunc("/host/{name}", srv.handleSingleHostView)
@@ -419,6 +420,73 @@ func (srv *Server) handleNetworkAll(w http.ResponseWriter, r *http.Request) {
 		srv.sendErrorMessage(w, msg)
 	}
 } // func (srv *Server) handleNetworkAll(w http.ResponseWriter, r *http.Request)
+
+func (srv *Server) handleNetworkDetails(w http.ResponseWriter, r *http.Request) {
+	srv.log.Printf("[TRACE] Handling request for %s from %s\n",
+		r.RequestURI,
+		r.RemoteAddr)
+
+	const tmplName = "network_details"
+	var (
+		err        error
+		msg, idStr string
+		db         *database.Database
+		vars       map[string]string
+		netID      int64
+		tmpl       *template.Template
+		data       = tmplDataNetworkDetails{
+			tmplDataBase: tmplDataBase{
+				Debug: common.Debug,
+				URL:   r.URL.String(),
+			},
+		}
+	)
+
+	vars = mux.Vars(r)
+	idStr = vars["id"]
+
+	if netID, err = strconv.ParseInt(idStr, 10, 64); err != nil {
+		msg = fmt.Sprintf("Cannot parse network ID %q: %s",
+			idStr,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if data.Devices, err = db.DeviceGetAll(); err != nil {
+		msg = fmt.Sprintf("Failed to load all Devices: %s",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if data.Network, err = db.NetGetByID(netID); err != nil {
+		msg = fmt.Sprintf("Failed to load Network %d: %s",
+			netID,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
+		msg = fmt.Sprintf("Could not find template %q", tmplName)
+		srv.log.Println("[CRITICAL] " + msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	data.Title = fmt.Sprintf("Details of Network %s", data.Network.Name)
+
+	w.Header().Set("Cache-Control", noCache)
+	if err = tmpl.Execute(w, &data); err != nil {
+		msg = fmt.Sprintf("Error rendering template %q: %s",
+			tmplName,
+			err.Error())
+		srv.sendErrorMessage(w, msg)
+	}
+} // func (srv *Server) handleNetworkDetails(w http.ResponseWriter, r *http.Request)
 
 func (srv *Server) handleNotFound(w http.ResponseWriter, r *http.Request) {
 	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)

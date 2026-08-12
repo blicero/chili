@@ -1,0 +1,77 @@
+{{ define "network_details" }}
+{{/* Created on 12. 08. 2026 */}}
+{{/* Time-stamp: <2026-08-12 10:12:48 krylon> */}}
+<!DOCTYPE html>
+<html>
+  {{ template "head" . }}
+
+  <body>
+    {{ template "intro" . }}
+
+    <div class="container content">
+      <div class="row">
+        <table class="caption-top">
+          <caption>Network {{ .Network.Name }}</caption>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Address</th>
+              <th>Added</th>
+              <th>Last Scan</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>{{ .Network.ID }}</td>
+              <td>{{ .Network.Addr }}</td>
+              <td>{{ fmt_date .Network.Added }}</td>
+              <td>{{ fmt_time_minute .Network.LastScan }}</td>
+              <td>
+                Edit
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row">
+        <table class="caption-top">
+          <caption>Devices</caption>
+          <thead>
+            <th>Address</th>
+            <th>Name</th>
+            <th>OS</th>
+            <th>Device Class</th>
+            <th>Added</th>
+            <th>Last Contact</th>
+          </thead>
+
+          <tbody>
+            {{ $net_id := .Network.ID }}
+            {{ range .Devices }}
+            {{ if eq .NetID $net_id }}
+            <tr>
+              <td>{{ .Addr }}</td>
+              <td>
+                <a href="/device/{{ .ID }}">
+                  {{ .Name }}
+                </a>
+              </td>
+              <td>{{ .OS }}</td>
+              <td>{{ .Class }}</td>
+              <td>{{ fmt_date .Added }}</td>
+              <td>{{ fmt_time_minute .LastContact }}</td>
+            </tr>
+            {{ end }}
+            {{ end }}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {{ template "footer" . }}
+  </body>
+</html>
+{{ end }}
