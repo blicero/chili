@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-08-12 11:46:05 krylon>
+# Time-stamp: <2026-08-12 13:35:53 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -15,49 +15,50 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-08-12 Mi 11:46]
-   | Headline                                         | Time      |            |       |      |      |
-   |--------------------------------------------------+-----------+------------+-------+------+------|
-   | *Total time*                                     | *3d 2:10* |            |       |      |      |
-   |--------------------------------------------------+-----------+------------+-------+------+------|
-   | *Chili [29/32]*                                  | *3d 2:10* |            |       |      |      |
-   | \_  /Components [28/31]/                         |           | /2d 23:02/ |       |      |      |
-   | \_    Data model [0/0]                           |           |            |  8:50 |      |      |
-   | \_    Database [1/1]                             |           |            |  7:34 |      |      |
-   | \_      De-serialize attributes                  |           |            |       | 0:18 |      |
-   | \_      Pool                                     |           |            |       | 0:02 |      |
-   | \_      Testing                                  |           |            |       | 0:44 |      |
-   | \_    Network Scanner [2/2]                      |           |            | 13:05 |      |      |
-   | \_      Set LastScan timestamp on Network        |           |            |       | 0:51 |      |
-   | \_      Avoid adding devices we already know     |           |            |       | 0:33 |      |
-   | \_    Host Probe [17/17]                         |           |            | 23:22 |      |      |
-   | \_      Make use of sudo and alternatives...     |           |            |       | 0:37 |      |
-   | \_      Consider device class                    |           |            |       | 0:20 |      |
-   | \_      Scheduling                               |           |            |       | 1:13 |      |
-   | \_      Device Info                              |           |            |       | 4:09 |      |
-   | \_      Running services [0/0]                   |           |            |       | 4:21 |      |
-   | \_      SNMP [0/0]                               |           |            |       | 5:14 |      |
-   | \_      Packages [7/7]                           |           |            |       | 1:57 |      |
-   | \_        Debian                                 |           |            |       |      | 0:20 |
-   | \_        OpenBSD                                |           |            |       |      | 0:07 |
-   | \_        NetBSD                                 |           |            |       |      | 0:17 |
-   | \_        Fedora                                 |           |            |       |      | 0:11 |
-   | \_        openSUSE                               |           |            |       |      | 0:40 |
-   | \_      Uptime                                   |           |            |       | 0:13 |      |
-   | \_      Refactor for easier testing              |           |            |       | 0:29 |      |
-   | \_    Nexus [0/0]                                |           |            |  1:17 |      |      |
-   | \_    Web UI [7/9]                               |           |            | 16:07 |      |      |
-   | \_      Edit Networks [0/0]                      |           |            |       | 4:47 |      |
-   | \_      Display Device Attributes more prettily  |           |            |       | 3:12 |      |
-   | \_      Display urgent situations prominently... |           |            |       | 1:02 |      |
-   | \_        Overview                               |           |            |       |      | 0:52 |
-   | \_      Menu for Devices                         |           |            |       | 2:01 |      |
-   | \_      Render attributes properly               |           |            |       | 0:31 |      |
-   | \_      Trigger Probe run                        |           |            |       | 0:37 |      |
-   | \_    Main [1/1]                                 |           |            |  0:47 |      |      |
-   | \_      Profiling                                |           |            |       | 0:44 |      |
-   | \_  /Bugs [0/0]/                                 |           | /3:08/     |       |      |      |
-   | \_    The little probe that could... get...      |           |            |  3:08 |      |      |
+   #+CAPTION: Clock summary at [2026-08-12 Mi 13:35]
+   | Headline                                         | Time      |           |       |      |      |
+   |--------------------------------------------------+-----------+-----------+-------+------+------|
+   | *Total time*                                     | *3d 3:48* |           |       |      |      |
+   |--------------------------------------------------+-----------+-----------+-------+------+------|
+   | *Chili [29/32]*                                  | *3d 3:48* |           |       |      |      |
+   | \_  /Components [28/31]/                         |           | /3d 0:40/ |       |      |      |
+   | \_    Data model [0/0]                           |           |           |  8:50 |      |      |
+   | \_    Database [1/1]                             |           |           |  7:34 |      |      |
+   | \_      De-serialize attributes                  |           |           |       | 0:18 |      |
+   | \_      Pool                                     |           |           |       | 0:02 |      |
+   | \_      Testing                                  |           |           |       | 0:44 |      |
+   | \_    Network Scanner [2/2]                      |           |           | 13:05 |      |      |
+   | \_      Set LastScan timestamp on Network        |           |           |       | 0:51 |      |
+   | \_      Avoid adding devices we already know     |           |           |       | 0:33 |      |
+   | \_    Configuration [0/0]                        |           |           |  1:38 |      |      |
+   | \_    Host Probe [17/18]                         |           |           | 23:22 |      |      |
+   | \_      Make use of sudo and alternatives...     |           |           |       | 0:37 |      |
+   | \_      Consider device class                    |           |           |       | 0:20 |      |
+   | \_      Scheduling                               |           |           |       | 1:13 |      |
+   | \_      Device Info                              |           |           |       | 4:09 |      |
+   | \_      Running services [0/0]                   |           |           |       | 4:21 |      |
+   | \_      SNMP [0/0]                               |           |           |       | 5:14 |      |
+   | \_      Packages [7/7]                           |           |           |       | 1:57 |      |
+   | \_        Debian                                 |           |           |       |      | 0:20 |
+   | \_        OpenBSD                                |           |           |       |      | 0:07 |
+   | \_        NetBSD                                 |           |           |       |      | 0:17 |
+   | \_        Fedora                                 |           |           |       |      | 0:11 |
+   | \_        openSUSE                               |           |           |       |      | 0:40 |
+   | \_      Uptime                                   |           |           |       | 0:13 |      |
+   | \_      Refactor for easier testing              |           |           |       | 0:29 |      |
+   | \_    Nexus [0/0]                                |           |           |  1:17 |      |      |
+   | \_    Web UI [7/9]                               |           |           | 16:07 |      |      |
+   | \_      Edit Networks [0/0]                      |           |           |       | 4:47 |      |
+   | \_      Display Device Attributes more prettily  |           |           |       | 3:12 |      |
+   | \_      Display urgent situations prominently... |           |           |       | 1:02 |      |
+   | \_        Overview                               |           |           |       |      | 0:52 |
+   | \_      Menu for Devices                         |           |           |       | 2:01 |      |
+   | \_      Render attributes properly               |           |           |       | 0:31 |      |
+   | \_      Trigger Probe run                        |           |           |       | 0:37 |      |
+   | \_    Main [1/1]                                 |           |           |  0:47 |      |      |
+   | \_      Profiling                                |           |           |       | 0:44 |      |
+   | \_  /Bugs [0/0]/                                 |           | /3:08/    |       |      |      |
+   | \_    The little probe that could... get...      |           |           |  3:08 |      |      |
    #+END:
 ** Components [28/31]
    :PROPERTIES:
@@ -138,8 +139,11 @@
      CLOCK: [2026-07-20 Mo 10:49]--[2026-07-20 Mo 11:22] =>  0:33
      :END:
 *** TODO Configuration [0/0]
+    :LOGBOOK:
+    CLOCK: [2026-08-12 Mi 11:57]--[2026-08-12 Mi 13:35] =>  1:38
+    :END:
     At least for configuring the log levels, that would be great.
-*** Host Probe [17/17]
+*** Host Probe [17/18]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -152,6 +156,7 @@
     CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
+**** TODO Determine Device Class
 **** DONE Discard empty update on openSUSE
      CLOSED: [2026-08-07 Fr 16:13]
      I currently see about 20 updates for an openSUSE VM all of which are
