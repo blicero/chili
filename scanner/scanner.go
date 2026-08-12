@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-27 09:22:52 krylon>
+// Time-stamp: <2026-08-12 10:23:13 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -74,7 +74,7 @@ func New(wcnt int) (*Scanner, error) {
 
 	if sc.log, err = common.GetLogger(logdomain.Scanner); err != nil {
 		return nil, err
-	} else if sc.dbPool, err = database.NewPool(max(wcnt>>1, 2)); err != nil {
+	} else if sc.dbPool, err = database.NewPool(max(wcnt+1, 2)); err != nil {
 		sc.log.Printf("[ERROR] Failed to create database pool: %s\n",
 			err.Error())
 		return nil, err
@@ -223,6 +223,12 @@ func (sc *Scanner) feeder(scanQ chan<- *scanTarget) {
 				}
 			}
 		}
+
+		if err = db.NetSetLastScan(n, time.Now().Truncate(time.Second)); err != nil {
+			sc.log.Printf("[ERROR] Failed to set LastScan on Network %s: %s\n",
+				n.Name,
+				err.Error())
+		}
 	}
 } // func (sc *Scanner) feeder(scanQ chan<- *scanTarget)
 
@@ -231,9 +237,6 @@ func (sc *Scanner) scanWorker(id int, scanQ <-chan *scanTarget, devQ chan<- *mod
 	defer sc.log.Printf("[TRACE] Scanner worker #%d quitting...\n", id)
 
 	for target := range scanQ {
-		// sc.log.Printf("[TRACE] Scan worker %03d about to scan %s\n",
-		// 	id,
-		// 	target.addr)
 		sc.scanAddr(id, target, devQ)
 	}
 } // func (sc *Scanner) scanWorker(id int, scanQ <-chan *scanTarget, devQ chan<- *model.Device)
