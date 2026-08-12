@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-12 10:23:13 krylon>
+// Time-stamp: <2026-08-12 11:50:11 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -39,7 +39,7 @@ import (
 
 const (
 	// XXX Set to more reasonable value after testing/debugging.
-	scanInterval = time.Minute * 10
+	scanInterval = time.Hour * 4
 )
 
 type scanTarget struct {
