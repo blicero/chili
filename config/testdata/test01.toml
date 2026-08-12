@@ -1,0 +1,26 @@
+# Time-stamp: <2026-08-12 12:56:56 krylon>
+
+[Global]
+Debug = true
+
+[Web]
+Address = "[::1]:4242"
+
+[Ping]
+Count = 13
+Timeout = 23
+Interval = 3.141592
+
+[Scan]
+Interval = 14400
+
+[Loglevel]
+Common = "DEBUG"
+Database = "DEBUG"
+DBPool = "DEBUG"
+Ping = "DEBUG"
+Probe = "DEBUG"
+Scanner = "DEBUG"
+Scheduler = "DEBUG"
+Nexus = "DEBUG"
+Web = "DEBUG"
