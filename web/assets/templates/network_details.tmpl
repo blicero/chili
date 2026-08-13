@@ -1,6 +1,6 @@
 {{ define "network_details" }}
 {{/* Created on 12. 08. 2026 */}}
-{{/* Time-stamp: <2026-08-12 10:12:48 krylon> */}}
+{{/* Time-stamp: <2026-08-13 12:02:11 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -9,6 +9,58 @@
     {{ template "intro" . }}
 
     <div class="container content">
+      <div class="row">
+        <table class="table caption-top" id="net_form" hidden="true">
+          <caption>Add Network</caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>
+                <input
+                  type="text"
+                  class="net_form"
+                  name="name"
+                  id="net_name"
+                  value="{{ .Network.Name }}" />
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  class="net_form"
+                  name="addr"
+                  value="{{ .Network.Addr }}"
+                  id="net_addr" />
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <button
+                  class="btn btn-danger"
+                  onclick="net_form_reset();">
+                  Cancel
+                </button>
+              </td>
+              <td>
+                <button
+                  class="btn btn-success"
+                  onclick="net_save();">
+                  OK
+                </button>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
       <div class="row">
         <table class="caption-top">
           <caption>Network {{ .Network.Name }}</caption>
@@ -29,7 +81,11 @@
               <td>{{ fmt_date .Network.Added }}</td>
               <td>{{ fmt_time_minute .Network.LastScan }}</td>
               <td>
-                Edit
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="net_edit_begin();">
+                  Edit
+                </button>
               </td>
             </tr>
           </tbody>

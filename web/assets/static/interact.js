@@ -1,4 +1,4 @@
-// Time-stamp: <2026-08-11 16:39:04 krylon>
+// Time-stamp: <2026-08-13 12:05:55 krylon>
 // -*- mode: javascript; coding: utf-8; -*-
 // Copyright 2015-2020 Benjamin Walkenhorst <krylon@gmx.net>
 //
@@ -237,10 +237,16 @@ const formatters = {
     "disk": fmtBytes,
 }
 
-function net_form_reset() {
-    $(".net_form").each(() => {
-        $(this).text("")
-    })
+function net_form_reset(hide_form=true) {
+    const input_name = $("#net_name")[0]
+    const input_addr = $("#net_addr")[0]
+
+    input_name.value = ""
+    input_addr.value = ""
+
+    if (hide_form) {
+        $("#net_form")[0].hidden = true
+    }
 } // function net_form_reset()
 
 function net_form_submit() {
@@ -272,4 +278,14 @@ function net_form_submit() {
         'json').fail((xhr, txt, err) => {
             console.error(txt, err)
         })
-}
+} // function net_form_submit()
+
+function net_edit_begin() {
+    $("#net_form")[0].hidden = false
+} // function net_edit_begin()
+
+function net_save() {
+    const msg = "net_save() - IMPLEMENTME"
+    msg_add(msg, 1)
+    console.log(msg)
+} // function net_save()
