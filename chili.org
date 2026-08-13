@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-08-13 10:37:18 krylon>
+# Time-stamp: <2026-08-13 11:14:50 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [29/33]
+* Chili [31/34]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-08-13 Do 10:37]
+   #+CAPTION: Clock summary at [2026-08-13 Do 11:14]
    | Headline                                         | Time      |           |       |      |      |
    |--------------------------------------------------+-----------+-----------+-------+------+------|
-   | *Total time*                                     | *3d 4:01* |           |       |      |      |
+   | *Total time*                                     | *3d 4:31* |           |       |      |      |
    |--------------------------------------------------+-----------+-----------+-------+------+------|
-   | *Chili [29/33]*                                  | *3d 4:01* |           |       |      |      |
-   | \_  /Components [28/32]/                         |           | /3d 0:53/ |       |      |      |
+   | *Chili [31/34]*                                  | *3d 4:31* |           |       |      |      |
+   | \_  /Components [30/33]/                         |           | /3d 1:23/ |       |      |      |
    | \_    Data model [0/0]                           |           |           |  8:50 |      |      |
    | \_    Database [1/1]                             |           |           |  7:34 |      |      |
    | \_      De-serialize attributes                  |           |           |       | 0:18 |      |
@@ -55,12 +55,13 @@
    | \_      Menu for Devices                         |           |           |       | 2:01 |      |
    | \_      Render attributes properly               |           |           |       | 0:31 |      |
    | \_      Trigger Probe run                        |           |           |       | 0:37 |      |
-   | \_    Main [1/1]                                 |           |           |  0:47 |      |      |
+   | \_    Main [2/2]                                 |           |           |  1:17 |      |      |
+   | \_      Integrate Configuration parser           |           |           |       | 0:30 |      |
    | \_      Profiling                                |           |           |       | 0:44 |      |
    | \_  /Bugs [0/0]/                                 |           | /3:08/    |       |      |      |
    | \_    The little probe that could... get...      |           |           |  3:08 |      |      |
    #+END:
-** Components [28/32]
+** Components [30/33]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -138,7 +139,8 @@
      :LOGBOOK:
      CLOCK: [2026-07-20 Mo 10:49]--[2026-07-20 Mo 11:22] =>  0:33
      :END:
-*** TODO Configuration [0/0]
+*** DONE Configuration [0/0]
+    CLOSED: [2026-08-13 Do 10:37]
     :LOGBOOK:
     CLOCK: [2026-08-13 Do 10:24]--[2026-08-13 Do 10:37] =>  0:13
     CLOCK: [2026-08-12 Mi 11:57]--[2026-08-12 Mi 13:35] =>  1:38
@@ -369,7 +371,7 @@
      :LOGBOOK:
      CLOCK: [2026-07-31 Fr 12:40]--[2026-07-31 Fr 13:17] =>  0:37
      :END:
-*** Main [1/1]
+*** Main [2/2]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -378,6 +380,11 @@
     CLOCK: [2026-01-07 Mi 15:50]--[2026-01-07 Mi 15:53] =>  0:03
     :END:
     The entry point and user-facing part of the application
+**** DONE Integrate Configuration parser
+     CLOSED: [2026-08-13 Do 11:14]
+     :LOGBOOK:
+     CLOCK: [2026-08-13 Do 10:44]--[2026-08-13 Do 11:14] =>  0:30
+     :END:
 **** DONE Profiling
      CLOSED: [2026-07-10 Fr 10:48]
      :LOGBOOK:
