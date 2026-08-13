@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-08-12 13:35:53 krylon>
+# Time-stamp: <2026-08-13 10:37:18 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [29/32]
+* Chili [29/33]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-08-12 Mi 13:35]
+   #+CAPTION: Clock summary at [2026-08-13 Do 10:37]
    | Headline                                         | Time      |           |       |      |      |
    |--------------------------------------------------+-----------+-----------+-------+------+------|
-   | *Total time*                                     | *3d 3:48* |           |       |      |      |
+   | *Total time*                                     | *3d 4:01* |           |       |      |      |
    |--------------------------------------------------+-----------+-----------+-------+------+------|
-   | *Chili [29/32]*                                  | *3d 3:48* |           |       |      |      |
-   | \_  /Components [28/31]/                         |           | /3d 0:40/ |       |      |      |
+   | *Chili [29/33]*                                  | *3d 4:01* |           |       |      |      |
+   | \_  /Components [28/32]/                         |           | /3d 0:53/ |       |      |      |
    | \_    Data model [0/0]                           |           |           |  8:50 |      |      |
    | \_    Database [1/1]                             |           |           |  7:34 |      |      |
    | \_      De-serialize attributes                  |           |           |       | 0:18 |      |
@@ -30,7 +30,7 @@
    | \_    Network Scanner [2/2]                      |           |           | 13:05 |      |      |
    | \_      Set LastScan timestamp on Network        |           |           |       | 0:51 |      |
    | \_      Avoid adding devices we already know     |           |           |       | 0:33 |      |
-   | \_    Configuration [0/0]                        |           |           |  1:38 |      |      |
+   | \_    Configuration [0/0]                        |           |           |  1:51 |      |      |
    | \_    Host Probe [17/18]                         |           |           | 23:22 |      |      |
    | \_      Make use of sudo and alternatives...     |           |           |       | 0:37 |      |
    | \_      Consider device class                    |           |           |       | 0:20 |      |
@@ -60,7 +60,7 @@
    | \_  /Bugs [0/0]/                                 |           | /3:08/    |       |      |      |
    | \_    The little probe that could... get...      |           |           |  3:08 |      |      |
    #+END:
-** Components [28/31]
+** Components [28/32]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -140,6 +140,7 @@
      :END:
 *** TODO Configuration [0/0]
     :LOGBOOK:
+    CLOCK: [2026-08-13 Do 10:24]--[2026-08-13 Do 10:37] =>  0:13
     CLOCK: [2026-08-12 Mi 11:57]--[2026-08-12 Mi 13:35] =>  1:38
     :END:
     At least for configuring the log levels, that would be great.
