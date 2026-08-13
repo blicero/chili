@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-03 11:13:36 krylon>
+// Time-stamp: <2026-08-13 11:02:01 krylon>
 
 package main
 
@@ -18,10 +18,12 @@ import (
 	"time"
 
 	"github.com/blicero/chili/common"
+	"github.com/blicero/chili/config"
 	"github.com/blicero/chili/logdomain"
 	"github.com/blicero/chili/probe"
 	"github.com/blicero/chili/scanner"
 	"github.com/blicero/chili/web"
+	"github.com/hashicorp/logutils"
 )
 
 func main() {
@@ -39,6 +41,8 @@ func main() {
 		srv                           *web.Server
 		scanWorkerCnt, probeWorkerCnt int
 		profOut, username, webAddr    string
+		cfgPath                       string
+		cfg                           *config.Config
 		ticker                        *time.Ticker
 		sigQ                          chan os.Signal
 		pubKeys                       []string
@@ -67,8 +71,14 @@ func main() {
 	flag.StringVar(
 		&webAddr,
 		"addr",
-		fmt.Sprintf("[::1]:%d", common.DefaultPort),
+		"",
 		"the addr the web server listens on")
+	flag.StringVar(
+		&cfgPath,
+		"cfg",
+		common.CfgPath,
+		"the path to the configuration file",
+	)
 
 	flag.Parse()
 
@@ -99,6 +109,34 @@ func main() {
 
 		defer pprof.StopCPUProfile()
 	}
+
+	if cfg, err = config.Read(cfgPath); err != nil {
+		fmt.Fprintf(
+			os.Stderr,
+			"Failed to read configuration file %s: %s\n",
+			cfgPath,
+			err.Error(),
+		)
+		os.Exit(1)
+	} else if webAddr == "" {
+		webAddr = cfg.Web.Address
+	}
+
+	common.PingCount = int(cfg.Ping.Count)
+	common.PingTimeout = time.Second * time.Duration(cfg.Ping.Timeout)
+	common.PingInterval = time.Millisecond * time.Duration(cfg.Ping.Interval*100)
+
+	scanner.ScanInterval = time.Second * time.Duration(cfg.Scan.Interval)
+
+	common.PackageLevels[logdomain.Common] = logutils.LogLevel(cfg.Loglevel.Common)
+	common.PackageLevels[logdomain.Database] = logutils.LogLevel(cfg.Loglevel.Database)
+	common.PackageLevels[logdomain.DBPool] = logutils.LogLevel(cfg.Loglevel.DBPool)
+	common.PackageLevels[logdomain.Ping] = logutils.LogLevel(cfg.Loglevel.Ping)
+	common.PackageLevels[logdomain.Probe] = logutils.LogLevel(cfg.Loglevel.Probe)
+	common.PackageLevels[logdomain.Scanner] = logutils.LogLevel(cfg.Loglevel.Scanner)
+	common.PackageLevels[logdomain.Scheduler] = logutils.LogLevel(cfg.Loglevel.Scheduler)
+	common.PackageLevels[logdomain.Nexus] = logutils.LogLevel(cfg.Loglevel.Nexus)
+	common.PackageLevels[logdomain.Web] = logutils.LogLevel(cfg.Loglevel.Web)
 
 	pubKeys = []string{filepath.Join(os.Getenv("HOME"), ".ssh")}
 
