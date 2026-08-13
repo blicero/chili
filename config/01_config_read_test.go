@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 15. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-12 13:19:09 krylon>
+// Time-stamp: <2026-08-13 10:33:40 krylon>
 
 package config
 
@@ -53,7 +53,7 @@ func TestReadNoConfig(t *testing.T) {
 	} else if cfg == nil {
 		t.Fatal("Read() did not return a Config object")
 	} else if !cfg.Equal(&expect) {
-		t.Fatalf("Read() returned unexpected config:\nExpected: %s\nGot: %s\n",
+		t.Fatalf("Read() returned unexpected fresh config:\nExpected: %s\nGot: %s\n",
 			spew.Sdump(&expect),
 			spew.Sdump(cfg))
 	}

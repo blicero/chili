@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 12. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-12 12:57:20 krylon>
+// Time-stamp: <2026-08-13 10:33:46 krylon>
 
 // Package config deals with the configuration file
 package config
@@ -176,17 +176,17 @@ type Config struct {
 func (cfg *Config) Equal(other any) bool {
 	switch c2 := other.(type) {
 	case *Config:
-		return cfg.Global.Equal(c2.Global) &&
-			cfg.Web.Equal(c2.Web) &&
-			cfg.Ping.Equal(c2.Ping) &&
-			cfg.Scan.Equal(c2.Scan) &&
-			cfg.Loglevel.Equal(c2.Loglevel)
+		return cfg.Global.Equal(&c2.Global) &&
+			cfg.Web.Equal(&c2.Web) &&
+			cfg.Ping.Equal(&c2.Ping) &&
+			cfg.Scan.Equal(&c2.Scan) &&
+			cfg.Loglevel.Equal(&c2.Loglevel)
 	case Config:
-		return cfg.Global.Equal(c2.Global) &&
-			cfg.Web.Equal(c2.Web) &&
-			cfg.Ping.Equal(c2.Ping) &&
-			cfg.Scan.Equal(c2.Scan) &&
-			cfg.Loglevel.Equal(c2.Loglevel)
+		return cfg.Global.Equal(&c2.Global) &&
+			cfg.Web.Equal(&c2.Web) &&
+			cfg.Ping.Equal(&c2.Ping) &&
+			cfg.Scan.Equal(&c2.Scan) &&
+			cfg.Loglevel.Equal(&c2.Loglevel)
 	default:
 		return false
 	}
