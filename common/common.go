@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 23. 07. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-08-11 12:48:14 krylon>
+// Time-stamp: <2026-08-13 10:51:22 krylon>
 
 // Package common contains definitions used throughout the application
 package common
@@ -36,7 +36,6 @@ import (
 const (
 	AppName                  = "Chili"
 	Version                  = "0.5.0"
-	Debug                    = true
 	DefaultPort              = 4001
 	TimestampFormatMinute    = "2006-01-02 15:04"
 	TimestampFormat          = "2006-01-02 15:04:05"
@@ -47,10 +46,18 @@ const (
 	BufSize                  = 65536
 	LiveTimeout              = time.Minute * 5
 	ActiveTimeout            = time.Second * 2
-	PingCount                = 4
-	PingTimeout              = time.Second * 30
-	PingInterval             = time.Millisecond * 250
 	DefaultProbeInterval     = time.Minute * 5
+)
+
+// Debug controls additional log messages and sanity checks.
+// PingCount is the number of pings sent to a Device to see if it is online.
+// PingTimeout is the timeout to wait before a ping is considered unanswered.
+// PingInterval is the delay between pings.
+var (
+	Debug        bool = true
+	PingCount         = 4
+	PingTimeout       = time.Second * 30
+	PingInterval      = time.Millisecond * 250
 )
 
 // LogLevels are the names of the log levels supported by the logger.
