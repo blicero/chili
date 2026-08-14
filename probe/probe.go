@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-14 10:12:41 krylon>
+// Time-stamp: <2026-08-14 11:33:02 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -11,6 +11,7 @@ package probe
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
@@ -219,6 +220,7 @@ func (p *Probe) mainLoop() {
 				go p.probeDevices()
 			}
 		case cmd := <-p.CmdQ:
+			p.log.Printf("[DEBUG] Received command %s\n", cmd)
 			switch cmd {
 			case control.Stop:
 				p.Stop()
@@ -230,8 +232,8 @@ func (p *Probe) mainLoop() {
 } // func (p *Probe) mainLoop()
 
 func (p *Probe) probeDevices() {
-	p.log.Println("[TRACE] Probing devices")
-	defer p.log.Println("[TRACE] Done probing")
+	p.log.Println("[INFO] Probing devices")
+	defer p.log.Println("[INFO] Done probing")
 
 	if swapped := p.scanRunning.CompareAndSwap(false, true); !swapped {
 		p.log.Println("[ERROR] It appears a probe is already running. Bye.")
@@ -259,7 +261,7 @@ func (p *Probe) probeDevices() {
 		return
 	}
 
-	p.log.Printf("[TRACE] About to probe %d Devices using %d workers\n",
+	p.log.Printf("[INFO] About to probe %d Devices using %d workers\n",
 		len(devices),
 		p.parCnt)
 
@@ -269,23 +271,29 @@ func (p *Probe) probeDevices() {
 		wg.Go(func() { p.probeWorker(i+1, devQ) })
 	}
 
-	for _, dev := range devices {
+	var indices = rand.Perm(len(devices))
+
+	for _, i := range indices {
+		dev := devices[i]
 		switch dev.Class {
 		case device.Entertainment, device.Router:
-			p.log.Printf("[TRACE] Won't probe %s, it is a %s\n",
-				dev.Name,
-				dev.Class)
+			// p.log.Printf("[TRACE] Won't probe %s, it is a %s\n",
+			// 	dev.Name,
+			// 	dev.Class)
 			continue
 		}
-		p.log.Printf("[TRACE] Enqueueing %s for a Probing\n", dev.Name)
+
+	DEVICE:
 		select {
 		case <-ticker.C:
 			if !p.active.Load() || !p.scanRunning.Load() {
-				p.log.Printf("[TRACE] Probe Feeder quitting prematurely\n")
-				close(devQ) // nolint: errcheck
+				p.log.Printf("[INFO] Probe Feeder quitting prematurely\n")
+				close(devQ)
 				return
 			}
+			goto DEVICE
 		case devQ <- dev:
+			p.log.Printf("[TRACE] Enqueueing %s for a Probing\n", dev.Name)
 			p.pending.Add(1)
 		}
 	}
@@ -301,21 +309,21 @@ func (p *Probe) probeWorker(id int, devQ <-chan *model.Device) {
 	defer p.log.Printf("[TRACE] Probe worker %02d quitting", id)
 
 	for dev := range devQ {
-		p.pending.Add(-1)
+		// p.pending.Add(-1)
 		p.probeOneDevice(id, dev)
 	}
 } // func (p *Probe) probeWorker(id int, devQ <-chan *model.Device)
 
 func (p *Probe) probeOneDevice(id int, dev *model.Device) {
-	p.log.Printf("[TRACE] Probe#%d querying %s (%s)\n",
+	p.log.Printf("[INFO] Probe#%d querying %s (%s)\n",
 		id,
 		dev.Name,
 		dev.Addr)
-	defer p.log.Printf("[TRACE] Probe#%d finished probing %s (%s)\n",
+	defer p.log.Printf("[INFO] Probe#%d finished probing %s (%s)\n",
 		id,
 		dev.Name,
 		dev.Addr)
-	// defer p.pending.Add(-1)
+	defer p.pending.Add(-1)
 
 	var (
 		err    error
@@ -449,6 +457,7 @@ INSTALLED:
 	} else if len(packages) == 0 {
 		p.log.Printf("[TRACE] Did not find any installed packages on %s\n",
 			dev.Name)
+		goto UPTIME
 	}
 
 	attr = &model.Attribute{
@@ -600,8 +609,7 @@ DMI:
 		// p.log.Printf("[DEBUG] %s is a %s, so no DMI\n",
 		// 	dev.Name,
 		// 	dev.Class)
-		// goto END
-		return
+		goto END
 	}
 
 	p.log.Printf("[TRACE] Probe#%d about to query DMI on %s\n",
