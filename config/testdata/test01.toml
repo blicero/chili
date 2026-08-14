@@ -1,4 +1,4 @@
-# Time-stamp: <2026-08-13 10:33:57 krylon>
+# Time-stamp: <2026-08-14 10:41:16 krylon>
 
 [Global]
 Debug = true
@@ -13,6 +13,15 @@ Interval = 3.141592
 
 [Scan]
 Interval = 14400
+
+[Probe]
+Updates = 3600
+DiskSpace = 900
+Uptime = 60
+Packages = 86400
+SNMP = 600
+Services = 600
+DMI = 604800
 
 [Loglevel]
 Common = "DEBUG"

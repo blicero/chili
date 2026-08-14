@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-13 11:02:01 krylon>
+// Time-stamp: <2026-08-14 10:46:39 krylon>
 
 package main
 
@@ -20,6 +20,7 @@ import (
 	"github.com/blicero/chili/common"
 	"github.com/blicero/chili/config"
 	"github.com/blicero/chili/logdomain"
+	"github.com/blicero/chili/model/attribute"
 	"github.com/blicero/chili/probe"
 	"github.com/blicero/chili/scanner"
 	"github.com/blicero/chili/web"
@@ -138,6 +139,13 @@ func main() {
 	common.PackageLevels[logdomain.Nexus] = logutils.LogLevel(cfg.Loglevel.Nexus)
 	common.PackageLevels[logdomain.Web] = logutils.LogLevel(cfg.Loglevel.Web)
 
+	probe.Schedule[attribute.Updates] = seconds(cfg.Probe.Updates)
+	probe.Schedule[attribute.DiskSpace] = seconds(cfg.Probe.DiskSpace)
+	probe.Schedule[attribute.Packages] = seconds(cfg.Probe.Packages)
+	probe.Schedule[attribute.SNMP] = seconds(cfg.Probe.SNMP)
+	probe.Schedule[attribute.Services] = seconds(cfg.Probe.Services)
+	probe.Schedule[attribute.DMI] = seconds(cfg.Probe.DMI)
+
 	pubKeys = []string{filepath.Join(os.Getenv("HOME"), ".ssh")}
 
 	common.PackageLevels[logdomain.Scanner] = "INFO"
@@ -188,6 +196,10 @@ func main() {
 		}
 	}
 } // func main()
+
+func seconds(n int64) time.Duration {
+	return time.Second * time.Duration(n)
+}
 
 // func findKeyFiles() ([]string, error) {
 // 	var (

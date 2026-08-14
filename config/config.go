@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 12. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-13 10:33:46 krylon>
+// Time-stamp: <2026-08-14 10:42:59 krylon>
 
 // Package config deals with the configuration file
 package config
@@ -30,6 +30,15 @@ Interval = 0.25
 
 [Scan]
 Interval = 14400
+
+[Probe]
+Updates = 3600
+DiskSpace = 900
+Uptime = 60
+Packages = 86400
+SNMP = 600
+Services = 600
+DMI = 604800
 
 [Loglevel]
 Common = "DEBUG"
@@ -126,6 +135,38 @@ func (s *Scan) Equal(other any) bool {
 	return s.Interval == t.Interval
 } // func (s *Scan) Equal(other any) bool
 
+// Probe defines the settings for the Device Probe
+type Probe struct {
+	Updates   int64
+	DiskSpace int64
+	Uptime    int64
+	Packages  int64
+	SNMP      int64
+	Services  int64
+	DMI       int64
+}
+
+// Equal returns true if the argument is of the same type as the receiver
+// and if all of its fields have the same values.
+func (p *Probe) Equal(other any) bool {
+	var (
+		p2 *Probe
+		ok bool
+	)
+
+	if p2, ok = other.(*Probe); !ok {
+		return false
+	}
+
+	return (p.Updates == p2.Updates) &&
+		(p.DiskSpace == p2.DiskSpace) &&
+		(p.Uptime == p2.Uptime) &&
+		(p.Packages == p2.Packages) &&
+		(p.SNMP == p2.SNMP) &&
+		(p.Services == p2.Services) &&
+		(p.DMI == p2.DMI)
+} // func (p *Probe) Equal(other any) bool
+
 // Loglevel configures the minimum log level for the components of
 // the application.
 type Loglevel struct {
@@ -168,6 +209,7 @@ type Config struct {
 	Web      Web
 	Ping     Ping
 	Scan     Scan
+	Probe    Probe
 	Loglevel Loglevel
 }
 
@@ -180,12 +222,14 @@ func (cfg *Config) Equal(other any) bool {
 			cfg.Web.Equal(&c2.Web) &&
 			cfg.Ping.Equal(&c2.Ping) &&
 			cfg.Scan.Equal(&c2.Scan) &&
+			cfg.Probe.Equal(&c2.Probe) &&
 			cfg.Loglevel.Equal(&c2.Loglevel)
 	case Config:
 		return cfg.Global.Equal(&c2.Global) &&
 			cfg.Web.Equal(&c2.Web) &&
 			cfg.Ping.Equal(&c2.Ping) &&
 			cfg.Scan.Equal(&c2.Scan) &&
+			cfg.Probe.Equal(&c2.Probe) &&
 			cfg.Loglevel.Equal(&c2.Loglevel)
 	default:
 		return false

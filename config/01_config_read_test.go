@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 15. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-13 10:33:40 krylon>
+// Time-stamp: <2026-08-14 10:42:32 krylon>
 
 package config
 
@@ -31,6 +31,15 @@ func TestReadNoConfig(t *testing.T) {
 			},
 			Scan: Scan{
 				Interval: 14400,
+			},
+			Probe: Probe{
+				Updates:   3600,
+				DiskSpace: 900,
+				Uptime:    60,
+				Packages:  86400,
+				SNMP:      600,
+				Services:  600,
+				DMI:       604800,
 			},
 			Loglevel: Loglevel{
 				Common:    "DEBUG",
@@ -78,6 +87,15 @@ func TestReadExampleConfig(t *testing.T) {
 			},
 			Scan: Scan{
 				Interval: 14400,
+			},
+			Probe: Probe{
+				Updates:   3600,
+				DiskSpace: 900,
+				Uptime:    60,
+				Packages:  86400,
+				SNMP:      600,
+				Services:  600,
+				DMI:       604800,
 			},
 			Loglevel: Loglevel{
 				Common:    "DEBUG",
