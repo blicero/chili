@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-08-13 13:03:54 krylon>
+# Time-stamp: <2026-08-14 10:14:59 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,26 +8,27 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [33/34]
+* Chili [34/35]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-08-13 Do 13:03]
+   #+CAPTION: Clock summary at [2026-08-14 Fr 10:14]
    | Headline                                         | Time      |           |         |      |      |
    |--------------------------------------------------+-----------+-----------+---------+------+------|
-   | *Total time*                                     | *3d 5:57* |           |         |      |      |
+   | *Total time*                                     | *3d 6:03* |           |         |      |      |
    |--------------------------------------------------+-----------+-----------+---------+------+------|
-   | *Chili [33/34]*                                  | *3d 5:57* |           |         |      |      |
-   | \_  /Components [32/33]/                         |           | /3d 2:49/ |         |      |      |
+   | *Chili [34/35]*                                  | *3d 6:03* |           |         |      |      |
+   | \_  /Components [33/34]/                         |           | /3d 2:55/ |         |      |      |
    | \_    Data model [0/0]                           |           |           |    8:50 |      |      |
    | \_    Database [1/1]                             |           |           |    7:34 |      |      |
    | \_      De-serialize attributes                  |           |           |         | 0:18 |      |
    | \_      Pool                                     |           |           |         | 0:02 |      |
    | \_      Testing                                  |           |           |         | 0:44 |      |
-   | \_    Network Scanner [2/2]                      |           |           |   13:05 |      |      |
+   | \_    Network Scanner [3/3]                      |           |           |   13:11 |      |      |
+   | \_      Don't log hosts unless they are new      |           |           |         | 0:06 |      |
    | \_      Set LastScan timestamp on Network        |           |           |         | 0:51 |      |
    | \_      Avoid adding devices we already know     |           |           |         | 0:33 |      |
    | \_    Configuration [0/0]                        |           |           |    1:51 |      |      |
@@ -62,7 +63,7 @@
    | \_  /Bugs [0/0]/                                 |           | /3:08/    |         |      |      |
    | \_    The little probe that could... get...      |           |           |    3:08 |      |      |
    #+END:
-** Components [32/33]
+** Components [33/34]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -118,7 +119,7 @@
      CLOCK: [2026-07-08 Mi 12:38]--[2026-07-08 Mi 13:12] =>  0:34
      CLOCK: [2026-01-09 Fr 15:40]--[2026-01-09 Fr 15:50] =>  0:10
      :END:
-*** Network Scanner [2/2]
+*** Network Scanner [3/3]
     :LOGBOOK:
     CLOCK: [2026-07-10 Fr 10:34]--[2026-07-10 Fr 10:48] =>  0:14
     CLOCK: [2026-07-09 Do 10:19]--[2026-07-09 Do 13:34] =>  3:15
@@ -130,6 +131,11 @@
     CLOCK: [2026-01-09 Fr 18:36]--[2026-01-09 Fr 18:45] =>  0:09
     CLOCK: [2026-01-09 Fr 16:14]--[2026-01-09 Fr 18:28] =>  2:14
     :END:
+**** DONE Don't log hosts unless they are new
+     CLOSED: [2026-08-14 Fr 10:14]
+     :LOGBOOK:
+     CLOCK: [2026-08-14 Fr 10:08]--[2026-08-14 Fr 10:14] =>  0:06
+     :END:
 **** DONE Set LastScan timestamp on Network
      CLOSED: [2026-08-12 Mi 11:45]
      :LOGBOOK:
