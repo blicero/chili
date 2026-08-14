@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-11 12:45:56 krylon>
+// Time-stamp: <2026-08-14 10:12:41 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -597,10 +597,11 @@ DMI:
 
 	switch dev.Class {
 	case device.VM, device.Jail, device.Router, device.Entertainment:
-		p.log.Printf("[DEBUG] %s is a %s, so no DMI\n",
-			dev.Name,
-			dev.Class)
-		goto END
+		// p.log.Printf("[DEBUG] %s is a %s, so no DMI\n",
+		// 	dev.Name,
+		// 	dev.Class)
+		// goto END
+		return
 	}
 
 	p.log.Printf("[TRACE] Probe#%d about to query DMI on %s\n",

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-13 11:02:42 krylon>
+// Time-stamp: <2026-08-14 10:09:47 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -265,7 +265,7 @@ func (sc *Scanner) scanAddr(wid int, target *scanTarget, devQ chan<- *model.Devi
 		return
 	}
 
-	sc.log.Printf("[INFO] Discovered one Device at %s\n", target.addr)
+	// sc.log.Printf("[INFO] Discovered one Device at %s\n", target.addr)
 
 	var (
 		name  string
@@ -274,9 +274,9 @@ func (sc *Scanner) scanAddr(wid int, target *scanTarget, devQ chan<- *model.Devi
 	)
 
 	if dev = sc.knownDevice(target.addr.String()); dev != nil {
-		sc.log.Printf("[TRACE] Device %s is already known as %s\n",
-			target.addr,
-			dev.Name)
+		// sc.log.Printf("[TRACE] Device %s is already known as %s\n",
+		// 	target.addr,
+		// 	dev.Name)
 		return
 	} else if names, err = net.LookupAddr(target.addr.String()); err != nil {
 		sc.log.Printf("[ERROR] sc#%03d Could not resolve address %s to name: %s\n",
