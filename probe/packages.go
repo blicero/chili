@@ -2,15 +2,18 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-01 06:05:57 krylon>
+// Time-stamp: <2026-10-26 19:38:10 krylon>
 
 package probe
 
 import (
 	"regexp"
 	"strings"
+	"time"
 
+	"github.com/blicero/chili/database"
 	"github.com/blicero/chili/model"
+	"github.com/blicero/chili/model/attribute"
 )
 
 var (
@@ -294,3 +297,37 @@ func (p *Probe) QueryPackages(d *model.Device, port int) ([]string, error) {
 		return nil, nil
 	}
 } // func (p *Probe) QueryPackages(d *model.Device, port int) ([]string, error)
+
+func (p *Probe) queryInstalled(d *model.Device, port int) error {
+	var (
+		err  error
+		db   *database.Database
+		attr *model.Attribute
+		pkg  []string
+	)
+
+	if pkg, err = p.QueryPackages(d, port); err != nil {
+		p.log.Printf("[ERROR] Failed to query packages on %s: %s\n",
+			d.Name,
+			err.Error())
+		return err
+	}
+
+	attr = &model.Attribute{
+		DevID:     d.ID,
+		Timestamp: time.Now().Truncate(time.Second),
+		Type:      attribute.Updates,
+		Value:     model.Packages(pkg),
+	}
+
+	db = p.pool.Get()
+	defer p.pool.Put(db)
+
+	if err = db.AttributeAdd(attr); err != nil {
+		p.log.Printf("[ERROR] Failed to add list of installed packages to database: %s\n",
+			err.Error())
+		return err
+	}
+
+	return nil
+} // func (p *Probe) queryInstalled(d *model.Device, port int) error
