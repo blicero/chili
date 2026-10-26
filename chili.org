@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-10-26 18:09:16 krylon>
+# Time-stamp: <2026-10-26 21:04:19 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -15,13 +15,13 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-10-26 Mo 18:09]
+   #+CAPTION: Clock summary at [2026-10-26 Mo 21:04]
    | Headline                                         | Time      |           |         |      |      |
    |--------------------------------------------------+-----------+-----------+---------+------+------|
-   | *Total time*                                     | *3d 6:33* |           |         |      |      |
+   | *Total time*                                     | *3d 9:29* |           |         |      |      |
    |--------------------------------------------------+-----------+-----------+---------+------+------|
-   | *Chili [35/36]*                                  | *3d 6:33* |           |         |      |      |
-   | \_  /Components [34/35]/                         |           | /3d 3:25/ |         |      |      |
+   | *Chili [35/36]*                                  | *3d 9:29* |           |         |      |      |
+   | \_  /Components [34/35]/                         |           | /3d 6:21/ |         |      |      |
    | \_    Data model [0/0]                           |           |           |    8:50 |      |      |
    | \_    Database [1/1]                             |           |           |    7:34 |      |      |
    | \_      De-serialize attributes                  |           |           |         | 0:18 |      |
@@ -32,7 +32,8 @@
    | \_      Set LastScan timestamp on Network        |           |           |         | 0:51 |      |
    | \_      Avoid adding devices we already know     |           |           |         | 0:33 |      |
    | \_    Configuration [0/0]                        |           |           |    1:51 |      |      |
-   | \_    Host Probe [19/20]                         |           |           | 1d 0:47 |      |      |
+   | \_    Host Probe [19/20]                         |           |           | 1d 3:43 |      |      |
+   | \_      Break up host probe into multiple...     |           |           |         | 2:56 |      |
    | \_      Make intervals for different probes...   |           |           |         | 0:16 |      |
    | \_      Determine Device Class                   |           |           |         | 0:55 |      |
    | \_      Make use of sudo and alternatives...     |           |           |         | 0:37 |      |
@@ -170,7 +171,7 @@
     :END:
 **** TODO Break up host probe into multiple functions
      :LOGBOOK:
-     CLOCK: [2026-10-26 Mo 18:08]
+     CLOCK: [2026-10-26 Mo 18:08]--[2026-10-26 Mo 21:04] =>  2:56
      :END:
      Right now, the host probe is one giant method (~330 lines), I should
      really split it up into several smaller methods.
