@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-26 20:54:06 krylon>
+// Time-stamp: <2026-10-27 09:01:12 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -383,13 +383,9 @@ OPENDB:
 		knownAttr  []*model.Attribute
 		lastProbed map[attribute.ID]time.Time
 		now        = time.Now().Truncate(time.Second)
-		updates    []string
-		attr       *model.Attribute
-		svc        *model.Services
-		dmi        *model.DMI
 	)
 
-	if knownAttr, err = db.AttributeGetMostRecent(dev); err != nil {
+	if knownAttr, err = p.getMostRecentAttributes(id, dev); err != nil {
 		p.log.Printf("[ERROR] Failed to load attributes for %s: %s\n",
 			dev.Name,
 			err.Error())
@@ -407,17 +403,9 @@ OPENDB:
 	//       each time.
 
 	if stamp, ok := lastProbed[attribute.Updates]; !ok || stamp.Add(Schedule[attribute.Updates]).Before(now) {
-		p.log.Printf("[TRACE] Probe#%d about to query updates on %s\n",
-			id,
-			dev.Name)
-
-		if updates, err = p.QueryUpdates(dev, portSSH); err != nil {
-			p.log.Printf("[ERROR] Querying %s for updates failed: %s\n",
-				dev.Name,
-				err.Error())
-		} else if err = p.attributeAdd(db, dev, attribute.Updates, model.Updates(updates)); err != nil {
-			p.log.Printf("[ERROR] Cannot add %s of %s to Database: %s\n",
-				attribute.Updates,
+		if err = p.qUpdate(id, dev, portSSH); err != nil {
+			p.log.Printf("[ERROR] Probe#%d failed to query updates on %s: %s\n",
+				id,
 				dev.Name,
 				err.Error())
 		}
@@ -427,9 +415,9 @@ OPENDB:
 	//       At first I thought I had gotten too clever with concurrency, but
 	//       it appears the problem is a timeout?
 	if stamp, ok := lastProbed[attribute.Packages]; !ok || stamp.Add(Schedule[attribute.Packages]).Before(now) {
-		//goto UPTIME
-		if err = p.queryInstalled(dev, portSSH); err != nil {
-			p.log.Printf("[ERROR] Failed to query packages on %s: %s\n",
+		if err = p.queryInstalled(id, dev, portSSH); err != nil {
+			p.log.Printf("[ERROR] Probe#%d failed to query packages on %s: %s\n",
+				id,
 				dev.Name,
 				err.Error())
 		}
@@ -461,78 +449,24 @@ OPENDB:
 		}
 	}
 
-	if stamp, ok := lastProbed[attribute.Services]; ok && stamp.Add(Schedule[attribute.Services]).After(now) {
-		goto DMI
+	if stamp, ok := lastProbed[attribute.Services]; !ok || stamp.Add(Schedule[attribute.Services]).Before(now) {
+		if err = p.qSvc(id, dev, portSSH); err != nil {
+			p.log.Printf("[ERROR] Probe#%d failed to query Services on %s: %s\n",
+				id,
+				dev.Name,
+				err.Error())
+		}
 	}
 
-	p.log.Printf("[TRACE] Probe#%d about to query services on %s\n",
-		id,
-		dev.Name)
-
-	if svc, err = p.QueryServices(dev, portSSH); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to query services on %s: %s\n",
-			id,
-			dev.Name,
-			err.Error())
-		goto DMI
+	if stamp, ok := lastProbed[attribute.DMI]; !ok || stamp.Add(Schedule[attribute.DMI]).Before(now) {
+		if err = p.qDMI(id, dev, portSSH); err != nil {
+			p.log.Printf("[ERROR] Probe#%d failed to query DMI on %s: %s\n",
+				id,
+				dev.Name,
+				err.Error())
+		}
 	}
 
-	attr = &model.Attribute{
-		DevID:     dev.ID,
-		Timestamp: time.Now().Truncate(time.Second),
-		Type:      attribute.Services,
-		Value:     svc,
-	}
-
-	if err = db.AttributeAdd(attr); err != nil {
-		p.log.Printf("[ERROR] Failed to save %s data for %s: %s\n",
-			attr.Type,
-			dev.Name,
-			err.Error())
-	}
-
-DMI:
-	if stamp, ok := lastProbed[attribute.DMI]; ok && stamp.Add(Schedule[attribute.DMI]).After(now) {
-		p.log.Printf("[TRACE] Skipping DMI probe for %s\n",
-			dev.Name)
-		goto END
-	}
-
-	switch dev.Class {
-	case device.VM, device.Jail, device.Router, device.Entertainment:
-		// p.log.Printf("[DEBUG] %s is a %s, so no DMI\n",
-		// 	dev.Name,
-		// 	dev.Class)
-		goto END
-	}
-
-	p.log.Printf("[TRACE] Probe#%d about to query DMI on %s\n",
-		id,
-		dev.Name)
-
-	if dmi, err = p.QueryDMI(dev, portSSH); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to query services on %s: %s\n",
-			id,
-			dev.Name,
-			err.Error())
-		goto END
-	}
-
-	attr = &model.Attribute{
-		DevID:     dev.ID,
-		Timestamp: time.Now().Truncate(time.Second),
-		Type:      attribute.DMI,
-		Value:     dmi,
-	}
-
-	if err = db.AttributeAdd(attr); err != nil {
-		p.log.Printf("[ERROR] Failed to save %s data for %s: %s\n",
-			attr.Type,
-			dev.Name,
-			err.Error())
-	}
-
-END:
 	p.log.Printf("[TRACE] Probe#%d finished probing %s\n",
 		id,
 		dev.Name)
@@ -556,6 +490,27 @@ func (p *Probe) getAllDevices() ([]*model.Device, error) {
 
 	return devs, nil
 } // func (p *Probe) getAllDevices() ([]*model.Device, error)
+
+func (p *Probe) getMostRecentAttributes(id int, dev *model.Device) ([]*model.Attribute, error) {
+	var (
+		err  error
+		db   *database.Database
+		attr []*model.Attribute
+	)
+
+	db = p.pool.Get()
+	defer p.pool.Put(db)
+
+	if attr, err = db.AttributeGetMostRecent(dev); err != nil {
+		p.log.Printf("[ERROR] Probe#%d failed to load attributes for %s: %s\n",
+			id,
+			dev.Name,
+			err.Error())
+		return nil, err
+	}
+
+	return attr, nil
+} // func (p *Probe) getMostRecentAttributes(id int, dev *model.Device) ([]*model.Attribute, error)
 
 func (p *Probe) qUptime(d *model.Device, port int) error {
 	var (
@@ -601,7 +556,7 @@ func (p *Probe) qDiskSpace(id int, d *model.Device, port int) error {
 	)
 
 	if ds, err = p.QueryDiskFree(d, port); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to query Uptime on %s: %s\n",
+		p.log.Printf("[ERROR] Probe#%d failed to query free space on %s: %s\n",
 			id,
 			d.Name,
 			err.Error())
@@ -611,7 +566,7 @@ func (p *Probe) qDiskSpace(id int, d *model.Device, port int) error {
 	attr = &model.Attribute{
 		DevID:     d.ID,
 		Timestamp: time.Now().Truncate(time.Second),
-		Type:      attribute.Uptime,
+		Type:      attribute.DiskSpace,
 		Value:     model.DiskSpace(ds),
 	}
 
@@ -619,7 +574,7 @@ func (p *Probe) qDiskSpace(id int, d *model.Device, port int) error {
 	defer p.pool.Put(db)
 
 	if err = db.AttributeAdd(attr); err != nil {
-		p.log.Printf("[ERROR] Failed to add Uptime of %s to database: %s\n",
+		p.log.Printf("[ERROR] Failed to add free space for %s to database: %s\n",
 			d.Name,
 			err.Error())
 		return err
@@ -658,6 +613,92 @@ func (p *Probe) qSNMP(id int, d *model.Device, port int) error {
 	defer p.pool.Put(db)
 
 	if err = db.AttributeAdd(attr); err != nil {
+		p.log.Printf("[ERROR] Failed to add SNMP data for %s to database: %s\n",
+			d.Name,
+			err.Error())
+		return err
+	}
+
+	return nil
+} // func (p *Probe) qSNMP(id int, d *model.Device, port int) error
+
+func (p *Probe) qDMI(id int, d *model.Device, port int) error {
+	var (
+		err  error
+		db   *database.Database
+		val  *model.DMI
+		attr *model.Attribute
+	)
+
+	switch d.Class {
+	case device.VM, device.Jail, device.Router, device.Entertainment:
+		// p.log.Printf("[DEBUG] %s is a %s, so no DMI\n",
+		// 	dev.Name,
+		// 	dev.Class)
+		return nil
+	default:
+		p.log.Printf("[TRACE] Probe#%d about to query DMI data from %s\n",
+			id,
+			d.Name)
+	}
+
+	if val, err = p.QueryDMI(d, port); err != nil {
+		p.log.Printf("[ERROR] Probe#%d failed to query DMI on %s: %s\n",
+			id,
+			d.Name,
+			err.Error())
+	}
+
+	attr = &model.Attribute{
+		DevID:     d.ID,
+		Timestamp: time.Now().Truncate(time.Second),
+		Type:      attribute.DMI,
+		Value:     val,
+	}
+
+	db = p.pool.Get()
+	defer p.pool.Put(db)
+
+	if err = db.AttributeAdd(attr); err != nil {
+		p.log.Printf("[ERROR] Failed to add DMI data for %s to database: %s\n",
+			d.Name,
+			err.Error())
+		return err
+	}
+
+	return nil
+} // func (p *Probe) qDMI(id int, d *model.Device, port int) error
+
+func (p *Probe) qSvc(id int, d *model.Device, port int) error {
+	var (
+		err  error
+		db   *database.Database
+		val  *model.Services
+		attr *model.Attribute
+	)
+
+	p.log.Printf("[TRACE] Probe#%d about to query services on %s\n",
+		id,
+		d.Name)
+
+	if val, err = p.QueryServices(d, port); err != nil {
+		p.log.Printf("[ERROR] Probe#%d failed to query services on %s: %s\n",
+			id,
+			d.Name,
+			err.Error())
+	}
+
+	attr = &model.Attribute{
+		DevID:     d.ID,
+		Timestamp: time.Now().Truncate(time.Second),
+		Type:      attribute.Services,
+		Value:     val,
+	}
+
+	db = p.pool.Get()
+	defer p.pool.Put(db)
+
+	if err = db.AttributeAdd(attr); err != nil {
 		p.log.Printf("[ERROR] Failed to add Uptime of %s to database: %s\n",
 			d.Name,
 			err.Error())
@@ -665,7 +706,46 @@ func (p *Probe) qSNMP(id int, d *model.Device, port int) error {
 	}
 
 	return nil
-} // func (p *Probe) qSNMP(d *model.Device, port int) error
+} // func (p *Probe) qSvc(id int, d *model.Device, port int) error
+
+func (p *Probe) qUpdate(id int, d *model.Device, port int) error {
+	var (
+		err  error
+		db   *database.Database
+		upd  []string
+		attr *model.Attribute
+	)
+
+	p.log.Printf("[TRACE] Probe#%d about to query pending updates on %s\n",
+		id,
+		d.Name)
+
+	if upd, err = p.QueryUpdates(d, port); err != nil {
+		p.log.Printf("[ERROR] Probe#%d failed to query updates on %s: %s\n",
+			id,
+			d.Name,
+			err.Error())
+	}
+
+	attr = &model.Attribute{
+		DevID:     d.ID,
+		Timestamp: time.Now().Truncate(time.Second),
+		Type:      attribute.Updates,
+		Value:     model.Updates(upd),
+	}
+
+	db = p.pool.Get()
+	defer p.pool.Put(db)
+
+	if err = db.AttributeAdd(attr); err != nil {
+		p.log.Printf("[ERROR] Failed to add Updates on %s to database: %s\n",
+			d.Name,
+			err.Error())
+		return err
+	}
+
+	return nil
+} // func (p *Probe) qUpdate(id int, d *model.Device, port int) error
 
 const (
 	cmdSudo = "sudo"

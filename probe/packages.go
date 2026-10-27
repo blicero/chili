@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-26 19:38:10 krylon>
+// Time-stamp: <2026-10-27 09:20:38 krylon>
 
 package probe
 
@@ -282,6 +282,8 @@ func (p *Probe) QueryPackages(d *model.Device, port int) ([]string, error) {
 		return p.QueryPackagesDebian(d, port)
 	case "openSUSE Leap", "openSUSE Tumbleweed":
 		return p.QueryPackagesSuse(d, port)
+	case "Fedora":
+		return p.QueryPackagesFedora(d, port)
 	case "FreeBSD":
 		return p.QueryPackagesFreeBSD(d, port)
 	case "OpenBSD":
@@ -298,7 +300,7 @@ func (p *Probe) QueryPackages(d *model.Device, port int) ([]string, error) {
 	}
 } // func (p *Probe) QueryPackages(d *model.Device, port int) ([]string, error)
 
-func (p *Probe) queryInstalled(d *model.Device, port int) error {
+func (p *Probe) queryInstalled(id int, d *model.Device, port int) error {
 	var (
 		err  error
 		db   *database.Database
@@ -307,16 +309,19 @@ func (p *Probe) queryInstalled(d *model.Device, port int) error {
 	)
 
 	if pkg, err = p.QueryPackages(d, port); err != nil {
-		p.log.Printf("[ERROR] Failed to query packages on %s: %s\n",
+		p.log.Printf("[ERROR] Probe#%d failed to query packages on %s: %s\n",
+			id,
 			d.Name,
 			err.Error())
 		return err
+	} else if pkg == nil {
+		return nil
 	}
 
 	attr = &model.Attribute{
 		DevID:     d.ID,
 		Timestamp: time.Now().Truncate(time.Second),
-		Type:      attribute.Updates,
+		Type:      attribute.Packages,
 		Value:     model.Packages(pkg),
 	}
 
@@ -324,7 +329,9 @@ func (p *Probe) queryInstalled(d *model.Device, port int) error {
 	defer p.pool.Put(db)
 
 	if err = db.AttributeAdd(attr); err != nil {
-		p.log.Printf("[ERROR] Failed to add list of installed packages to database: %s\n",
+		p.log.Printf("[ERROR] Probe#%d failed to add list of installed packages on %s to database: %s\n",
+			id,
+			d.Name,
 			err.Error())
 		return err
 	}

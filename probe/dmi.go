@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-10 13:57:54 krylon>
+// Time-stamp: <2026-10-27 08:48:22 krylon>
 
 package probe
 
@@ -29,6 +29,10 @@ func (p *Probe) QueryDMI(dev *model.Device, port int) (*model.DMI, error) {
 		err    error
 		output []string
 	)
+
+	if dev.OS == "Darwin" {
+		return nil, nil
+	}
 
 	var command = fmt.Sprintf("%s %s",
 		p.getPrivCmd(dev),
