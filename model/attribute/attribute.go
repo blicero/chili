@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 11. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-10 11:30:32 krylon>
+// Time-stamp: <2026-10-28 09:29:12 krylon>
 
 package attribute
 
@@ -25,6 +25,19 @@ const (
 	Services
 	DMI
 )
+
+// All returns a slice of all valid ID values.
+func All() []ID {
+	return []ID{
+		Updates,
+		DiskSpace,
+		Uptime,
+		Packages,
+		SNMP,
+		Services,
+		DMI,
+	}
+} // func All() []ID
 
 // Parse attempts to convert the given string to an attribute ID.
 func Parse(s string) ID {
