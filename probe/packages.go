@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-27 09:20:38 krylon>
+// Time-stamp: <2026-10-28 20:09:19 krylon>
 
 package probe
 
@@ -282,7 +282,7 @@ func (p *Probe) QueryPackages(d *model.Device, port int) ([]string, error) {
 		return p.QueryPackagesDebian(d, port)
 	case "openSUSE Leap", "openSUSE Tumbleweed":
 		return p.QueryPackagesSuse(d, port)
-	case "Fedora":
+	case "Fedora", "Fedora Linux":
 		return p.QueryPackagesFedora(d, port)
 	case "FreeBSD":
 		return p.QueryPackagesFreeBSD(d, port)
