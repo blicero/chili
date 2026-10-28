@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-10-28 18:57:36 krylon>
+# Time-stamp: <2026-10-28 19:29:07 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [36/37]
+* Chili [36/38]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-10-28 Mi 18:57]
+   #+CAPTION: Clock summary at [2026-10-28 Mi 19:29]
    | Headline                                         | Time       |            |         |      |      |
    |--------------------------------------------------+------------+------------+---------+------+------|
-   | *Total time*                                     | *3d 14:03* |            |         |      |      |
+   | *Total time*                                     | *3d 14:07* |            |         |      |      |
    |--------------------------------------------------+------------+------------+---------+------+------|
-   | *Chili [36/37]*                                  | *3d 14:03* |            |         |      |      |
-   | \_  /Components [35/36]/                         |            | /3d 10:55/ |         |      |      |
+   | *Chili [36/38]*                                  | *3d 14:07* |            |         |      |      |
+   | \_  /Components [36/37]/                         |            | /3d 10:59/ |         |      |      |
    | \_    Data model [0/0]                           |            |            |    8:50 |      |      |
    | \_    Database [1/1]                             |            |            |    7:34 |      |      |
    | \_      De-serialize attributes                  |            |            |         | 0:18 |      |
@@ -59,13 +59,14 @@
    | \_      Menu for Devices                         |            |            |         | 2:01 |      |
    | \_      Render attributes properly               |            |            |         | 0:31 |      |
    | \_      Trigger Probe run                        |            |            |         | 0:37 |      |
-   | \_    Main [2/2]                                 |            |            |    1:17 |      |      |
+   | \_    Main [3/3]                                 |            |            |    1:21 |      |      |
+   | \_      Allow number of scanners xor probes...   |            |            |         | 0:04 |      |
    | \_      Integrate Configuration parser           |            |            |         | 0:30 |      |
    | \_      Profiling                                |            |            |         | 0:44 |      |
-   | \_  /Bugs [0/0]/                                 |            | /3:08/     |         |      |      |
+   | \_  /Bugs [0/1]/                                 |            | /3:08/     |         |      |      |
    | \_    The little probe that could... get...      |            |            |    3:08 |      |      |
    #+END:
-** Components [35/36]
+** Components [36/37]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -412,7 +413,7 @@
      :LOGBOOK:
      CLOCK: [2026-07-31 Fr 12:40]--[2026-07-31 Fr 13:17] =>  0:37
      :END:
-*** Main [2/2]
+*** Main [3/3]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -421,6 +422,11 @@
     CLOCK: [2026-01-07 Mi 15:50]--[2026-01-07 Mi 15:53] =>  0:03
     :END:
     The entry point and user-facing part of the application
+**** DONE Allow number of scanners xor probes to be zero 
+     CLOSED: [2026-10-28 Mi 19:27]
+     :LOGBOOK:
+     CLOCK: [2026-10-28 Mi 19:23]--[2026-10-28 Mi 19:27] =>  0:04
+     :END:
 **** DONE Integrate Configuration parser
      CLOSED: [2026-08-13 Do 11:14]
      :LOGBOOK:
@@ -436,13 +442,12 @@
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
    :END:
-** Bugs [0/0]
+** Bugs [0/1]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
    :END:
-*** DONE The little probe that could... get stuck?
-     CLOSED: [2026-07-27 Mo 09:13]
+*** TODO The little probe that could... get stuck?
      :LOGBOOK:
      CLOCK: [2026-07-22 Mi 10:50]--[2026-07-22 Mi 13:16] =>  2:26
      CLOCK: [2026-07-21 Di 11:28]--[2026-07-21 Di 12:10] =>  0:42
@@ -453,5 +458,12 @@
      worker, it runs fine. 🤡
      [2026-07-27 Mo 09:12] I think the problem has disappeared. I'll just
      count my blessings and move on.
+     [2026-10-28 Mi 18:59] No, no no no no no no, the problem still exists. Or
+     again. I thought the problem might be caused by the DBPool, so I
+     refactored the Probe.probeOneDevice method to use lots of sub-methods
+     that each hold the database connection for just a short time before
+     returning it to the pool.
+     However, that appears not to have fixed the problem. I am not even 100%
+     if it is related to the DBPool at all. 😞
 
    
