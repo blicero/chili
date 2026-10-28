@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-10-28 18:56:18 krylon>
+# Time-stamp: <2026-10-28 18:57:36 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [35/36]
+* Chili [36/37]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-10-28 Mi 18:56]
+   #+CAPTION: Clock summary at [2026-10-28 Mi 18:57]
    | Headline                                         | Time       |            |         |      |      |
    |--------------------------------------------------+------------+------------+---------+------+------|
    | *Total time*                                     | *3d 14:03* |            |         |      |      |
    |--------------------------------------------------+------------+------------+---------+------+------|
-   | *Chili [35/36]*                                  | *3d 14:03* |            |         |      |      |
-   | \_  /Components [34/35]/                         |            | /3d 10:55/ |         |      |      |
+   | *Chili [36/37]*                                  | *3d 14:03* |            |         |      |      |
+   | \_  /Components [35/36]/                         |            | /3d 10:55/ |         |      |      |
    | \_    Data model [0/0]                           |            |            |    8:50 |      |      |
    | \_    Database [1/1]                             |            |            |    7:34 |      |      |
    | \_      De-serialize attributes                  |            |            |         | 0:18 |      |
@@ -32,7 +32,7 @@
    | \_      Set LastScan timestamp on Network        |            |            |         | 0:51 |      |
    | \_      Avoid adding devices we already know     |            |            |         | 0:33 |      |
    | \_    Configuration [0/0]                        |            |            |    1:51 |      |      |
-   | \_    Host Probe [19/20]                         |            |            | 1d 8:17 |      |      |
+   | \_    Host Probe [20/20]                         |            |            | 1d 8:17 |      |      |
    | \_      Break up host probe into multiple...     |            |            |         | 7:30 |      |
    | \_      Make intervals for different probes...   |            |            |         | 0:16 |      |
    | \_      Determine Device Class                   |            |            |         | 0:55 |      |
@@ -65,7 +65,7 @@
    | \_  /Bugs [0/0]/                                 |            | /3:08/     |         |      |      |
    | \_    The little probe that could... get...      |            |            |    3:08 |      |      |
    #+END:
-** Components [34/35]
+** Components [35/36]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -155,7 +155,7 @@
     CLOCK: [2026-08-12 Mi 11:57]--[2026-08-12 Mi 13:35] =>  1:38
     :END:
     At least for configuring the log levels, that would be great.
-*** Host Probe [19/20]
+*** Host Probe [20/20]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -169,7 +169,8 @@
     CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
-**** TODO Break up host probe into multiple functions
+**** DONE Break up host probe into multiple functions
+     CLOSED: [2026-10-28 Mi 18:57]
      :LOGBOOK:
      CLOCK: [2026-10-28 Mi 18:20]--[2026-10-28 Mi 18:56] =>  0:36
      CLOCK: [2026-10-28 Mi 09:04]--[2026-10-28 Mi 10:33] =>  1:29
