@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-28 09:28:09 krylon>
+// Time-stamp: <2026-10-28 18:40:30 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -42,6 +42,15 @@ var Schedule = map[attribute.ID]time.Duration{
 	attribute.DMI:       time.Hour * 168, // DMI data is unlikely to change
 }
 
+func portFor(a attribute.ID) int {
+	switch a {
+	case attribute.SNMP:
+		return portSNMP
+	default:
+		return portSSH
+	}
+} // func portFor(a attribute.ID) int
+
 type probeFn func(id int, dev *model.Device, port int) error
 
 // Probe queries Devices about their OS, installed software, hardware,
@@ -78,7 +87,7 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 		return nil, err
 	} else if err = p.initConfig(userName, keyPath...); err != nil {
 		return nil, err
-	} else if p.pool, err = database.NewPool(max(2, cnt+1)); err != nil {
+	} else if p.pool, err = database.NewPool(cnt + 2); err != nil {
 		p.log.Printf("[CRITICAL] Cannot open database connection pool: %s\n",
 			err.Error())
 		return nil, err
@@ -289,10 +298,10 @@ func (p *Probe) probeDevices() {
 	for _, i := range indices {
 		dev := devices[i]
 		switch dev.Class {
-		case device.Entertainment, device.Router:
-			// p.log.Printf("[TRACE] Won't probe %s, it is a %s\n",
-			// 	dev.Name,
-			// 	dev.Class)
+		case device.Mobile, device.Unknown, device.Entertainment, device.Router:
+			p.log.Printf("[TRACE] Won't probe %s, it is a %s\n",
+				dev.Name,
+				dev.Class)
 			continue
 		}
 
@@ -391,70 +400,87 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 	//       to get me going, I will just perform them one after another,
 	//       each time.
 
-	if stamp, ok := lastProbed[attribute.Updates]; !ok || stamp.Add(Schedule[attribute.Updates]).Before(now) {
-		if err = p.qUpdate(id, dev, portSSH); err != nil {
-			p.log.Printf("[ERROR] Probe#%d failed to query updates on %s: %s\n",
+	for _, att := range attribute.All() {
+		if stamp, ok := lastProbed[att]; !ok || stamp.Add(Schedule[att]).Before(now) {
+			p.log.Printf("[TRACE] Probe#%d probing %s for %s\n",
 				id,
 				dev.Name,
-				err.Error())
+				att)
+
+			if err = p.probes[att](id, dev, portFor(att)); err != nil {
+				p.log.Printf("[ERROR] Probe#%d failed to probe %s for %s: %s\n",
+					id,
+					dev.Name,
+					att,
+					err.Error())
+			}
 		}
 	}
 
-	// FIXME Querying for installed software runs into some sort of tar pit.
-	//       At first I thought I had gotten too clever with concurrency, but
-	//       it appears the problem is a timeout?
-	if stamp, ok := lastProbed[attribute.Packages]; !ok || stamp.Add(Schedule[attribute.Packages]).Before(now) {
-		if err = p.queryInstalled(id, dev, portSSH); err != nil {
-			p.log.Printf("[ERROR] Probe#%d failed to query packages on %s: %s\n",
-				id,
-				dev.Name,
-				err.Error())
-		}
-	}
+	// if stamp, ok := lastProbed[attribute.Updates]; !ok || stamp.Add(Schedule[attribute.Updates]).Before(now) {
+	// 	if err = p.qUpdate(id, dev, portSSH); err != nil {
+	// 		p.log.Printf("[ERROR] Probe#%d failed to query updates on %s: %s\n",
+	// 			id,
+	// 			dev.Name,
+	// 			err.Error())
+	// 	}
+	// }
 
-	if stamp, ok := lastProbed[attribute.Uptime]; !ok || stamp.Add(Schedule[attribute.Uptime]).Before(now) {
-		if err = p.qUptime(id, dev, portSSH); err != nil {
-			p.log.Printf("[ERROR] Failed to query Uptime on %s: %s\n",
-				dev.Name,
-				err.Error())
-		}
-	}
+	// // FIXME Querying for installed software runs into some sort of tar pit.
+	// //       At first I thought I had gotten too clever with concurrency, but
+	// //       it appears the problem is a timeout?
+	// if stamp, ok := lastProbed[attribute.Packages]; !ok || stamp.Add(Schedule[attribute.Packages]).Before(now) {
+	// 	if err = p.queryInstalled(id, dev, portSSH); err != nil {
+	// 		p.log.Printf("[ERROR] Probe#%d failed to query packages on %s: %s\n",
+	// 			id,
+	// 			dev.Name,
+	// 			err.Error())
+	// 	}
+	// }
 
-	if stamp, ok := lastProbed[attribute.DiskSpace]; !ok || stamp.Add(Schedule[attribute.DiskSpace]).Before(now) {
-		if err = p.qDiskSpace(id, dev, portSSH); err != nil {
-			p.log.Printf("[ERROR] Probe#%d failed to query free disk space on %s: %s\n",
-				id,
-				dev.Name,
-				err.Error())
-		}
-	}
+	// if stamp, ok := lastProbed[attribute.Uptime]; !ok || stamp.Add(Schedule[attribute.Uptime]).Before(now) {
+	// 	if err = p.qUptime(id, dev, portSSH); err != nil {
+	// 		p.log.Printf("[ERROR] Failed to query Uptime on %s: %s\n",
+	// 			dev.Name,
+	// 			err.Error())
+	// 	}
+	// }
 
-	if stamp, ok := lastProbed[attribute.SNMP]; !ok || stamp.Add(Schedule[attribute.SNMP]).Before(now) {
-		if err = p.qSNMP(id, dev, portSNMP); err != nil {
-			p.log.Printf("[ERROR] Probe#%d failed to query %s via SNMP: %s\n",
-				id,
-				dev.Name,
-				err.Error())
-		}
-	}
+	// if stamp, ok := lastProbed[attribute.DiskSpace]; !ok || stamp.Add(Schedule[attribute.DiskSpace]).Before(now) {
+	// 	if err = p.qDiskSpace(id, dev, portSSH); err != nil {
+	// 		p.log.Printf("[ERROR] Probe#%d failed to query free disk space on %s: %s\n",
+	// 			id,
+	// 			dev.Name,
+	// 			err.Error())
+	// 	}
+	// }
 
-	if stamp, ok := lastProbed[attribute.Services]; !ok || stamp.Add(Schedule[attribute.Services]).Before(now) {
-		if err = p.qSvc(id, dev, portSSH); err != nil {
-			p.log.Printf("[ERROR] Probe#%d failed to query Services on %s: %s\n",
-				id,
-				dev.Name,
-				err.Error())
-		}
-	}
+	// if stamp, ok := lastProbed[attribute.SNMP]; !ok || stamp.Add(Schedule[attribute.SNMP]).Before(now) {
+	// 	if err = p.qSNMP(id, dev, portSNMP); err != nil {
+	// 		p.log.Printf("[ERROR] Probe#%d failed to query %s via SNMP: %s\n",
+	// 			id,
+	// 			dev.Name,
+	// 			err.Error())
+	// 	}
+	// }
 
-	if stamp, ok := lastProbed[attribute.DMI]; !ok || stamp.Add(Schedule[attribute.DMI]).Before(now) {
-		if err = p.qDMI(id, dev, portSSH); err != nil {
-			p.log.Printf("[ERROR] Probe#%d failed to query DMI on %s: %s\n",
-				id,
-				dev.Name,
-				err.Error())
-		}
-	}
+	// if stamp, ok := lastProbed[attribute.Services]; !ok || stamp.Add(Schedule[attribute.Services]).Before(now) {
+	// 	if err = p.qSvc(id, dev, portSSH); err != nil {
+	// 		p.log.Printf("[ERROR] Probe#%d failed to query Services on %s: %s\n",
+	// 			id,
+	// 			dev.Name,
+	// 			err.Error())
+	// 	}
+	// }
+
+	// if stamp, ok := lastProbed[attribute.DMI]; !ok || stamp.Add(Schedule[attribute.DMI]).Before(now) {
+	// 	if err = p.qDMI(id, dev, portSSH); err != nil {
+	// 		p.log.Printf("[ERROR] Probe#%d failed to query DMI on %s: %s\n",
+	// 			id,
+	// 			dev.Name,
+	// 			err.Error())
+	// 	}
+	// }
 
 	p.log.Printf("[TRACE] Probe#%d finished probing %s\n",
 		id,
