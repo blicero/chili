@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-07 15:34:35 krylon>
+// Time-stamp: <2026-10-28 18:44:29 krylon>
 
 package database
 
@@ -98,6 +98,9 @@ WAIT_FOR_LINK:
 		return link.db
 	}
 
+	pool.log.Printf("[TRACE] Pool is empty (%d), wait for connection\n",
+		pool.cnt)
+
 	// Wait for it!!!
 	pool.empty.Wait()
 	goto WAIT_FOR_LINK
@@ -111,6 +114,9 @@ func (pool *Pool) GetNoWait() (*Database, error) {
 
 	pool.lock.Lock()
 	defer pool.lock.Unlock()
+
+	pool.log.Printf("[TRACE] Get one connection from %d available\n",
+		pool.cnt)
 
 	if pool.link != nil {
 		link := pool.link
@@ -143,10 +149,16 @@ func (pool *Pool) Put(db *Database) {
 	}
 
 	pool.lock.Lock()
+	defer pool.lock.Unlock()
+
+	pool.log.Printf("[TRACE] Return connection to pool, %d -> %d available\n",
+		pool.cnt,
+		pool.cnt+1)
+
 	link.next = pool.link
 	pool.link = link
 	pool.cnt++
-	pool.lock.Unlock()
+	// pool.lock.Unlock()
 	pool.empty.Signal()
 } // func (pool *Pool) Put(db *Database)
 
