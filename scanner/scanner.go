@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-14 10:09:47 krylon>
+// Time-stamp: <2026-10-28 19:26:00 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -10,7 +10,6 @@ package scanner
 
 // NB: IPv6 is NOT supported currently.
 import (
-	"fmt"
 	"log"
 	"net"
 	"strings"
@@ -60,7 +59,8 @@ type Scanner struct {
 // New creates a new Scanner with the given number of worker goroutines.
 func New(wcnt int) (*Scanner, error) {
 	if wcnt < 1 {
-		return nil, fmt.Errorf("number of workers must be a positive integer, not %d", wcnt)
+		// return nil, fmt.Errorf("number of workers must be a positive integer, not %d", wcnt)
+		return nil, nil
 	}
 
 	var (

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-14 10:46:39 krylon>
+// Time-stamp: <2026-10-28 19:27:11 krylon>
 
 package main
 
@@ -150,6 +150,13 @@ func main() {
 
 	common.PackageLevels[logdomain.Scanner] = "INFO"
 
+	if scanWorkerCnt+probeWorkerCnt == 0 {
+		fmt.Fprintf(
+			os.Stderr,
+			"Running no probes and no scanners? I am done!\n")
+		os.Exit(0)
+	}
+
 	if sc, err = scanner.New(scanWorkerCnt); err != nil {
 		fmt.Fprintf(
 			os.Stderr,
@@ -177,8 +184,14 @@ func main() {
 	sigQ = make(chan os.Signal, 1)
 	signal.Notify(sigQ, os.Interrupt, syscall.SIGTERM)
 
-	sc.Start()
-	p.Start()
+	if scanWorkerCnt > 0 {
+		sc.Start()
+	}
+
+	if probeWorkerCnt > 0 {
+		p.Start()
+	}
+
 	go srv.Run()
 
 	for {

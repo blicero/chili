@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-28 18:40:30 krylon>
+// Time-stamp: <2026-10-28 19:26:33 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -83,7 +83,9 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 		}
 	)
 
-	if p.log, err = common.GetLogger(logdomain.Probe); err != nil {
+	if cnt < 1 {
+		return nil, nil
+	} else if p.log, err = common.GetLogger(logdomain.Probe); err != nil {
 		return nil, err
 	} else if err = p.initConfig(userName, keyPath...); err != nil {
 		return nil, err
