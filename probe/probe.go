@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-27 09:01:12 krylon>
+// Time-stamp: <2026-10-28 09:28:09 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -42,6 +42,8 @@ var Schedule = map[attribute.ID]time.Duration{
 	attribute.DMI:       time.Hour * 168, // DMI data is unlikely to change
 }
 
+type probeFn func(id int, dev *model.Device, port int) error
+
 // Probe queries Devices about their OS, installed software, hardware,
 // pending updates, etc...
 type Probe struct {
@@ -57,6 +59,7 @@ type Probe struct {
 	cfg         *ssh.ClientConfig
 	clients     map[int64]*ssh.Client
 	privCmd     map[int64]string
+	probes      map[attribute.ID]probeFn
 }
 
 // Create returns a fresh Probe.
@@ -79,6 +82,16 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 		p.log.Printf("[CRITICAL] Cannot open database connection pool: %s\n",
 			err.Error())
 		return nil, err
+	}
+
+	p.probes = map[attribute.ID]probeFn{
+		attribute.Updates:   p.qUpdate,
+		attribute.DiskSpace: p.qDiskSpace,
+		attribute.Uptime:    p.qUptime,
+		attribute.Packages:  p.queryInstalled,
+		attribute.SNMP:      p.qSNMP,
+		attribute.Services:  p.qSvc,
+		attribute.DMI:       p.qDMI,
 	}
 
 	p.CmdQ = make(chan control.Message, 1)
@@ -328,8 +341,6 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 	var (
 		err    error
 		online bool
-		db     *database.Database
-		errcnt int
 	)
 
 	if online = p.pingDevice(dev); !online {
@@ -341,28 +352,6 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 	p.log.Printf("[TRACE] Probe#%d getting Database from pool\n",
 		id)
 
-	// FIXME It would be kind of nice to not use the database directly in
-	//       this method. I'd rather break it up into smaller methods that
-	//       each get their database from the pool and return it right away,
-	//       so I don't hog the database connections as long.
-	//       I suspect this causes a blockage of some sort.
-OPENDB:
-	if db, err = p.pool.GetNoWait(); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to open database: %s\n",
-			id,
-			err.Error())
-		if errcnt < 5 {
-			errcnt++
-			time.Sleep(time.Millisecond * 25)
-			goto OPENDB
-		} else {
-			p.log.Printf("[CRITICAL] Probe#%d could not get a database connection\n",
-				id)
-			return
-		}
-	}
-	defer p.pool.Put(db)
-
 	if dev.OS == "" {
 		var sysname string
 		if sysname, err = p.QueryOS(dev, portSSH); err != nil {
@@ -370,7 +359,7 @@ OPENDB:
 				dev.Name,
 				err.Error())
 			return
-		} else if err = db.DeviceSetOS(dev, sysname); err != nil {
+		} else if err = p.setOS(id, dev, sysname); err != nil {
 			p.log.Printf("[ERROR] Failed to set OS for %s to %s: %s\n",
 				dev.Name,
 				sysname,
@@ -424,7 +413,7 @@ OPENDB:
 	}
 
 	if stamp, ok := lastProbed[attribute.Uptime]; !ok || stamp.Add(Schedule[attribute.Uptime]).Before(now) {
-		if err = p.qUptime(dev, portSSH); err != nil {
+		if err = p.qUptime(id, dev, portSSH); err != nil {
 			p.log.Printf("[ERROR] Failed to query Uptime on %s: %s\n",
 				dev.Name,
 				err.Error())
@@ -512,7 +501,7 @@ func (p *Probe) getMostRecentAttributes(id int, dev *model.Device) ([]*model.Att
 	return attr, nil
 } // func (p *Probe) getMostRecentAttributes(id int, dev *model.Device) ([]*model.Attribute, error)
 
-func (p *Probe) qUptime(d *model.Device, port int) error {
+func (p *Probe) qUptime(id int, d *model.Device, port int) error {
 	var (
 		err  error
 		db   *database.Database
@@ -521,7 +510,8 @@ func (p *Probe) qUptime(d *model.Device, port int) error {
 	)
 
 	if up, err = p.QueryUptime(d, port); err != nil {
-		p.log.Printf("[ERROR] Failed to query Uptime on %s: %s\n",
+		p.log.Printf("[ERROR] Probe#%d failed to query Uptime on %s: %s\n",
+			id,
 			d.Name,
 			err.Error())
 		return err
@@ -746,6 +736,28 @@ func (p *Probe) qUpdate(id int, d *model.Device, port int) error {
 
 	return nil
 } // func (p *Probe) qUpdate(id int, d *model.Device, port int) error
+
+func (p *Probe) setOS(id int, d *model.Device, osname string) error {
+	var (
+		err error
+		db  *database.Database
+	)
+
+	db = p.pool.Get()
+	defer p.pool.Put(db)
+
+	if err = db.DeviceSetOS(d, osname); err != nil {
+		p.log.Printf("[ERROR] Probe#%d failed to set OS on %s to %s: %s\n",
+			id,
+			d.Name,
+			osname,
+			err.Error())
+		return err
+	}
+
+	d.OS = osname
+	return nil
+} // func (p *Probe) setOS(id int, d *model.Device, osname string) error
 
 const (
 	cmdSudo = "sudo"
