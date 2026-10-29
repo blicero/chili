@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-28 19:26:33 krylon>
+// Time-stamp: <2026-10-29 10:53:45 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -84,6 +84,11 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 	)
 
 	if cnt < 1 {
+		fmt.Fprintf(
+			os.Stderr,
+			"Trying to create a Probe with %d workers? That's not how that works.\n",
+			cnt)
+
 		return nil, nil
 	} else if p.log, err = common.GetLogger(logdomain.Probe); err != nil {
 		return nil, err
