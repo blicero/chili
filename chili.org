@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-10-28 19:29:07 krylon>
+# Time-stamp: <2026-10-29 11:13:00 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -15,13 +15,13 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-10-28 Mi 19:29]
+   #+CAPTION: Clock summary at [2026-10-29 Do 11:12]
    | Headline                                         | Time       |            |         |      |      |
    |--------------------------------------------------+------------+------------+---------+------+------|
-   | *Total time*                                     | *3d 14:07* |            |         |      |      |
+   | *Total time*                                     | *3d 14:27* |            |         |      |      |
    |--------------------------------------------------+------------+------------+---------+------+------|
-   | *Chili [36/38]*                                  | *3d 14:07* |            |         |      |      |
-   | \_  /Components [36/37]/                         |            | /3d 10:59/ |         |      |      |
+   | *Chili [36/38]*                                  | *3d 14:27* |            |         |      |      |
+   | \_  /Components [36/37]/                         |            | /3d 11:19/ |         |      |      |
    | \_    Data model [0/0]                           |            |            |    8:50 |      |      |
    | \_    Database [1/1]                             |            |            |    7:34 |      |      |
    | \_      De-serialize attributes                  |            |            |         | 0:18 |      |
@@ -32,7 +32,7 @@
    | \_      Set LastScan timestamp on Network        |            |            |         | 0:51 |      |
    | \_      Avoid adding devices we already know     |            |            |         | 0:33 |      |
    | \_    Configuration [0/0]                        |            |            |    1:51 |      |      |
-   | \_    Host Probe [20/20]                         |            |            | 1d 8:17 |      |      |
+   | \_    Host Probe [20/20]                         |            |            | 1d 8:37 |      |      |
    | \_      Break up host probe into multiple...     |            |            |         | 7:30 |      |
    | \_      Make intervals for different probes...   |            |            |         | 0:16 |      |
    | \_      Determine Device Class                   |            |            |         | 0:55 |      |
@@ -162,6 +162,7 @@
     :VISIBILITY: children
     :END:
     :LOGBOOK:
+    CLOCK: [2026-10-29 Do 10:52]--[2026-10-29 Do 11:12] =>  0:20
     CLOCK: [2026-08-14 Fr 10:20]--[2026-08-14 Fr 10:34] =>  0:14
     CLOCK: [2026-08-11 Di 11:10]--[2026-08-11 Di 12:41] =>  1:31
     CLOCK: [2026-08-07 Fr 15:10]--[2026-08-07 Fr 16:07] =>  0:57
