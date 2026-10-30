@@ -2,11 +2,12 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-03 12:26:46 krylon>
+// Time-stamp: <2026-10-30 10:20:36 krylon>
 
 package probe
 
 import (
+	"sync"
 	"time"
 
 	"github.com/alouca/gosnmp"
@@ -17,6 +18,8 @@ const (
 	snmpTimeout = 5
 	portSNMP    = 161
 )
+
+var snmpLock sync.Mutex
 
 // oids - quite stupidly - contains the OID values we are interested in.
 var oids = map[string]string{
@@ -32,6 +35,9 @@ func (p *Probe) QuerySNMP(dev *model.Device, port int) (model.SNMPInfo, error) {
 		resp   *gosnmp.SnmpPacket
 		result = make(map[string]string)
 	)
+
+	snmpLock.Lock()
+	defer snmpLock.Unlock()
 
 	if snmp, err = gosnmp.NewGoSNMP(dev.Addr.String(), "public", gosnmp.Version2c, snmpTimeout); err != nil {
 		p.log.Printf("[ERROR] Failed to talk SNMP to %s: %s\n",
