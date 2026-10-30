@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-10-29 11:13:00 krylon>
+# Time-stamp: <2026-10-30 12:00:56 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [36/38]
+* Chili [37/40]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-10-29 Do 11:12]
+   #+CAPTION: Clock summary at [2026-10-30 Fr 12:00]
    | Headline                                         | Time       |            |         |      |      |
    |--------------------------------------------------+------------+------------+---------+------+------|
-   | *Total time*                                     | *3d 14:27* |            |         |      |      |
+   | *Total time*                                     | *3d 15:55* |            |         |      |      |
    |--------------------------------------------------+------------+------------+---------+------+------|
-   | *Chili [36/38]*                                  | *3d 14:27* |            |         |      |      |
-   | \_  /Components [36/37]/                         |            | /3d 11:19/ |         |      |      |
+   | *Chili [37/40]*                                  | *3d 15:55* |            |         |      |      |
+   | \_  /Components [36/38]/                         |            | /3d 12:23/ |         |      |      |
    | \_    Data model [0/0]                           |            |            |    8:50 |      |      |
    | \_    Database [1/1]                             |            |            |    7:34 |      |      |
    | \_      De-serialize attributes                  |            |            |         | 0:18 |      |
@@ -32,7 +32,8 @@
    | \_      Set LastScan timestamp on Network        |            |            |         | 0:51 |      |
    | \_      Avoid adding devices we already know     |            |            |         | 0:33 |      |
    | \_    Configuration [0/0]                        |            |            |    1:51 |      |      |
-   | \_    Host Probe [20/20]                         |            |            | 1d 8:37 |      |      |
+   | \_    Host Probe [20/21]                         |            |            | 1d 9:41 |      |      |
+   | \_      Introspection much?                      |            |            |         | 1:04 |      |
    | \_      Break up host probe into multiple...     |            |            |         | 7:30 |      |
    | \_      Make intervals for different probes...   |            |            |         | 0:16 |      |
    | \_      Determine Device Class                   |            |            |         | 0:55 |      |
@@ -63,10 +64,11 @@
    | \_      Allow number of scanners xor probes...   |            |            |         | 0:04 |      |
    | \_      Integrate Configuration parser           |            |            |         | 0:30 |      |
    | \_      Profiling                                |            |            |         | 0:44 |      |
-   | \_  /Bugs [0/1]/                                 |            | /3:08/     |         |      |      |
-   | \_    The little probe that could... get...      |            |            |    3:08 |      |      |
+   | \_  /Bugs [1/2]/                                 |            | /3:32/     |         |      |      |
+   | \_    The little probe that could... get...      |            |            |    3:14 |      |      |
+   | \_    Parse output of dnf on Fedora              |            |            |    0:18 |      |      |
    #+END:
-** Components [36/37]
+** Components [36/38]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -156,7 +158,7 @@
     CLOCK: [2026-08-12 Mi 11:57]--[2026-08-12 Mi 13:35] =>  1:38
     :END:
     At least for configuring the log levels, that would be great.
-*** Host Probe [20/20]
+*** Host Probe [20/21]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -171,6 +173,13 @@
     CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
+**** TODO Introspection much?
+     :LOGBOOK:
+     CLOCK: [2026-10-30 Fr 11:00]--[2026-10-30 Fr 12:00] =>  1:00
+     CLOCK: [2026-10-30 Fr 10:41]--[2026-10-30 Fr 10:45] =>  0:04
+     :END:
+     It would be nice if I could get a better look at what the individual
+     probes are doing
 **** DONE Break up host probe into multiple functions
      CLOSED: [2026-10-28 Mi 18:57]
      :LOGBOOK:
@@ -443,13 +452,15 @@
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
    :END:
-** Bugs [0/1]
+** Bugs [1/2]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
    :END:
 *** TODO The little probe that could... get stuck?
      :LOGBOOK:
+     CLOCK: [2026-10-30 Fr 10:41]--[2026-10-30 Fr 10:41] =>  0:00
+     CLOCK: [2026-10-30 Fr 10:17]--[2026-10-30 Fr 10:23] =>  0:06
      CLOCK: [2026-07-22 Mi 10:50]--[2026-07-22 Mi 13:16] =>  2:26
      CLOCK: [2026-07-21 Di 11:28]--[2026-07-21 Di 12:10] =>  0:42
      :END:
@@ -466,5 +477,9 @@
      returning it to the pool.
      However, that appears not to have fixed the problem. I am not even 100%
      if it is related to the DBPool at all. 😞
-
+*** DONE Parse output of dnf on Fedora
+    CLOSED: [2026-10-30 Fr 10:41]
+    :LOGBOOK:
+    CLOCK: [2026-10-30 Fr 10:23]--[2026-10-30 Fr 10:41] =>  0:18
+    :END:
    
