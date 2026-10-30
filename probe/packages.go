@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-28 20:09:19 krylon>
+// Time-stamp: <2026-10-30 10:36:29 krylon>
 
 package probe
 
@@ -234,7 +234,7 @@ func (p *Probe) QueryPackagesArch(d *model.Device, port int) ([]string, error) {
 
 // QueryPackagesFedora attempts to get the installed packages from a Fedora device.
 func (p *Probe) QueryPackagesFedora(d *model.Device, port int) ([]string, error) {
-	const cmd = "/usr/sbin/dnf list -q"
+	const cmd = "/usr/sbin/dnf list -q --installed"
 	var (
 		err      error
 		output   []string
@@ -262,13 +262,16 @@ func (p *Probe) QueryPackagesFedora(d *model.Device, port int) ([]string, error)
 	for _, l := range output[1:] {
 		var pkg string
 		l = strings.Trim(l, " \t\n")
-		if match := patPkgFedora.FindStringSubmatch(l); len(match) == 3 {
+		if l == "" {
+			continue
+		} else if match := patPkgFedora.FindStringSubmatch(l); len(match) == 3 {
 			pkg = match[1] + " " + match[2]
 			packages = append(packages, pkg)
 		} else {
-			p.log.Printf("[ERROR] Don't understand output of dnf(8) on %s: %s\n",
+			p.log.Printf("[ERROR] Don't understand output of dnf(8) on %s: %q\n\n\nComplete output:\n%s\n\n",
 				d.Name,
-				l)
+				l,
+				strings.Join(output, "\n"))
 		}
 	}
 
