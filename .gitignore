@@ -1,5 +1,5 @@
 # Binaries for programs and plugins
-# Time-stamp: <2026-01-07 15:47:56 krylon>
+# Time-stamp: <2026-10-30 11:57:00 krylon>
 *.exe
 *.dll
 *.so
@@ -37,3 +37,5 @@ __pycache__
 monkeytype.sqlite3
 
 chili
+*.chili
+
