@@ -3,7 +3,7 @@ module github.com/blicero/chili
 go 1.26.0
 
 require (
-	github.com/blicero/krylib v0.2.1
+	github.com/blicero/krylib v0.4.1
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/logutils v1.0.0
 	github.com/korylprince/ipnetgen v1.0.1

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-29 10:53:45 krylon>
+// Time-stamp: <2026-10-30 11:47:47 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -14,6 +14,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -26,6 +27,7 @@ import (
 	"github.com/blicero/chili/model"
 	"github.com/blicero/chili/model/attribute"
 	"github.com/blicero/chili/model/device"
+	"github.com/blicero/krylib"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -69,6 +71,7 @@ type Probe struct {
 	clients     map[int64]*ssh.Client
 	privCmd     map[int64]string
 	probes      map[attribute.ID]probeFn
+	pmap        *krylib.SyncMap[int, string]
 }
 
 // Create returns a fresh Probe.
@@ -80,6 +83,7 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 			clients:  make(map[int64]*ssh.Client),
 			interval: common.DefaultProbeInterval,
 			privCmd:  make(map[int64]string),
+			pmap:     krylib.NewSyncMap[int, string](),
 		}
 	)
 
@@ -240,8 +244,35 @@ func (p *Probe) mainLoop() {
 		select {
 		case <-heartbeat.C:
 			if cnt++; cnt%5 == 0 && p.scanRunning.Load() {
-				p.log.Printf("[DEBUG] Pending probes: %d\n",
-					p.pending.Load())
+				// FIXME This debugging code is not pretty! I should
+				//       remove it as soon as possible.
+				var (
+					sb      strings.Builder
+					keys    []int
+					pending = p.pmap.Map()
+				)
+
+				keys = make([]int, 0, len(pending))
+
+				for k := range pending {
+					keys = append(keys, k)
+				}
+
+				slices.Sort(keys)
+
+				for _, key := range keys {
+					var w = key
+					var d = pending[w]
+					fmt.Fprintf(
+						&sb,
+						"\t%02d => %s\n",
+						w,
+						d)
+				}
+
+				p.log.Printf("[DEBUG] Pending probes: %d\n%s\n",
+					p.pending.Load(),
+					sb.String())
 			}
 			continue
 		case <-probeTicker.C:
@@ -304,9 +335,10 @@ func (p *Probe) probeDevices() {
 
 	for _, i := range indices {
 		dev := devices[i]
+
 		switch dev.Class {
 		case device.Mobile, device.Unknown, device.Entertainment, device.Router:
-			p.log.Printf("[TRACE] Won't probe %s, it is a %s\n",
+			p.log.Printf("[INFO] Won't probe %s, it is a %s\n",
 				dev.Name,
 				dev.Class)
 			continue
@@ -353,6 +385,9 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 		dev.Name,
 		dev.Addr)
 	defer p.pending.Add(-1)
+
+	p.pmap.Put(id, dev.Name)
+	defer p.pmap.Delete(id)
 
 	var (
 		err    error
