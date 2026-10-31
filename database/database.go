@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-09 11:23:17 krylon>
+// Time-stamp: <2026-10-31 12:34:18 krylon>
 //
 // This files implements the database interface itself.
 
@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"regexp"
 	"strings"
@@ -66,10 +67,16 @@ func worthARetry(e error) bool {
 
 // retryDelay is the amount of time we wait before we repeat a database
 // operation that failed due to a transient error.
-const retryDelay = 25 * time.Millisecond
+// maxRetry is the maximum number of attempts in case of a locked database
+// before giving up.
+const (
+	retryDelay = 50
+	maxRetry   = 10
+)
 
 func waitForRetry() {
-	time.Sleep(retryDelay)
+	var delay = rand.Intn(retryDelay) + 1
+	time.Sleep(time.Duration(delay) * time.Millisecond)
 } // func waitForRetry()
 
 // Database is the storage backend.

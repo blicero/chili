@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-30 12:06:15 krylon>
+// Time-stamp: <2026-10-31 12:04:47 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -55,6 +55,19 @@ func portFor(a attribute.ID) int {
 
 type probeFn func(id int, dev *model.Device, port int) error
 
+type probeState struct {
+	id   int
+	dev  string
+	step atomic.Uint32
+}
+
+func (p *probeState) String() string {
+	return fmt.Sprintf("Probe#%02d => %s @ %s",
+		p.id,
+		p.dev,
+		attribute.ID(p.step.Load()))
+} // func (p *probeState) String() string
+
 // Probe queries Devices about their OS, installed software, hardware,
 // pending updates, etc...
 type Probe struct {
@@ -71,7 +84,7 @@ type Probe struct {
 	clients     map[int64]*ssh.Client
 	privCmd     map[int64]string
 	probes      map[attribute.ID]probeFn
-	pmap        *krylib.SyncMap[int, string]
+	pmap        *krylib.SyncMap[int, *probeState]
 }
 
 // Create returns a fresh Probe.
@@ -83,7 +96,7 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 			clients:  make(map[int64]*ssh.Client),
 			interval: common.DefaultProbeInterval,
 			privCmd:  make(map[int64]string),
-			pmap:     krylib.NewSyncMap[int, string](),
+			pmap:     krylib.NewSyncMap[int, *probeState](),
 		}
 	)
 
@@ -196,7 +209,7 @@ func (p *Probe) initConfig(userName string, keyPath ...string) error {
 			ssh.PublicKeys(keys...),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		Timeout:         time.Second * 300,
+		Timeout:         time.Second * 30,
 	}
 
 	return nil
@@ -270,7 +283,7 @@ func (p *Probe) mainLoop() {
 						d)
 				}
 
-				p.log.Printf("[DEBUG] Pending probes: %d\n%s\n",
+				p.log.Printf("[TRACE] Pending probes: %d\n%s\n",
 					p.pending.Load(),
 					sb.String())
 			}
@@ -376,17 +389,20 @@ func (p *Probe) probeWorker(id int, devQ <-chan *model.Device) {
 } // func (p *Probe) probeWorker(id int, devQ <-chan *model.Device)
 
 func (p *Probe) probeOneDevice(id int, dev *model.Device) {
-	p.log.Printf("[INFO] Probe#%d querying %s (%s)\n",
+	p.log.Printf("[INFO] Probe#%02d querying %s (%s)\n",
 		id,
 		dev.Name,
 		dev.Addr)
-	defer p.log.Printf("[INFO] Probe#%d finished probing %s (%s)\n",
+	defer p.log.Printf("[INFO] Probe#%02d finished probing %s (%s)\n",
 		id,
 		dev.Name,
 		dev.Addr)
 	defer p.pending.Add(-1)
 
-	p.pmap.Put(id, dev.Name)
+	p.pmap.Put(id, &probeState{
+		id:  id,
+		dev: dev.Name,
+	})
 	defer p.pmap.Delete(id)
 
 	var (
@@ -437,13 +453,18 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 
 	for _, att := range attribute.All() {
 		if stamp, ok := lastProbed[att]; !ok || stamp.Add(Schedule[att]).Before(now) {
-			p.log.Printf("[TRACE] Probe#%d probing %s for %s\n",
+			p.log.Printf("[TRACE] Probe#%02d probing %s for %s\n",
 				id,
 				dev.Name,
 				att)
 
+			s, _ := p.pmap.Get(id)
+			if s != nil {
+				s.step.Store(uint32(att))
+			}
+
 			if err = p.probes[att](id, dev, portFor(att)); err != nil {
-				p.log.Printf("[ERROR] Probe#%d failed to probe %s for %s: %s\n",
+				p.log.Printf("[ERROR] Probe#%02d failed to probe %s for %s: %s\n",
 					id,
 					dev.Name,
 					att,
@@ -452,7 +473,12 @@ func (p *Probe) probeOneDevice(id int, dev *model.Device) {
 		}
 	}
 
-	p.log.Printf("[TRACE] Probe#%d finished probing %s\n",
+	s, _ := p.pmap.Get(id)
+	if s != nil {
+		s.step.Store(uint32(attribute.Finished))
+	}
+
+	p.log.Printf("[TRACE] Probe#%02d finished probing %s\n",
 		id,
 		dev.Name)
 } // func (p *Probe) probeOneDevice(id int, dev *model.Device)
@@ -487,7 +513,7 @@ func (p *Probe) getMostRecentAttributes(id int, dev *model.Device) ([]*model.Att
 	defer p.pool.Put(db)
 
 	if attr, err = db.AttributeGetMostRecent(dev); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to load attributes for %s: %s\n",
+		p.log.Printf("[ERROR] Probe#%02d failed to load attributes for %s: %s\n",
 			id,
 			dev.Name,
 			err.Error())
@@ -505,13 +531,21 @@ func (p *Probe) qUptime(id int, d *model.Device, port int) error {
 		attr *model.Attribute
 	)
 
+	p.log.Printf("[TRACE] Probe#%02d - query uptime on %s\n",
+		id,
+		d.Name)
+
 	if up, err = p.QueryUptime(d, port); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to query Uptime on %s: %s\n",
+		p.log.Printf("[ERROR] Probe#%02d failed to query Uptime on %s: %s\n",
 			id,
 			d.Name,
 			err.Error())
 		return err
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d - save uptime for %s\n",
+		id,
+		d.Name)
 
 	attr = &model.Attribute{
 		DevID:     d.ID,
@@ -523,12 +557,19 @@ func (p *Probe) qUptime(id int, d *model.Device, port int) error {
 	db = p.pool.Get()
 	defer p.pool.Put(db)
 
+	p.log.Printf("[TRACE] Probe#%02d got DB connection\n",
+		id)
+
 	if err = db.AttributeAdd(attr); err != nil {
 		p.log.Printf("[ERROR] Failed to add Uptime of %s to database: %s\n",
 			d.Name,
 			err.Error())
 		return err
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d done querying/saving uptime for %s\n",
+		id,
+		d.Name)
 
 	return nil
 } // func (p *Probe) qUptime(d *model.Device, port int) error
@@ -541,13 +582,21 @@ func (p *Probe) qDiskSpace(id int, d *model.Device, port int) error {
 		attr *model.Attribute
 	)
 
+	p.log.Printf("[TRACE] Probe#%02d - about to query free disk space on %s\n",
+		id,
+		d.Name)
+
 	if ds, err = p.QueryDiskFree(d, port); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to query free space on %s: %s\n",
+		p.log.Printf("[ERROR] Probe#%02d failed to query free space on %s: %s\n",
 			id,
 			d.Name,
 			err.Error())
 		return err
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d - about to save free disk space for %s\n",
+		id,
+		d.Name)
 
 	attr = &model.Attribute{
 		DevID:     d.ID,
@@ -559,12 +608,19 @@ func (p *Probe) qDiskSpace(id int, d *model.Device, port int) error {
 	db = p.pool.Get()
 	defer p.pool.Put(db)
 
+	p.log.Printf("[TRACE] Probe#%02d - got DB connection\n",
+		id)
+
 	if err = db.AttributeAdd(attr); err != nil {
 		p.log.Printf("[ERROR] Failed to add free space for %s to database: %s\n",
 			d.Name,
 			err.Error())
 		return err
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d - finished querying/saving disk space on %s\n",
+		id,
+		d.Name)
 
 	return nil
 } // func (p *Probe) qDiskSpace(d *model.Device, port int) error
@@ -577,16 +633,20 @@ func (p *Probe) qSNMP(id int, d *model.Device, port int) error {
 		attr *model.Attribute
 	)
 
-	p.log.Printf("[TRACE] Probe#%d about to query SNMP data from %s\n",
+	p.log.Printf("[TRACE] Probe#%02d about to query SNMP data from %s\n",
 		id,
 		d.Name)
 
 	if val, err = p.QuerySNMP(d, port); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to query %s via SNMP: %s\n",
+		p.log.Printf("[ERROR] Probe#%02d failed to query %s via SNMP: %s\n",
 			id,
 			d.Name,
 			err.Error())
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d about to save SNMP info for %s\n",
+		id,
+		d.Name)
 
 	attr = &model.Attribute{
 		DevID:     d.ID,
@@ -598,12 +658,19 @@ func (p *Probe) qSNMP(id int, d *model.Device, port int) error {
 	db = p.pool.Get()
 	defer p.pool.Put(db)
 
+	p.log.Printf("[TRACE] Probe#%02d - got DB connection\n",
+		id)
+
 	if err = db.AttributeAdd(attr); err != nil {
 		p.log.Printf("[ERROR] Failed to add SNMP data for %s to database: %s\n",
 			d.Name,
 			err.Error())
 		return err
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d - finished querying/saving SNMP data for %s\n",
+		id,
+		d.Name)
 
 	return nil
 } // func (p *Probe) qSNMP(id int, d *model.Device, port int) error
@@ -623,17 +690,21 @@ func (p *Probe) qDMI(id int, d *model.Device, port int) error {
 		// 	dev.Class)
 		return nil
 	default:
-		p.log.Printf("[TRACE] Probe#%d about to query DMI data from %s\n",
+		p.log.Printf("[TRACE] Probe#%02d about to query DMI data from %s\n",
 			id,
 			d.Name)
 	}
 
 	if val, err = p.QueryDMI(d, port); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to query DMI on %s: %s\n",
+		p.log.Printf("[ERROR] Probe#%02d failed to query DMI on %s: %s\n",
 			id,
 			d.Name,
 			err.Error())
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d - about to save DMI data for %s\n",
+		id,
+		d.Name)
 
 	attr = &model.Attribute{
 		DevID:     d.ID,
@@ -645,12 +716,19 @@ func (p *Probe) qDMI(id int, d *model.Device, port int) error {
 	db = p.pool.Get()
 	defer p.pool.Put(db)
 
+	p.log.Printf("[TRACE] Probe#%02d - got DB connection\n",
+		id)
+
 	if err = db.AttributeAdd(attr); err != nil {
 		p.log.Printf("[ERROR] Failed to add DMI data for %s to database: %s\n",
 			d.Name,
 			err.Error())
 		return err
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d finished querying/saving DMI data for %s\n",
+		id,
+		d.Name)
 
 	return nil
 } // func (p *Probe) qDMI(id int, d *model.Device, port int) error
@@ -663,16 +741,20 @@ func (p *Probe) qSvc(id int, d *model.Device, port int) error {
 		attr *model.Attribute
 	)
 
-	p.log.Printf("[TRACE] Probe#%d about to query services on %s\n",
+	p.log.Printf("[TRACE] Probe#%02d about to query services on %s\n",
 		id,
 		d.Name)
 
 	if val, err = p.QueryServices(d, port); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to query services on %s: %s\n",
+		p.log.Printf("[ERROR] Probe#%02d failed to query services on %s: %s\n",
 			id,
 			d.Name,
 			err.Error())
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d about to save services for %s\n",
+		id,
+		d.Name)
 
 	attr = &model.Attribute{
 		DevID:     d.ID,
@@ -684,12 +766,19 @@ func (p *Probe) qSvc(id int, d *model.Device, port int) error {
 	db = p.pool.Get()
 	defer p.pool.Put(db)
 
+	p.log.Printf("[TRACE] Probe#%02d got DB connection\n",
+		id)
+
 	if err = db.AttributeAdd(attr); err != nil {
-		p.log.Printf("[ERROR] Failed to add Uptime of %s to database: %s\n",
+		p.log.Printf("[ERROR] Failed to add services on %s to database: %s\n",
 			d.Name,
 			err.Error())
 		return err
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d finished querying/saving services on %s\n",
+		id,
+		d.Name)
 
 	return nil
 } // func (p *Probe) qSvc(id int, d *model.Device, port int) error
@@ -702,16 +791,20 @@ func (p *Probe) qUpdate(id int, d *model.Device, port int) error {
 		attr *model.Attribute
 	)
 
-	p.log.Printf("[TRACE] Probe#%d about to query pending updates on %s\n",
+	p.log.Printf("[TRACE] Probe#%02d about to query pending updates on %s\n",
 		id,
 		d.Name)
 
 	if upd, err = p.QueryUpdates(d, port); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to query updates on %s: %s\n",
+		p.log.Printf("[ERROR] Probe#%02d failed to query updates on %s: %s\n",
 			id,
 			d.Name,
 			err.Error())
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d about to save updates for %s\n",
+		id,
+		d.Name)
 
 	attr = &model.Attribute{
 		DevID:     d.ID,
@@ -723,12 +816,19 @@ func (p *Probe) qUpdate(id int, d *model.Device, port int) error {
 	db = p.pool.Get()
 	defer p.pool.Put(db)
 
+	p.log.Printf("[TRACE] Probe#%02d - got DB connection",
+		id)
+
 	if err = db.AttributeAdd(attr); err != nil {
 		p.log.Printf("[ERROR] Failed to add Updates on %s to database: %s\n",
 			d.Name,
 			err.Error())
 		return err
 	}
+
+	p.log.Printf("[TRACE] Probe#%02d finished querying/saving updates on %s\n",
+		id,
+		d.Name)
 
 	return nil
 } // func (p *Probe) qUpdate(id int, d *model.Device, port int) error
@@ -743,7 +843,7 @@ func (p *Probe) setOS(id int, d *model.Device, osname string) error {
 	defer p.pool.Put(db)
 
 	if err = db.DeviceSetOS(d, osname); err != nil {
-		p.log.Printf("[ERROR] Probe#%d failed to set OS on %s to %s: %s\n",
+		p.log.Printf("[ERROR] Probe#%02d failed to set OS on %s to %s: %s\n",
 			id,
 			d.Name,
 			osname,

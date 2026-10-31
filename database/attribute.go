@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 11. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-10 14:58:26 krylon>
+// Time-stamp: <2026-10-31 12:14:22 krylon>
 
 package database
 
@@ -100,8 +100,9 @@ func (db *Database) unpackPayload(attr *model.Attribute, val string) (bool, erro
 func (db *Database) AttributeAdd(a *model.Attribute) error {
 	const qid query.ID = query.AttributeAdd
 	var (
-		err  error
-		stmt *sql.Stmt
+		err      error
+		stmt     *sql.Stmt
+		retryCnt = 0
 	)
 
 	if stmt, err = db.getQuery(qid); err != nil {
@@ -122,6 +123,14 @@ EXEC_QUERY:
 		a.Type,
 		a.Value.String()); err != nil {
 		if worthARetry(err) {
+			if retryCnt++; retryCnt > maxRetry {
+				err = fmt.Errorf("maximum number of retries reached for AttributeAdd (%d / %s)",
+					a.DevID,
+					a.Type)
+				db.log.Printf("[ERROR] %s\n",
+					err.Error())
+				return err
+			}
 			waitForRetry()
 			goto EXEC_QUERY
 		} else {

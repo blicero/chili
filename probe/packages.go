@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-30 10:36:29 krylon>
+// Time-stamp: <2026-10-31 12:03:01 krylon>
 
 package probe
 
@@ -311,6 +311,13 @@ func (p *Probe) queryInstalled(id int, d *model.Device, port int) error {
 		pkg  []string
 	)
 
+	p.log.Printf("[TRACE] Probe#%02d about to query installed packages on %s\n",
+		id,
+		d.Name)
+	defer p.log.Printf("[TRACE] Probe#%02d finished querying/saving packages on %s\n",
+		id,
+		d.Name)
+
 	if pkg, err = p.QueryPackages(d, port); err != nil {
 		p.log.Printf("[ERROR] Probe#%d failed to query packages on %s: %s\n",
 			id,
@@ -321,6 +328,10 @@ func (p *Probe) queryInstalled(id int, d *model.Device, port int) error {
 		return nil
 	}
 
+	p.log.Printf("[TRACE] Probe#%02d about to save installed packages on %s\n",
+		id,
+		d.Name)
+
 	attr = &model.Attribute{
 		DevID:     d.ID,
 		Timestamp: time.Now().Truncate(time.Second),
@@ -330,6 +341,9 @@ func (p *Probe) queryInstalled(id int, d *model.Device, port int) error {
 
 	db = p.pool.Get()
 	defer p.pool.Put(db)
+
+	p.log.Printf("[TRACE] Probe#%02d got DB connection\n",
+		id)
 
 	if err = db.AttributeAdd(attr); err != nil {
 		p.log.Printf("[ERROR] Probe#%d failed to add list of installed packages on %s to database: %s\n",

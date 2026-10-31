@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 11. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-28 09:29:12 krylon>
+// Time-stamp: <2026-10-30 13:14:52 krylon>
 
 package attribute
 
@@ -17,13 +17,15 @@ import (
 type ID uint8
 
 const (
-	Updates ID = iota
+	None ID = iota
+	Updates
 	DiskSpace
 	Uptime
 	Packages
 	SNMP
 	Services
 	DMI
+	Finished
 )
 
 // All returns a slice of all valid ID values.
