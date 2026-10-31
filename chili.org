@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-10-30 12:46:48 krylon>
+# Time-stamp: <2026-10-31 12:44:30 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -15,13 +15,13 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-10-30 Fr 12:46]
+   #+CAPTION: Clock summary at [2026-10-31 Sa 12:44]
    | Headline                                         | Time       |            |          |      |      |
    |--------------------------------------------------+------------+------------+----------+------+------|
-   | *Total time*                                     | *3d 16:38* |            |          |      |      |
+   | *Total time*                                     | *3d 21:05* |            |          |      |      |
    |--------------------------------------------------+------------+------------+----------+------+------|
-   | *Chili [37/40]*                                  | *3d 16:38* |            |          |      |      |
-   | \_  /Components [36/38]/                         |            | /3d 13:06/ |          |      |      |
+   | *Chili [37/40]*                                  | *3d 21:05* |            |          |      |      |
+   | \_  /Components [36/38]/                         |            | /3d 17:33/ |          |      |      |
    | \_    Data model [0/0]                           |            |            |     8:50 |      |      |
    | \_    Database [1/1]                             |            |            |     7:34 |      |      |
    | \_      De-serialize attributes                  |            |            |          | 0:18 |      |
@@ -32,8 +32,8 @@
    | \_      Set LastScan timestamp on Network        |            |            |          | 0:51 |      |
    | \_      Avoid adding devices we already know     |            |            |          | 0:33 |      |
    | \_    Configuration [0/0]                        |            |            |     1:51 |      |      |
-   | \_    Host Probe [20/21]                         |            |            | 1d 10:24 |      |      |
-   | \_      Introspection much?                      |            |            |          | 1:47 |      |
+   | \_    Host Probe [20/21]                         |            |            | 1d 14:51 |      |      |
+   | \_      Introspection much?                      |            |            |          | 6:14 |      |
    | \_      Break up host probe into multiple...     |            |            |          | 7:30 |      |
    | \_      Make intervals for different probes...   |            |            |          | 0:16 |      |
    | \_      Determine Device Class                   |            |            |          | 0:55 |      |
@@ -175,12 +175,21 @@
     :END:
 **** TODO Introspection much?
      :LOGBOOK:
+     CLOCK: [2026-10-31 Sa 11:48]
+     CLOCK: [2026-10-31 Sa 07:57]--[2026-10-31 Sa 08:36] =>  0:39
+     CLOCK: [2026-10-30 Fr 13:00]--[2026-10-30 Fr 16:48] =>  3:48
      CLOCK: [2026-10-30 Fr 12:03]--[2026-10-30 Fr 12:46] =>  0:43
      CLOCK: [2026-10-30 Fr 11:00]--[2026-10-30 Fr 12:00] =>  1:00
      CLOCK: [2026-10-30 Fr 10:41]--[2026-10-30 Fr 10:45] =>  0:04
      :END:
      It would be nice if I could get a better look at what the individual
      probes are doing
+***** [2026-10-31 Sa 12:42]
+      So *NOW* we're getting somewhere.
+      Apparently, SQLite's single writer policy is the root caus of my
+      problem. I am thinking I should maybe uncouple the probing and the
+      database interaction, so the database writing happens in a single
+      goroutine.
 **** DONE Break up host probe into multiple functions
      CLOSED: [2026-10-28 Mi 18:57]
      :LOGBOOK:
