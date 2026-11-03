@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-08-13 10:35:22 krylon>
+// Time-stamp: <2026-11-03 12:35:08 krylon>
 
 //go:build ignore
 // +build ignore
@@ -525,8 +525,9 @@ func initLog(min string) error {
 
 func backupExecutable() error {
 	const (
-		execPath   = "chili"
-		backupPath = "bak.chili"
+		execPath       = "chili"
+		backupPath     = "bak.chili"
+		compressedPath = "bak.chili.xz"
 	)
 	var (
 		exists bool
@@ -545,7 +546,21 @@ func backupExecutable() error {
 		}
 	}
 
+	if exists, err = krylib.Fexists(compressedPath); err != nil {
+		return err
+	} else if exists {
+		if err = os.Remove(compressedPath); err != nil {
+			return err
+		}
+	}
+
 	if err = os.Rename(execPath, backupPath); err != nil {
+		return err
+	}
+
+	var cmd = exec.Command("nice", "xz", "-8", backupPath)
+
+	if err = cmd.Run(); err != nil {
 		return err
 	}
 
