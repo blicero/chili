@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-31 12:04:47 krylon>
+// Time-stamp: <2026-11-03 11:44:18 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -111,7 +111,7 @@ func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
 		return nil, err
 	} else if err = p.initConfig(userName, keyPath...); err != nil {
 		return nil, err
-	} else if p.pool, err = database.NewPool(cnt + 2); err != nil {
+	} else if p.pool, err = database.NewPool(1); err != nil {
 		p.log.Printf("[CRITICAL] Cannot open database connection pool: %s\n",
 			err.Error())
 		return nil, err
@@ -305,13 +305,18 @@ func (p *Probe) mainLoop() {
 } // func (p *Probe) mainLoop()
 
 func (p *Probe) probeDevices() {
-	p.log.Println("[INFO] Probing devices")
-	defer p.log.Println("[INFO] Done probing")
-
 	if swapped := p.scanRunning.CompareAndSwap(false, true); !swapped {
 		p.log.Println("[ERROR] It appears a probe is already running. Bye.")
 		return
 	}
+
+	var before = time.Now()
+
+	p.log.Println("[INFO] Probing devices")
+	defer func() {
+		p.log.Printf("[INFO] Done probing, took %s\n",
+			time.Since(before))
+	}()
 
 	defer p.scanRunning.Store(false)
 
@@ -351,9 +356,9 @@ func (p *Probe) probeDevices() {
 
 		switch dev.Class {
 		case device.Mobile, device.Unknown, device.Entertainment, device.Router:
-			p.log.Printf("[INFO] Won't probe %s, it is a %s\n",
-				dev.Name,
-				dev.Class)
+			// p.log.Printf("[INFO] Won't probe %s, it is a %s\n",
+			// 	dev.Name,
+			// 	dev.Class)
 			continue
 		}
 

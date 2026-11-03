@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 10:54:27 krylon>
+// Time-stamp: <2026-11-02 12:40:44 krylon>
 
 package database
 
@@ -45,7 +45,7 @@ func (db *Database) DeviceAdd(d *model.Device) error {
 EXEC_QUERY:
 	if rows, err = stmt.Query(d.NetID, d.Name, d.Addr.String(), now.Unix(), d.Class); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		} else {
 			err = fmt.Errorf("cannot add Network %s to Database: %w",
@@ -108,7 +108,7 @@ func (db *Database) DeviceSetLastContact(d *model.Device, contact time.Time) err
 EXEC_QUERY:
 	if _, err = stmt.Exec(contact.Unix(), d.ID); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		} else {
 			err = fmt.Errorf("cannot update contact timestamp of Device %s: %w",
@@ -151,7 +151,7 @@ func (db *Database) DeviceSetOS(d *model.Device, osName string) error {
 EXEC_QUERY:
 	if _, err = stmt.Exec(osName, d.ID); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		} else {
 			err = fmt.Errorf("cannot update OS of Device %s: %w",
@@ -194,7 +194,7 @@ func (db *Database) DeviceSetClass(d *model.Device, class device.Class) error {
 EXEC_QUERY:
 	if _, err = stmt.Exec(class, d.ID); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		} else {
 			err = fmt.Errorf("cannot update contact timestamp of Device %s: %w",
@@ -237,7 +237,7 @@ func (db *Database) DeviceSetActive(d *model.Device, active bool) error {
 EXEC_QUERY:
 	if _, err = stmt.Exec(active, d.ID); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		} else {
 			err = fmt.Errorf("cannot update active flag of Device %s: %w",
@@ -274,7 +274,7 @@ func (db *Database) DeviceGetByID(id int64) (*model.Device, error) {
 EXEC_QUERY:
 	if rows, err = stmt.Query(id); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		}
 
@@ -333,7 +333,7 @@ func (db *Database) DeviceGetByNet(netID int64) ([]*model.Device, error) {
 EXEC_QUERY:
 	if rows, err = stmt.Query(netID); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		}
 
@@ -366,6 +366,7 @@ EXEC_QUERY:
 		d.Added = time.Unix(addstamp, 0)
 
 		devices = append(devices, d)
+		devNames.Put(d.ID, d.Name)
 	}
 
 	return devices, nil
@@ -393,7 +394,7 @@ func (db *Database) DeviceGetAll() ([]*model.Device, error) {
 EXEC_QUERY:
 	if rows, err = stmt.Query(); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		}
 
@@ -426,7 +427,31 @@ EXEC_QUERY:
 		d.Added = time.Unix(addstamp, 0)
 
 		devices = append(devices, d)
+
+		devNames.Put(d.ID, d.Name)
 	}
 
 	return devices, nil
 } // func (db *Database) DeviceGetAll() ([]*model.Device, error)
+
+func (db *Database) deviceGetName(id int64) (string, error) {
+	var (
+		err  error
+		name string
+		ok   bool
+		dev  *model.Device
+	)
+
+	if name, ok = devNames.Get(id); ok {
+		return name, nil
+	} else if dev, err = db.DeviceGetByID(id); err != nil {
+		return "", err
+	} else if dev != nil {
+		name = dev.Name
+	} else {
+		name = "nil"
+	}
+
+	devNames.Put(id, name)
+	return name, nil
+} // func (db *Database) deviceGetName(id int64) (string, error)

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-31 12:34:18 krylon>
+// Time-stamp: <2026-11-03 11:31:16 krylon>
 //
 // This files implements the database interface itself.
 
@@ -70,14 +70,16 @@ func worthARetry(e error) bool {
 // maxRetry is the maximum number of attempts in case of a locked database
 // before giving up.
 const (
-	retryDelay = 50
-	maxRetry   = 10
+	retryDelay = 16
+	maxRetry   = 32
 )
 
-func waitForRetry() {
-	var delay = rand.Intn(retryDelay) + 1
+func waitForRetry(attemptNo int) {
+	var delay = rand.Intn(retryDelay*int(krylib.Fibonacci(attemptNo))) + 1
 	time.Sleep(time.Duration(delay) * time.Millisecond)
 } // func waitForRetry()
+
+var devNames = krylib.NewSyncMap[int64, string]()
 
 // Database is the storage backend.
 //
@@ -119,7 +121,7 @@ func Open(path string) (*Database, error) {
 		db.log.Printf("[DEBUG] Open database %s\n", path)
 	}
 
-	var connstring = fmt.Sprintf("%s?_locking=NORMAL&_journal=WAL&_fk=1&recursive_triggers=0",
+	var connstring = fmt.Sprintf("%s?_locking=NORMAL&_journal=WAL&_fk=1&recursive_triggers=0&busy_timeout=2500",
 		path)
 
 	if dbExists, err = krylib.Fexists(path); err != nil {
@@ -250,7 +252,7 @@ func (db *Database) getQuery(id query.ID) (*sql.Stmt, error) { // nolint: unused
 PREPARE_QUERY:
 	if stmt, err = db.db.Prepare(qdb[id]); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto PREPARE_QUERY
 		}
 
@@ -323,7 +325,7 @@ BEGIN_TX:
 	for db.tx == nil {
 		if db.tx, err = db.db.Begin(); err != nil {
 			if worthARetry(err) {
-				waitForRetry()
+				waitForRetry(1)
 				continue BEGIN_TX
 			} else {
 				db.log.Printf("[ERROR] Failed to start transaction: %s\n",
@@ -422,7 +424,7 @@ SAVEPOINT:
 
 	if _, err = db.tx.Exec(spQuery); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto SAVEPOINT
 		}
 
@@ -465,7 +467,7 @@ func (db *Database) SavepointRelease(name string) error {
 SAVEPOINT:
 	if _, err = db.tx.Exec(spQuery); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto SAVEPOINT
 		}
 
@@ -503,7 +505,7 @@ func (db *Database) SavepointRollback(name string) error {
 SAVEPOINT:
 	if _, err = db.tx.Exec(spQuery); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto SAVEPOINT
 		}
 

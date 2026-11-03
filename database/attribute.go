@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 11. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-31 12:14:22 krylon>
+// Time-stamp: <2026-11-02 12:49:29 krylon>
 
 package database
 
@@ -101,9 +101,12 @@ func (db *Database) AttributeAdd(a *model.Attribute) error {
 	const qid query.ID = query.AttributeAdd
 	var (
 		err      error
+		name     string
 		stmt     *sql.Stmt
 		retryCnt = 0
 	)
+
+	name, _ = db.deviceGetName(a.DevID)
 
 	if stmt, err = db.getQuery(qid); err != nil {
 		db.log.Printf("[ERROR] Failed to prepare query %s: %s\n",
@@ -113,6 +116,10 @@ func (db *Database) AttributeAdd(a *model.Attribute) error {
 	} else if db.tx != nil {
 		stmt = db.tx.Stmt(stmt)
 	}
+
+	db.log.Printf("[TRACE] About to save Attribute %s for Device %s\n",
+		a.Type,
+		name)
 
 	var res sql.Result
 
@@ -131,12 +138,12 @@ EXEC_QUERY:
 					err.Error())
 				return err
 			}
-			waitForRetry()
+			waitForRetry(retryCnt)
 			goto EXEC_QUERY
 		} else {
-			err = fmt.Errorf("cannot add Attribute %s of Device %d to Database: %w (%#v)",
+			err = fmt.Errorf("cannot add Attribute %s of Device %s to Database: %w (%#v)",
 				a.Type,
-				a.DevID,
+				name,
 				err,
 				a)
 			db.log.Printf("[ERROR] %s\n", err.Error())
@@ -144,7 +151,13 @@ EXEC_QUERY:
 		}
 	}
 
-	var id int64
+	db.log.Printf("[TRACE] Added attribute %s for %s, getting ID of new record\n",
+		a.Type,
+		name)
+
+	var (
+		id int64
+	)
 
 	if id, err = res.LastInsertId(); err != nil {
 		db.log.Printf("[ERROR] Failed to get ID for added Attribute %s on Device %d: %s\n",
@@ -154,20 +167,12 @@ EXEC_QUERY:
 		return err
 	}
 
-	// if !rows.Next() {
-	// 	msg := fmt.Sprintf("Query %s did not return an ID", qid)
-	// 	db.log.Printf("[ERROR] %s\n",
-	// 		msg)
-	// 	return errors.New(msg)
-	// } else if err = rows.Scan(&id); err != nil {
-	// 	var ex = fmt.Errorf("failed to get ID  from query %s: %w",
-	// 		qid,
-	// 		err)
-	// 	db.log.Printf("[ERROR] %s\n", ex.Error())
-	// 	return ex
-	// }
-
 	a.ID = id
+
+	db.log.Printf("[TRACE] New attribute %s for Device %s has ID %d\n",
+		a.Type,
+		name,
+		id)
 
 	return nil
 } // func (db *Database) AttributeAdd(a *model.Attribute) error
@@ -195,7 +200,7 @@ func (db *Database) AttributeGetByDeviceType(dev *model.Device, aid attribute.ID
 EXEC_QUERY:
 	if rows, err = stmt.Query(dev.ID, aid); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		}
 
@@ -256,7 +261,7 @@ func (db *Database) AttributeGetByType(aid attribute.ID) ([]*model.Attribute, er
 EXEC_QUERY:
 	if rows, err = stmt.Query(aid); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		}
 
@@ -319,7 +324,7 @@ func (db *Database) AttributeGetByDevice(dev *model.Device) ([]*model.Attribute,
 EXEC_QUERY:
 	if rows, err = stmt.Query(dev.ID); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		}
 
@@ -436,7 +441,7 @@ func (db *Database) AttributeGetMostRecent(dev *model.Device) ([]*model.Attribut
 EXEC_QUERY:
 	if rows, err = stmt.Query(dev.ID); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		}
 

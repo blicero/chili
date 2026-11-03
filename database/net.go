@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 10:54:43 krylon>
+// Time-stamp: <2026-11-02 11:23:05 krylon>
 
 package database
 
@@ -44,7 +44,7 @@ func (db *Database) NetAdd(n *model.Network) error {
 EXEC_QUERY:
 	if rows, err = stmt.Query(n.Name, n.Addr.String(), now.Unix()); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		} else {
 			err = fmt.Errorf("cannot add Network %s to Database: %w",
@@ -99,7 +99,7 @@ func (db *Database) NetSetLastScan(n *model.Network, t time.Time) error {
 EXEC_QUERY:
 	if _, err = stmt.Exec(t.Unix(), n.ID); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		} else {
 			err = fmt.Errorf("cannot update scan timestamp of Network %s: %w",
@@ -134,7 +134,7 @@ func (db *Database) NetSetName(n *model.Network, name string) error {
 EXEC_QUERY:
 	if _, err = stmt.Exec(name, n.ID); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		} else {
 			err = fmt.Errorf("cannot update scan timestamp of Network %s: %w",
@@ -171,7 +171,7 @@ func (db *Database) NetGetByID(id int64) (*model.Network, error) {
 EXEC_QUERY:
 	if rows, err = stmt.Query(id); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		}
 
@@ -230,7 +230,7 @@ func (db *Database) NetGetAll() ([]*model.Network, error) {
 EXEC_QUERY:
 	if rows, err = stmt.Query(); err != nil {
 		if worthARetry(err) {
-			waitForRetry()
+			waitForRetry(1)
 			goto EXEC_QUERY
 		}
 
