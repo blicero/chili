@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-10-31 14:07:43 krylon>
+# Time-stamp: <2026-11-03 12:00:03 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,65 +8,65 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [37/40]
+* Chili [39/40]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-10-31 Sa 14:07]
-   | Headline                                         | Time       |            |          |      |      |
-   |--------------------------------------------------+------------+------------+----------+------+------|
-   | *Total time*                                     | *3d 23:24* |            |          |      |      |
-   |--------------------------------------------------+------------+------------+----------+------+------|
-   | *Chili [37/40]*                                  | *3d 23:24* |            |          |      |      |
-   | \_  /Components [36/38]/                         |            | /3d 19:52/ |          |      |      |
-   | \_    Data model [0/0]                           |            |            |     8:50 |      |      |
-   | \_    Database [1/1]                             |            |            |     7:34 |      |      |
-   | \_      De-serialize attributes                  |            |            |          | 0:18 |      |
-   | \_      Pool                                     |            |            |          | 0:02 |      |
-   | \_      Testing                                  |            |            |          | 0:44 |      |
-   | \_    Network Scanner [3/3]                      |            |            |    13:11 |      |      |
-   | \_      Don't log hosts unless they are new      |            |            |          | 0:06 |      |
-   | \_      Set LastScan timestamp on Network        |            |            |          | 0:51 |      |
-   | \_      Avoid adding devices we already know     |            |            |          | 0:33 |      |
-   | \_    Configuration [0/0]                        |            |            |     1:51 |      |      |
-   | \_    Host Probe [20/21]                         |            |            | 1d 17:10 |      |      |
-   | \_      Introspection much?                      |            |            |          | 8:33 |      |
-   | \_      Break up host probe into multiple...     |            |            |          | 7:30 |      |
-   | \_      Make intervals for different probes...   |            |            |          | 0:16 |      |
-   | \_      Determine Device Class                   |            |            |          | 0:55 |      |
-   | \_      Make use of sudo and alternatives...     |            |            |          | 0:37 |      |
-   | \_      Consider device class                    |            |            |          | 0:20 |      |
-   | \_      Scheduling                               |            |            |          | 1:13 |      |
-   | \_      Device Info                              |            |            |          | 4:09 |      |
-   | \_      Running services [0/0]                   |            |            |          | 4:21 |      |
-   | \_      SNMP [0/0]                               |            |            |          | 5:14 |      |
-   | \_      Packages [7/7]                           |            |            |          | 1:57 |      |
-   | \_        Debian                                 |            |            |          |      | 0:20 |
-   | \_        OpenBSD                                |            |            |          |      | 0:07 |
-   | \_        NetBSD                                 |            |            |          |      | 0:17 |
-   | \_        Fedora                                 |            |            |          |      | 0:11 |
-   | \_        openSUSE                               |            |            |          |      | 0:40 |
-   | \_      Uptime                                   |            |            |          | 0:13 |      |
-   | \_      Refactor for easier testing              |            |            |          | 0:29 |      |
-   | \_    Nexus [0/0]                                |            |            |     1:17 |      |      |
-   | \_    Web UI [8/9]                               |            |            |    16:38 |      |      |
-   | \_      Edit Networks [0/0]                      |            |            |          | 5:18 |      |
-   | \_      Display Device Attributes more prettily  |            |            |          | 3:12 |      |
-   | \_      Display urgent situations prominently... |            |            |          | 1:02 |      |
-   | \_        Overview                               |            |            |          |      | 0:52 |
-   | \_      Menu for Devices                         |            |            |          | 2:01 |      |
-   | \_      Render attributes properly               |            |            |          | 0:31 |      |
-   | \_      Trigger Probe run                        |            |            |          | 0:37 |      |
-   | \_    Main [3/3]                                 |            |            |     1:21 |      |      |
-   | \_      Allow number of scanners xor probes...   |            |            |          | 0:04 |      |
-   | \_      Integrate Configuration parser           |            |            |          | 0:30 |      |
-   | \_      Profiling                                |            |            |          | 0:44 |      |
-   | \_  /Bugs [1/2]/                                 |            | /3:32/     |          |      |      |
-   | \_    The little probe that could... get...      |            |            |     3:14 |      |      |
-   | \_    Parse output of dnf on Fedora              |            |            |     0:18 |      |      |
+   #+CAPTION: Clock summary at [2026-11-03 Di 12:00]
+   | Headline                                         | Time      |            |          |      |      |
+   |--------------------------------------------------+-----------+------------+----------+------+------|
+   | *Total time*                                     | *4d 2:10* |            |          |      |      |
+   |--------------------------------------------------+-----------+------------+----------+------+------|
+   | *Chili [39/40]*                                  | *4d 2:10* |            |          |      |      |
+   | \_  /Components [36/38]/                         |           | /3d 19:52/ |          |      |      |
+   | \_    Data model [0/0]                           |           |            |     8:50 |      |      |
+   | \_    Database [1/1]                             |           |            |     7:34 |      |      |
+   | \_      De-serialize attributes                  |           |            |          | 0:18 |      |
+   | \_      Pool                                     |           |            |          | 0:02 |      |
+   | \_      Testing                                  |           |            |          | 0:44 |      |
+   | \_    Network Scanner [3/3]                      |           |            |    13:11 |      |      |
+   | \_      Don't log hosts unless they are new      |           |            |          | 0:06 |      |
+   | \_      Set LastScan timestamp on Network        |           |            |          | 0:51 |      |
+   | \_      Avoid adding devices we already know     |           |            |          | 0:33 |      |
+   | \_    Configuration [0/0]                        |           |            |     1:51 |      |      |
+   | \_    Host Probe [21/21]                         |           |            | 1d 17:10 |      |      |
+   | \_      Introspection much?                      |           |            |          | 8:33 |      |
+   | \_      Break up host probe into multiple...     |           |            |          | 7:30 |      |
+   | \_      Make intervals for different probes...   |           |            |          | 0:16 |      |
+   | \_      Determine Device Class                   |           |            |          | 0:55 |      |
+   | \_      Make use of sudo and alternatives...     |           |            |          | 0:37 |      |
+   | \_      Consider device class                    |           |            |          | 0:20 |      |
+   | \_      Scheduling                               |           |            |          | 1:13 |      |
+   | \_      Device Info                              |           |            |          | 4:09 |      |
+   | \_      Running services [0/0]                   |           |            |          | 4:21 |      |
+   | \_      SNMP [0/0]                               |           |            |          | 5:14 |      |
+   | \_      Packages [7/7]                           |           |            |          | 1:57 |      |
+   | \_        Debian                                 |           |            |          |      | 0:20 |
+   | \_        OpenBSD                                |           |            |          |      | 0:07 |
+   | \_        NetBSD                                 |           |            |          |      | 0:17 |
+   | \_        Fedora                                 |           |            |          |      | 0:11 |
+   | \_        openSUSE                               |           |            |          |      | 0:40 |
+   | \_      Uptime                                   |           |            |          | 0:13 |      |
+   | \_      Refactor for easier testing              |           |            |          | 0:29 |      |
+   | \_    Nexus [0/0]                                |           |            |     1:17 |      |      |
+   | \_    Web UI [8/9]                               |           |            |    16:38 |      |      |
+   | \_      Edit Networks [0/0]                      |           |            |          | 5:18 |      |
+   | \_      Display Device Attributes more prettily  |           |            |          | 3:12 |      |
+   | \_      Display urgent situations prominently... |           |            |          | 1:02 |      |
+   | \_        Overview                               |           |            |          |      | 0:52 |
+   | \_      Menu for Devices                         |           |            |          | 2:01 |      |
+   | \_      Render attributes properly               |           |            |          | 0:31 |      |
+   | \_      Trigger Probe run                        |           |            |          | 0:37 |      |
+   | \_    Main [3/3]                                 |           |            |     1:21 |      |      |
+   | \_      Allow number of scanners xor probes...   |           |            |          | 0:04 |      |
+   | \_      Integrate Configuration parser           |           |            |          | 0:30 |      |
+   | \_      Profiling                                |           |            |          | 0:44 |      |
+   | \_  /Bugs [2/2]/                                 |           | /6:18/     |          |      |      |
+   | \_    The little probe that could... get...      |           |            |     6:00 |      |      |
+   | \_    Parse output of dnf on Fedora              |           |            |     0:18 |      |      |
    #+END:
 ** Components [36/38]
    :PROPERTIES:
@@ -158,7 +158,7 @@
     CLOCK: [2026-08-12 Mi 11:57]--[2026-08-12 Mi 13:35] =>  1:38
     :END:
     At least for configuring the log levels, that would be great.
-*** Host Probe [20/21]
+*** Host Probe [21/21]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -173,7 +173,8 @@
     CLOCK: [2026-07-11 Sa 10:25]--[2026-07-11 Sa 10:50] =>  0:25
     CLOCK: [2026-07-10 Fr 10:57]--[2026-07-10 Fr 12:25] =>  1:28
     :END:
-**** TODO Introspection much?
+**** DONE Introspection much?
+     CLOSED: [2026-11-02 Mo 11:17]
      :LOGBOOK:
      CLOCK: [2026-10-31 Sa 11:48]--[2026-10-31 Sa 14:07] =>  2:19
      CLOCK: [2026-10-31 Sa 07:57]--[2026-10-31 Sa 08:36] =>  0:39
@@ -462,13 +463,16 @@
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
    :END:
-** Bugs [1/2]
+** Bugs [2/2]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
    :END:
-*** TODO The little probe that could... get stuck?
+*** DONE The little probe that could... get stuck?
+     CLOSED: [2026-11-03 Di 11:58]
      :LOGBOOK:
+     CLOCK: [2026-11-03 Di 11:10]--[2026-11-03 Di 11:58] =>  0:48
+     CLOCK: [2026-11-02 Mo 11:17]--[2026-11-02 Mo 13:15] =>  1:58
      CLOCK: [2026-10-30 Fr 10:41]--[2026-10-30 Fr 10:41] =>  0:00
      CLOCK: [2026-10-30 Fr 10:17]--[2026-10-30 Fr 10:23] =>  0:06
      CLOCK: [2026-07-22 Mi 10:50]--[2026-07-22 Mi 13:16] =>  2:26
@@ -487,6 +491,12 @@
      returning it to the pool.
      However, that appears not to have fixed the problem. I am not even 100%
      if it is related to the DBPool at all. 😞
+     [2026-11-02 Mo 11:17] As far as I can tell, the problem is the result of
+     database lock contention. I still have to figure out what exactly is
+     happening, but at least we know where to look now.
+     [2026-11-03 Di 11:58] I found a kind of solution, I set the size of the
+     database pool for the Probe to *1*. Performance seems to be fine, and the
+     Probes now run to completion. Nice
 *** DONE Parse output of dnf on Fedora
     CLOSED: [2026-10-30 Fr 10:41]
     :LOGBOOK:
