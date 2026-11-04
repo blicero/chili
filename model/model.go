@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-11 17:06:58 krylon>
+// Time-stamp: <2026-11-03 13:20:52 krylon>
 
 package model
 
@@ -79,15 +79,15 @@ func (n *Network) Enumerate(q chan<- net.IP) error {
 
 // Device is a networked computer.
 type Device struct {
-	ID          int64
-	NetID       int64
-	Name        string
-	Addr        net.IP
-	Added       time.Time
-	LastContact time.Time
-	OS          string
-	Class       device.Class
-	Active      bool
+	ID          int64        `json:"id"`
+	NetID       int64        `json:"net_id"`
+	Name        string       `json:"name"`
+	Addr        net.IP       `json:"addr"`
+	Added       time.Time    `json:"added"`
+	LastContact time.Time    `json:"last_contact"`
+	OS          string       `json:"os"`
+	Class       device.Class `json:"class"`
+	Active      bool         `json:"active"`
 }
 
 // NewDevice creates a new Device.
