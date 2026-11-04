@@ -1,6 +1,6 @@
 {{ define "device_details" }}
 {{/* Created on 27. 07. 2026 */}}
-{{/* Time-stamp: <2026-08-11 12:32:44 krylon> */}}
+{{/* Time-stamp: <2026-11-04 11:39:37 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -67,6 +67,16 @@
           {{ fmt_float (index .Value.Load 1) }} /
           {{ fmt_float (index .Value.Load 2) }}
           {{ end }}
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <a href="/device/{{ .Device.ID }}/edit">
+            <button class="btn btn-primary">
+              Edit
+            </button>
+          </a>
         </td>
       </tr>
 

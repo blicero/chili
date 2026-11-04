@@ -1,0 +1,122 @@
+{{ define "device_form" }}
+{{/* Created on 03. 11. 2026 */}}
+{{/* Time-stamp: <2026-11-04 12:07:29 krylon> */}}
+<!DOCTYPE html>
+<html>
+  {{ template "head" . }}
+
+  <body>
+    {{ template "intro" . }}
+
+    <script>
+     const origDev = {
+             "id": {{ .Dev.ID }},
+             "net_id": {{ .Dev.NetID }},
+             "name": "{{ .Dev.Name }}",
+             "addr": "{{ .Dev.Addr }}",
+             "added": "{{ fmt_date .Dev.Added }}",
+             "last_contact": "{{ fmt_date .Dev.LastContact }}",
+             "os": "{{ .Dev.OS }}",
+             "class": "{{ .Dev.Class }}",
+             "classInt": {{ .Dev.Class.Int64 }},
+             "active": {{ .Dev.Active }},
+     }
+    </script>
+
+    <table class="horizontal">
+      <tbody>
+
+        <tr>
+          <th>Name:</th>
+          <td>
+            <input
+              type="text"
+              name="name"
+              placeholder="{{ .Dev.Name }}"
+              id="dev-name"
+              value="{{ .Dev.Name }}" />
+          </td>
+        </tr>
+
+        <tr>
+          <th>Address:</th>
+          <td>
+            <input
+              type="text"
+              name="addr"
+              placeholder="{{ .Dev.Addr }}"
+              id="dev-addr"
+              value="{{ .Dev.Addr }}" />
+          </td>
+        </tr>
+
+        <tr>
+          <th>OS:</th>
+          <td>
+            <input
+              type="text"
+              name="os"
+              placeholder="{{ .Dev.OS }}"
+              id="dev-os"
+              value="{{ .Dev.OS }}" />
+          </td>
+        </tr>
+
+        <tr>
+          <th>Class</th>
+          <td>
+            {{ $class := .Dev.Class.Int64 }}
+            <select
+              name="class"
+              id="dev-class">
+              {{ range .Classes }}
+              <option
+                {{ if (eq $class .Int64) }} selected {{ end }}
+                value="{{ .Int64 }}">
+                {{ . }}
+              </option>
+              {{ end }}
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <th>Active?</th>
+          <td>
+            <input
+              type="checkbox"
+              name="active"
+              id="dev-active"
+              {{ if .Dev.Active }}checked{{ end }}
+              switch
+              class="form-check-input"
+              role="switch" />
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <button
+              type="button"
+              class="btn btn-danger"
+              onclick="dev_form_reset({{ .Dev.ID }});" >
+              Cancel
+            </button>
+          </td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-success"
+              onclick="dev_form_submit({{ .Dev.ID }});" >
+              Save
+            </button>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    {{ template "footer" . }}
+  </body>
+</html>
+{{ end }}

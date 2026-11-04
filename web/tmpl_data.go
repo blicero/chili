@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 05. 2020 by Benjamin Walkenhorst
 // (c) 2020 Benjamin Walkenhorst
-// Time-stamp: <2026-08-12 10:08:05 krylon>
+// Time-stamp: <2026-11-04 10:53:04 krylon>
 //
 // This file contains data structures to be passed to HTML templates.
 
@@ -11,6 +11,7 @@ package web
 import (
 	"github.com/blicero/chili/model"
 	"github.com/blicero/chili/model/attribute"
+	"github.com/blicero/chili/model/device"
 )
 
 type notification struct {
@@ -48,4 +49,10 @@ type tmplDataNetworkAll struct {
 type tmplDataNetworkDetails struct {
 	tmplDataBase
 	Network *model.Network
+}
+
+type tmplDataDeviceForm struct {
+	tmplDataBase
+	Dev     *model.Device
+	Classes []device.Class
 }

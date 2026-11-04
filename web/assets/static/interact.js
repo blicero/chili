@@ -1,4 +1,4 @@
-// Time-stamp: <2026-08-13 12:05:55 krylon>
+// Time-stamp: <2026-11-04 12:46:57 krylon>
 // -*- mode: javascript; coding: utf-8; -*-
 // Copyright 2015-2020 Benjamin Walkenhorst <krylon@gmx.net>
 //
@@ -289,3 +289,57 @@ function net_save() {
     msg_add(msg, 1)
     console.log(msg)
 } // function net_save()
+
+function dev_form_reset(id=0) {
+    $("#dev-name")[0].value = origDev.name
+    $("#dev-addr")[0].value = origDev.addr
+    $("#dev-os")[0].value = origDev.os
+    $("#dev-class")[0].selectedIndex = origDev.classInt
+} // function dev_form_reset(id=0)
+
+function dev_form_submit(id) {
+    const url = `/ajax/device/${id}/edit`
+
+    const name_id = "#dev-name"
+    const name_input = $(name_id)[0]
+    const name = name_input.value
+
+    const addr_id = "#dev-addr"
+    const addr_input = $(addr_id)[0]
+    const addr = addr_input.value
+
+    const os_id = "#dev-os"
+    const os_input = $(os_id)[0]
+    const os = os_input.value
+
+    const cls_id = "#dev-class"
+    const cls_input = $(cls_id)[0]
+    const cls = cls_input.value
+
+    const active_id = "#dev-active"
+    const active_input = $(active_id)[0]
+    const active = active_input.checked
+
+    $.post(
+        url,
+        {
+            "name":   name,
+            "addr":   addr,
+            "os":     os,
+            "class":  cls,
+            "active": active
+        },
+        (res) => {
+            if (res.status) {
+                history.go(-1)
+            } else {
+                const msg = `Failed to update device ${name}: ${res.message}`
+                console.error(msg)
+                msg_add(msg, 2)
+            }
+        },
+        'json').fail((xhr, txt, err) => {
+            window.alert(txt + " " + err)
+            console.error(txt, err)
+        })
+} // function dev_form_submit(id)

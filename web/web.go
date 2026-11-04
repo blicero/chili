@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-12 09:43:00 krylon>
+// Time-stamp: <2026-11-04 11:39:11 krylon>
 
 package web
 
@@ -32,6 +32,7 @@ import (
 	"github.com/blicero/chili/logdomain"
 	"github.com/blicero/chili/model"
 	"github.com/blicero/chili/model/attribute"
+	"github.com/blicero/chili/model/device"
 	"github.com/gorilla/mux"
 )
 
@@ -145,30 +146,23 @@ func Create(addr string, pq chan<- control.Message) (*Server, error) {
 	srv.router.HandleFunc("/static/{file}", srv.handleStaticFile)
 	srv.router.HandleFunc("/{index:(?i:index|main|start)$}", srv.handleMain)
 	srv.router.HandleFunc("/device/{id:(?:\\d+)$}", srv.handleDeviceDetails)
+	srv.router.HandleFunc("/device/{id:(?:\\d+)}/edit", srv.handleDeviceForm)
 	srv.router.HandleFunc("/network/all", srv.handleNetworkAll)
 	srv.router.HandleFunc("/network/{id:(?:\\d+)$}", srv.handleNetworkDetails)
-	// srv.router.HandleFunc("/host/all", srv.handleHostsView)
-	// srv.router.HandleFunc("/host/{name}/chart", srv.handleHostChart)
-	// srv.router.HandleFunc("/host/{name}", srv.handleSingleHostView)
 
 	// AJAX Handlers
 	srv.router.HandleFunc(
 		"/ajax/beacon",
 		srv.handleBeacon)
-
 	srv.router.HandleFunc(
 		"/ajax/net/create",
-		srv.handleAjaxNetAdd,
-	)
-
-	srv.router.HandleFunc("/ajax/run-probe", srv.handleRunProbe)
-
-	// Web service endpoints
-	// srv.router.HandleFunc("/ws/get_timestamp/{name:(?:\\w+)$}",
-	// 	srv.handleClientGetTimestamp)
-
-	// srv.router.HandleFunc("/ws/submit_data/{name:(?:\\w+)$}",
-	// 	srv.handleClientData)
+		srv.handleAjaxNetAdd)
+	srv.router.HandleFunc(
+		"/ajax/device/{id:(?:\\d+)}/edit",
+		srv.handleAjaxDeviceSubmit)
+	srv.router.HandleFunc(
+		"/ajax/run-probe",
+		srv.handleRunProbe)
 
 	return srv, nil
 } // func Create(addr string) (*Server, error)
@@ -470,6 +464,12 @@ func (srv *Server) handleNetworkDetails(w http.ResponseWriter, r *http.Request) 
 		srv.log.Printf("[ERROR] %s\n", msg)
 		srv.sendErrorMessage(w, msg)
 		return
+	} else if data.Network == nil {
+		msg = fmt.Sprintf("Network %d was not found",
+			netID)
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
 	} else if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
 		msg = fmt.Sprintf("Could not find template %q", tmplName)
 		srv.log.Println("[CRITICAL] " + msg)
@@ -487,6 +487,73 @@ func (srv *Server) handleNetworkDetails(w http.ResponseWriter, r *http.Request) 
 		srv.sendErrorMessage(w, msg)
 	}
 } // func (srv *Server) handleNetworkDetails(w http.ResponseWriter, r *http.Request)
+
+func (srv *Server) handleDeviceForm(w http.ResponseWriter, r *http.Request) {
+	srv.log.Printf("[TRACE] Handle %s from %s\n",
+		r.URL,
+		r.RemoteAddr)
+
+	const tmplName = "device_form"
+	var (
+		err        error
+		msg, idStr string
+		db         *database.Database
+		vars       map[string]string
+		devID      int64
+		tmpl       *template.Template
+		data       = tmplDataDeviceForm{
+			tmplDataBase: tmplDataBase{
+				Debug: common.Debug,
+				URL:   r.URL.String(),
+			},
+			Classes: device.All(),
+		}
+	)
+
+	vars = mux.Vars(r)
+	idStr = vars["id"]
+
+	if devID, err = strconv.ParseInt(idStr, 10, 64); err != nil {
+		msg = fmt.Sprintf("Cannot parse network ID %q: %s",
+			idStr,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if data.Dev, err = db.DeviceGetByID(devID); err != nil {
+		msg = fmt.Sprintf("Failed to lookup Device %d in database: %s",
+			devID,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if data.Dev == nil {
+		msg = fmt.Sprintf("Unknown Device %d", devID)
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
+		msg = fmt.Sprintf("Unknown template %q", tmplName)
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	data.Title = fmt.Sprintf("Edit Device %s", data.Dev.Name)
+
+	w.Header().Set("Cache-Control", noCache)
+	if err = tmpl.Execute(w, &data); err != nil {
+		msg = fmt.Sprintf("Error rendering template %q: %s",
+			tmplName,
+			err.Error())
+		srv.sendErrorMessage(w, msg)
+	}
+} // func (srv *Server) handleDeviceForm(w http.ResponseWriter, r *http.Request)
 
 func (srv *Server) handleNotFound(w http.ResponseWriter, r *http.Request) {
 	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
@@ -602,6 +669,103 @@ SEND:
 	w.WriteHeader(200)
 	w.Write(buf) // nolint: errcheck,gosec
 } // func (srv *Server) handleAjaxNetAdd(w http.ResponseWriter, r *http.Request)
+
+func (srv *Server) handleAjaxDeviceSubmit(w http.ResponseWriter, r *http.Request) {
+	srv.log.Printf("[TRACE] Handle %s from %s\n",
+		r.URL,
+		r.RemoteAddr)
+
+	var (
+		err                 error
+		db                  *database.Database
+		buf                 []byte
+		dev                 model.Device
+		msg, addrStr, idStr string
+		classStr, activeStr string
+		cls                 int64
+		vars                map[string]string
+		data                = ajaxResponseNetAdd{
+			ajaxData: ajaxData{
+				Timestamp: time.Now(),
+			},
+		}
+	)
+
+	vars = mux.Vars(r)
+	idStr = vars["id"]
+
+	if err = r.ParseForm(); err != nil {
+		msg = fmt.Sprintf("cannot parse form data: %s",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		buf = errJSON(msg)
+		goto SEND
+	}
+
+	dev.Name = r.FormValue("name")
+	addrStr = r.FormValue("addr")
+	dev.OS = r.FormValue("os")
+	classStr = r.FormValue("class")
+	activeStr = r.FormValue("active")
+
+	dev.Addr = net.ParseIP(addrStr)
+	if dev.ID, err = strconv.ParseInt(idStr, 10, 64); err != nil {
+		msg = fmt.Sprintf("cannot parse ID %q: %s",
+			idStr,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		buf = errJSON(msg)
+		goto SEND
+	} else if dev.Active, err = strconv.ParseBool(activeStr); err != nil {
+		msg = fmt.Sprintf("cannot parse active flag %q: %s",
+			activeStr,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		buf = errJSON(msg)
+		goto SEND
+	} else if cls, err = strconv.ParseInt(classStr, 10, 8); err != nil {
+		msg = fmt.Sprintf("cannot parse device class %q: %s",
+			classStr,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		buf = errJSON(msg)
+		goto SEND
+	}
+
+	dev.Class = device.Class(cls)
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if err = db.DeviceUpdate(&dev); err != nil {
+		msg = fmt.Sprintf("failed to update Device %d (%s): %s",
+			dev.ID,
+			dev.Name,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		buf = errJSON(msg)
+		goto SEND
+	}
+
+	data.Status = true
+	data.Message = fmt.Sprintf("device %d (%s) was updated successfully",
+		dev.ID,
+		dev.Name)
+
+	if buf, err = json.Marshal(&data); err != nil {
+		msg = fmt.Sprintf("Failed to serialize response: %s",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		buf = errJSON(msg)
+		goto SEND
+	}
+
+SEND:
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", noCache)
+	w.WriteHeader(200)
+	w.Write(buf) // nolint: errcheck,gosec
+} // func (srv *Server) handleAjaxDeviceSubmit(w http.ResponseWriter, r *http.Request)
 
 func (srv *Server) handleBeacon(w http.ResponseWriter, r *http.Request) {
 	var (
