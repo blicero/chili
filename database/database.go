@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-03 11:31:16 krylon>
+// Time-stamp: <2026-11-04 12:33:15 krylon>
 //
 // This files implements the database interface itself.
 
@@ -71,7 +71,7 @@ func worthARetry(e error) bool {
 // before giving up.
 const (
 	retryDelay = 16
-	maxRetry   = 32
+	maxRetry   = 10
 )
 
 func waitForRetry(attemptNo int) {

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-02 12:40:44 krylon>
+// Time-stamp: <2026-11-04 12:14:38 krylon>
 
 package database
 
@@ -251,6 +251,59 @@ EXEC_QUERY:
 	d.Active = active
 	return nil
 } // func (db *Database) DeviceSetActive(d *model.Device, class device.Class) error
+
+// DeviceUpdate sets all properties at once.
+func (db *Database) DeviceUpdate(d *model.Device) error {
+	const qid query.ID = query.DeviceUpdate
+	var (
+		err      error
+		stmt     *sql.Stmt
+		retryCnt = 0
+	)
+
+	if d == nil {
+		db.log.Println("[ERROR] Cannot update Device, pointer is nil")
+		return ErrInvalidValue
+	} else if d.ID <= 0 {
+		db.log.Printf("[ERROR] Cannot update Device %s (%s) - missing ID!\n",
+			d.Name,
+			d.Addr)
+		return ErrInvalidValue
+	} else if stmt, err = db.getQuery(qid); err != nil {
+		db.log.Printf("[ERROR] Failed to prepare query %s: %s\n",
+			qid,
+			err.Error())
+		panic(err)
+	} else if db.tx != nil {
+		stmt = db.tx.Stmt(stmt)
+	}
+
+EXEC_QUERY:
+	if _, err = stmt.Exec(d.Name, d.Addr.String(), d.OS, d.Class, d.Active, d.ID); err != nil {
+		if worthARetry(err) {
+			if retryCnt++; retryCnt > maxRetry {
+				err = fmt.Errorf("maximum number of retries reached for %s (%d / %s)",
+					qid,
+					d.ID,
+					d.Name)
+				db.log.Printf("[ERROR] %s\n",
+					err.Error())
+				return err
+			}
+			waitForRetry(retryCnt)
+			goto EXEC_QUERY
+		} else {
+			err = fmt.Errorf("cannot update active Device %s (%s): %w",
+				d.Name,
+				d.Addr,
+				err)
+			db.log.Printf("[ERROR] %s\n", err.Error())
+			return err
+		}
+	}
+
+	return nil
+}
 
 // DeviceGetByID loads a Device by its ID, if such a record exists in the Datbase.
 func (db *Database) DeviceGetByID(id int64) (*model.Device, error) {

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-05 11:36:55 krylon>
+// Time-stamp: <2026-11-04 11:28:06 krylon>
 //
 // This files contains the SQL queries we intend to run on the database.
 
@@ -43,6 +43,11 @@ RETURNING id
 	query.DeviceSetClass:       "UPDATE device SET class = ? WHERE id = ?",
 	query.DeviceSetName:        "UPDATE device SET name = ? WHERE id = ?",
 	query.DeviceSetActive:      "UPDATE device SET active = ? WHERE id = ?",
+	query.DeviceUpdate: `
+UPDATE device
+    SET name = ?, addr = ?, os = ?, class = ?, active = ?
+    WHERE id = ?
+`,
 	query.DeviceGetByID: `
 SELECT
     net_id,
