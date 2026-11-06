@@ -1,5 +1,5 @@
 # Binaries for programs and plugins
-# Time-stamp: <2026-10-30 11:57:00 krylon>
+# Time-stamp: <2026-11-06 13:59:28 krylon>
 *.exe
 *.dll
 *.so
@@ -16,6 +16,7 @@
 .*
 *.log
 *TAGS*
+tags
 bak.*
 *.bak
 
@@ -33,6 +34,10 @@ __pycache__
 # Files left by tesseract
 *.bin
 *.dat
+
+# Cscope / Codequery
+cscope.*
+myproject.db
 
 monkeytype.sqlite3
 
