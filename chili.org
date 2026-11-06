@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-11-04 12:44:22 krylon>
+# Time-stamp: <2026-11-06 11:31:30 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,22 +8,22 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [40/41]
+* Chili [41/43]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-11-04 Mi 12:44]
+   #+CAPTION: Clock summary at [2026-11-06 Fr 11:31]
    | Headline                                         | Time      |            |          |      |      |
    |--------------------------------------------------+-----------+------------+----------+------+------|
-   | *Total time*                                     | *4d 4:37* |            |          |      |      |
+   | *Total time*                                     | *4d 5:05* |            |          |      |      |
    |--------------------------------------------------+-----------+------------+----------+------+------|
-   | *Chili [40/41]*                                  | *4d 4:37* |            |          |      |      |
-   | \_  /Components [37/38]/                         |           | /3d 22:10/ |          |      |      |
+   | *Chili [41/43]*                                  | *4d 5:05* |            |          |      |      |
+   | \_  /Components [38/40]/                         |           | /3d 22:38/ |          |      |      |
    | \_    Data model [0/0]                           |           |            |     8:50 |      |      |
-   | \_    Database [1/1]                             |           |            |     7:34 |      |      |
+   | \_    Database [1/2]                             |           |            |     7:34 |      |      |
    | \_      De-serialize attributes                  |           |            |          | 0:18 |      |
    | \_      Pool                                     |           |            |          | 0:02 |      |
    | \_      Testing                                  |           |            |          | 0:44 |      |
@@ -31,7 +31,8 @@
    | \_      Don't log hosts unless they are new      |           |            |          | 0:06 |      |
    | \_      Set LastScan timestamp on Network        |           |            |          | 0:51 |      |
    | \_      Avoid adding devices we already know     |           |            |          | 0:33 |      |
-   | \_    Configuration [0/0]                        |           |            |     1:51 |      |      |
+   | \_    Configuration [1/1]                        |           |            |     2:13 |      |      |
+   | \_      Make Probe and Scan intervals...         |           |            |          | 0:22 |      |
    | \_    Host Probe [21/21]                         |           |            | 1d 17:10 |      |      |
    | \_      Introspection much?                      |           |            |          | 8:33 |      |
    | \_      Break up host probe into multiple...     |           |            |          | 7:30 |      |
@@ -52,9 +53,9 @@
    | \_      Uptime                                   |           |            |          | 0:13 |      |
    | \_      Refactor for easier testing              |           |            |          | 0:29 |      |
    | \_    Nexus [0/0]                                |           |            |     1:17 |      |      |
-   | \_    Web UI [8/9]                               |           |            |    18:56 |      |      |
+   | \_    Web UI [8/9]                               |           |            |    19:02 |      |      |
    | \_      Edit Networks [0/0]                      |           |            |          | 5:18 |      |
-   | \_      Edit Devices [0/0]                       |           |            |          | 2:18 |      |
+   | \_      Edit Devices [0/0]                       |           |            |          | 2:24 |      |
    | \_      Display Device Attributes more prettily  |           |            |          | 3:12 |      |
    | \_      Display urgent situations prominently... |           |            |          | 1:02 |      |
    | \_        Overview                               |           |            |          |      | 0:52 |
@@ -72,7 +73,7 @@
    | \_    The little probe that could... get...      |           |            |     6:00 |      |      |
    | \_    Parse output of dnf on Fedora              |           |            |     0:18 |      |      |
    #+END:
-** Components [37/38]
+** Components [38/40]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -96,7 +97,7 @@
      for each kind of property, or one table that stores JSON data? I've been
      meaning to play around with SQLite's JSON support, and this would be a
      good use case. So, JSON it is.
-*** Database [1/1]
+*** Database [1/2]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -123,6 +124,11 @@
      I almost forgot about this.
      Fortunately, I could practically copy the implementation verbatim from a
      previous project.
+**** TODO Access patterns [0/0]
+     I have spent so much time chasing a presumed deadlock in the Probe that
+     ultimately turned out to be database-locking-related.
+     And just as I thought I was done, I run into the same issue again, this
+     time from the web UI. 😫
 **** Testing
      :LOGBOOK:
      CLOCK: [2026-07-08 Mi 12:38]--[2026-07-08 Mi 13:12] =>  0:34
@@ -155,13 +161,18 @@
      :LOGBOOK:
      CLOCK: [2026-07-20 Mo 10:49]--[2026-07-20 Mo 11:22] =>  0:33
      :END:
-*** DONE Configuration [0/0]
+*** DONE Configuration [1/1]
     CLOSED: [2026-08-13 Do 10:37]
     :LOGBOOK:
     CLOCK: [2026-08-13 Do 10:24]--[2026-08-13 Do 10:37] =>  0:13
     CLOCK: [2026-08-12 Mi 11:57]--[2026-08-12 Mi 13:35] =>  1:38
     :END:
     At least for configuring the log levels, that would be great.
+**** DONE Make Probe and Scan intervals configurable
+     CLOSED: [2026-11-06 Fr 11:31]
+     :LOGBOOK:
+     CLOCK: [2026-11-06 Fr 11:09]--[2026-11-06 Fr 11:31] =>  0:22
+     :END:
 *** Host Probe [21/21]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
@@ -396,6 +407,7 @@
      :VISIBILITY: children
      :END:
      :LOGBOOK:
+     CLOCK: [2026-11-06 Fr 11:02]--[2026-11-06 Fr 11:08] =>  0:06
      CLOCK: [2026-11-04 Mi 10:25]--[2026-11-04 Mi 12:43] =>  2:18
      :END:
 **** DONE Display Device Attributes more prettily
