@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-31 14:11:41 krylon>
+// Time-stamp: <2026-11-06 12:40:59 krylon>
 //
 // This file contains the SQL queries to initialize an empty database.
 
@@ -25,7 +25,7 @@ CREATE TABLE network (
 CREATE TABLE device (
     id INTEGER PRIMARY KEY,
     net_id INTEGER NOT NULL,
-    name TEXT NOT NULL,
+    name TEXT UNIQUE NOT NULL,
     addr TEXT UNIQUE NOT NULL,
     added INTEGER NOT NULL,
     last_contact INTEGER NOT NULL DEFAULT 0,
