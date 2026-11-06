@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-04 11:39:11 krylon>
+// Time-stamp: <2026-11-06 12:08:53 krylon>
 
 package web
 
@@ -93,7 +93,7 @@ func Create(addr string, pq chan<- control.Message) (*Server, error) {
 
 	if srv.log, err = common.GetLogger(logdomain.Web); err != nil {
 		return nil, err
-	} else if srv.pool, err = database.NewPool(poolSize); err != nil {
+	} else if srv.pool, err = database.NewPool(poolSize, false); err != nil {
 		srv.log.Printf("[CRITICAL] Failed to open Database connection pool: %s\n",
 			err.Error())
 		return nil, err

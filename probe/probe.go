@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 11:11:49 krylon>
+// Time-stamp: <2026-11-06 12:02:41 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -111,7 +111,7 @@ func Create(cnt int, interval time.Duration, userName string, keyPath ...string)
 		return nil, err
 	} else if err = p.initConfig(userName, keyPath...); err != nil {
 		return nil, err
-	} else if p.pool, err = database.NewPool(1); err != nil {
+	} else if p.pool, err = database.NewPool(1, false); err != nil {
 		p.log.Printf("[CRITICAL] Cannot open database connection pool: %s\n",
 			err.Error())
 		return nil, err

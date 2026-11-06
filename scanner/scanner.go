@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-28 19:26:00 krylon>
+// Time-stamp: <2026-11-06 12:02:41 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -73,7 +73,7 @@ func New(wcnt int) (*Scanner, error) {
 
 	if sc.log, err = common.GetLogger(logdomain.Scanner); err != nil {
 		return nil, err
-	} else if sc.dbPool, err = database.NewPool(max(wcnt+1, 2)); err != nil {
+	} else if sc.dbPool, err = database.NewPool(max(wcnt+1, 2), false); err != nil {
 		sc.log.Printf("[ERROR] Failed to create database pool: %s\n",
 			err.Error())
 		return nil, err

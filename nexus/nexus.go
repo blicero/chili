@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 10. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-07-10 13:38:57 krylon>
+// Time-stamp: <2026-11-06 12:02:41 krylon>
 
 // Package nexus provides a very primitive kind of message bus for the other
 // pieces of the appplication to talk to each other.
@@ -45,7 +45,7 @@ func New() (*Nexus, error) {
 
 	if nx.log, err = common.GetLogger(logdomain.Nexus); err != nil {
 		return nil, err
-	} else if nx.pool, err = database.NewPool(max(runtime.NumCPU()-2, 2)); err != nil {
+	} else if nx.pool, err = database.NewPool(max(runtime.NumCPU()-2, 2), false); err != nil {
 		nx.log.Printf("[CRITICAL] Failed to open database connection: %s\n",
 			err.Error())
 		return nil, err

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-04 12:33:15 krylon>
+// Time-stamp: <2026-11-06 11:59:53 krylon>
 //
 // This files implements the database interface itself.
 
@@ -94,16 +94,19 @@ type Database struct {
 	spNameCounter int
 	spNameCache   map[string]string
 	queries       map[query.ID]*sql.Stmt
+	readonly      bool
 }
 
 // Open opens a Database. If the database specified by the path does not exist,
 // yet, it is created and initialized.
-func Open(path string) (*Database, error) {
+func Open(path string, readonly bool) (*Database, error) {
 	var (
 		err      error
 		dbExists bool
+		mode     string
 		db       = &Database{
 			path:          path,
+			readonly:      readonly,
 			spNameCounter: 1,
 			spNameCache:   make(map[string]string),
 			queries:       make(map[query.ID]*sql.Stmt),
@@ -121,8 +124,15 @@ func Open(path string) (*Database, error) {
 		db.log.Printf("[DEBUG] Open database %s\n", path)
 	}
 
-	var connstring = fmt.Sprintf("%s?_locking=NORMAL&_journal=WAL&_fk=1&recursive_triggers=0&busy_timeout=2500",
-		path)
+	if readonly {
+		mode = "ro"
+	} else {
+		mode = "rwc"
+	}
+
+	var connstring = fmt.Sprintf("%s?_locking=NORMAL&mode=%s&_journal=WAL&_fk=1&recursive_triggers=0&busy_timeout=2500",
+		path,
+		mode)
 
 	if dbExists, err = krylib.Fexists(path); err != nil {
 		db.log.Printf("[ERROR] Failed to check if %s already exists: %s\n",

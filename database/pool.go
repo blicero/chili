@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-28 18:44:29 krylon>
+// Time-stamp: <2026-11-06 12:01:50 krylon>
 
 package database
 
@@ -22,20 +22,24 @@ type dblink struct {
 
 // Pool is a pool of database connections
 type Pool struct {
-	cnt   int
-	log   *log.Logger
-	link  *dblink
-	lock  sync.RWMutex
-	empty *sync.Cond
+	cnt      int
+	log      *log.Logger
+	link     *dblink
+	lock     sync.RWMutex
+	empty    *sync.Cond
+	readonly bool
 }
 
 // NewPool creates a Pool of database connections.
 // The number of connections to use is given by the
 // parameter cnt.
-func NewPool(cnt int) (*Pool, error) {
+func NewPool(cnt int, readonly bool) (*Pool, error) {
 	var (
 		err  error
-		pool = &Pool{cnt: cnt}
+		pool = &Pool{
+			cnt:      cnt,
+			readonly: readonly,
+		}
 	)
 
 	pool.empty = sync.NewCond(&pool.lock)
@@ -51,7 +55,7 @@ func NewPool(cnt int) (*Pool, error) {
 	for range cnt {
 		var link = &dblink{next: pool.link}
 
-		if link.db, err = Open(common.DbPath); err != nil {
+		if link.db, err = Open(common.DbPath, readonly); err != nil {
 			pool.log.Printf("[ERROR] Cannot open database: %s\n",
 				err.Error())
 			return nil, err
@@ -123,7 +127,7 @@ func (pool *Pool) GetNoWait() (*Database, error) {
 		pool.link = link.next
 		pool.cnt--
 		return link.db, nil
-	} else if db, err = Open(common.DbPath); err != nil {
+	} else if db, err = Open(common.DbPath, pool.readonly); err != nil {
 		pool.log.Printf("[ERROR] Error opening new database connection: %s",
 			err.Error())
 		return nil, err
@@ -177,7 +181,7 @@ var DBPool *Pool
 func InitPool(size int) error {
 	var err error
 
-	if DBPool, err = NewPool(size); err != nil {
+	if DBPool, err = NewPool(size, false); err != nil {
 		DBPool = nil
 		return err
 	}

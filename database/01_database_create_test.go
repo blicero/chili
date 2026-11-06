@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-01-09 15:42:57 krylon>
+// Time-stamp: <2026-11-06 12:00:09 krylon>
 
 package database
 
@@ -18,7 +18,7 @@ var tdb *Database
 func TestDBCreate(t *testing.T) {
 	var err error
 
-	if tdb, err = Open(common.DbPath); err != nil {
+	if tdb, err = Open(common.DbPath, false); err != nil {
 		tdb = nil
 		t.Fatalf("Cannot create database: %s",
 			err.Error())
