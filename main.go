@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-28 19:27:11 krylon>
+// Time-stamp: <2026-11-06 11:14:35 krylon>
 
 package main
 
@@ -47,6 +47,7 @@ func main() {
 		ticker                        *time.Ticker
 		sigQ                          chan os.Signal
 		pubKeys                       []string
+		pInterval                     time.Duration
 	)
 
 	flag.IntVar(
@@ -150,6 +151,10 @@ func main() {
 
 	common.PackageLevels[logdomain.Scanner] = "INFO"
 
+	if seconds(cfg.Probe.Interval) != common.DefaultProbeInterval {
+		pInterval = time.Second * seconds(cfg.Probe.Interval)
+	}
+
 	if scanWorkerCnt+probeWorkerCnt == 0 {
 		fmt.Fprintf(
 			os.Stderr,
@@ -163,7 +168,7 @@ func main() {
 			"Failed to create Scanner: %s\n",
 			err.Error())
 		os.Exit(1)
-	} else if p, err = probe.Create(probeWorkerCnt, username, pubKeys...); err != nil {
+	} else if p, err = probe.Create(probeWorkerCnt, pInterval, username, pubKeys...); err != nil {
 		fmt.Fprintf(
 			os.Stderr,
 			"Failed to create Probe: %s\n",

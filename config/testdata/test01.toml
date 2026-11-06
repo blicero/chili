@@ -1,4 +1,4 @@
-# Time-stamp: <2026-08-14 10:41:16 krylon>
+# Time-stamp: <2026-11-06 11:27:13 krylon>
 
 [Global]
 Debug = true
@@ -15,6 +15,7 @@ Interval = 3.141592
 Interval = 14400
 
 [Probe]
+Interval = 150
 Updates = 3600
 DiskSpace = 900
 Uptime = 60

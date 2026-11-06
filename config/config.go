@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 12. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-14 10:42:59 krylon>
+// Time-stamp: <2026-11-06 11:10:36 krylon>
 
 // Package config deals with the configuration file
 package config
@@ -32,6 +32,7 @@ Interval = 0.25
 Interval = 14400
 
 [Probe]
+Interval = 600
 Updates = 3600
 DiskSpace = 900
 Uptime = 60
@@ -137,6 +138,7 @@ func (s *Scan) Equal(other any) bool {
 
 // Probe defines the settings for the Device Probe
 type Probe struct {
+	Interval  int64
 	Updates   int64
 	DiskSpace int64
 	Uptime    int64
@@ -158,7 +160,8 @@ func (p *Probe) Equal(other any) bool {
 		return false
 	}
 
-	return (p.Updates == p2.Updates) &&
+	return (p.Interval == p2.Interval) &&
+		(p.Updates == p2.Updates) &&
 		(p.DiskSpace == p2.DiskSpace) &&
 		(p.Uptime == p2.Uptime) &&
 		(p.Packages == p2.Packages) &&

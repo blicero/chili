@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-03 11:44:18 krylon>
+// Time-stamp: <2026-11-06 11:11:49 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -88,13 +88,13 @@ type Probe struct {
 }
 
 // Create returns a fresh Probe.
-func Create(cnt int, userName string, keyPath ...string) (*Probe, error) {
+func Create(cnt int, interval time.Duration, userName string, keyPath ...string) (*Probe, error) {
 	var (
 		err error
 		p   = &Probe{
 			parCnt:   cnt,
 			clients:  make(map[int64]*ssh.Client),
-			interval: common.DefaultProbeInterval,
+			interval: interval,
 			privCmd:  make(map[int64]string),
 			pmap:     krylib.NewSyncMap[int, *probeState](),
 		}

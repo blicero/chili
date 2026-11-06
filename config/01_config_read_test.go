@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 15. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-08-14 10:42:32 krylon>
+// Time-stamp: <2026-11-06 11:27:19 krylon>
 
 package config
 
@@ -33,6 +33,7 @@ func TestReadNoConfig(t *testing.T) {
 				Interval: 14400,
 			},
 			Probe: Probe{
+				Interval:  600,
 				Updates:   3600,
 				DiskSpace: 900,
 				Uptime:    60,
@@ -89,6 +90,7 @@ func TestReadExampleConfig(t *testing.T) {
 				Interval: 14400,
 			},
 			Probe: Probe{
+				Interval:  150,
 				Updates:   3600,
 				DiskSpace: 900,
 				Uptime:    60,
