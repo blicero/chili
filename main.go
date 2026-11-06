@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 11:14:35 krylon>
+// Time-stamp: <2026-11-06 11:50:15 krylon>
 
 package main
 
@@ -47,7 +47,7 @@ func main() {
 		ticker                        *time.Ticker
 		sigQ                          chan os.Signal
 		pubKeys                       []string
-		pInterval                     time.Duration
+		pInterval                     = common.DefaultProbeInterval
 	)
 
 	flag.IntVar(
@@ -152,7 +152,7 @@ func main() {
 	common.PackageLevels[logdomain.Scanner] = "INFO"
 
 	if seconds(cfg.Probe.Interval) != common.DefaultProbeInterval {
-		pInterval = time.Second * seconds(cfg.Probe.Interval)
+		pInterval = seconds(cfg.Probe.Interval)
 	}
 
 	if scanWorkerCnt+probeWorkerCnt == 0 {
