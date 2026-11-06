@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-11-06 11:31:30 krylon>
+# Time-stamp: <2026-11-06 13:05:08 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,26 +8,28 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [41/43]
+* Chili [42/44]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-11-06 Fr 11:31]
+   #+CAPTION: Clock summary at [2026-11-06 Fr 13:05]
    | Headline                                         | Time      |            |          |      |      |
    |--------------------------------------------------+-----------+------------+----------+------+------|
-   | *Total time*                                     | *4d 5:05* |            |          |      |      |
+   | *Total time*                                     | *4d 6:15* |            |          |      |      |
    |--------------------------------------------------+-----------+------------+----------+------+------|
-   | *Chili [41/43]*                                  | *4d 5:05* |            |          |      |      |
-   | \_  /Components [38/40]/                         |           | /3d 22:38/ |          |      |      |
+   | *Chili [42/44]*                                  | *4d 6:15* |            |          |      |      |
+   | \_  /Components [39/41]/                         |           | /3d 23:48/ |          |      |      |
    | \_    Data model [0/0]                           |           |            |     8:50 |      |      |
-   | \_    Database [1/2]                             |           |            |     7:34 |      |      |
+   | \_    Database [1/2]                             |           |            |     8:16 |      |      |
    | \_      De-serialize attributes                  |           |            |          | 0:18 |      |
    | \_      Pool                                     |           |            |          | 0:02 |      |
+   | \_      Access patterns [0/0]                    |           |            |          | 0:42 |      |
    | \_      Testing                                  |           |            |          | 0:44 |      |
-   | \_    Network Scanner [3/3]                      |           |            |    13:11 |      |      |
+   | \_    Network Scanner [4/4]                      |           |            |    13:39 |      |      |
+   | \_      Handle hosts with multiple IP addresses  |           |            |          | 0:28 |      |
    | \_      Don't log hosts unless they are new      |           |            |          | 0:06 |      |
    | \_      Set LastScan timestamp on Network        |           |            |          | 0:51 |      |
    | \_      Avoid adding devices we already know     |           |            |          | 0:33 |      |
@@ -73,7 +75,7 @@
    | \_    The little probe that could... get...      |           |            |     6:00 |      |      |
    | \_    Parse output of dnf on Fedora              |           |            |     0:18 |      |      |
    #+END:
-** Components [38/40]
+** Components [39/41]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -125,6 +127,9 @@
      Fortunately, I could practically copy the implementation verbatim from a
      previous project.
 **** TODO Access patterns [0/0]
+     :LOGBOOK:
+     CLOCK: [2026-11-06 Fr 11:54]--[2026-11-06 Fr 12:36] =>  0:42
+     :END:
      I have spent so much time chasing a presumed deadlock in the Probe that
      ultimately turned out to be database-locking-related.
      And just as I thought I was done, I run into the same issue again, this
@@ -134,7 +139,7 @@
      CLOCK: [2026-07-08 Mi 12:38]--[2026-07-08 Mi 13:12] =>  0:34
      CLOCK: [2026-01-09 Fr 15:40]--[2026-01-09 Fr 15:50] =>  0:10
      :END:
-*** Network Scanner [3/3]
+*** Network Scanner [4/4]
     :LOGBOOK:
     CLOCK: [2026-07-10 Fr 10:34]--[2026-07-10 Fr 10:48] =>  0:14
     CLOCK: [2026-07-09 Do 10:19]--[2026-07-09 Do 13:34] =>  3:15
@@ -146,6 +151,11 @@
     CLOCK: [2026-01-09 Fr 18:36]--[2026-01-09 Fr 18:45] =>  0:09
     CLOCK: [2026-01-09 Fr 16:14]--[2026-01-09 Fr 18:28] =>  2:14
     :END:
+**** DONE Handle hosts with multiple IP addresses
+     CLOSED: [2026-11-06 Fr 13:04]
+     :LOGBOOK:
+     CLOCK: [2026-11-06 Fr 12:36]--[2026-11-06 Fr 13:04] =>  0:28
+     :END:
 **** DONE Don't log hosts unless they are new
      CLOSED: [2026-08-14 Fr 10:14]
      :LOGBOOK:
