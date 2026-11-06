@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 15. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 11:27:19 krylon>
+// Time-stamp: <2026-11-06 12:27:31 krylon>
 
 package config
 
@@ -20,6 +20,10 @@ func TestReadNoConfig(t *testing.T) {
 		expect = Config{
 			Global: Global{
 				Debug: true,
+			},
+			Database: Database{
+				RWPool: 1,
+				ROPool: 8,
 			},
 			Web: Web{
 				Address: "[::1]:4001",
@@ -77,6 +81,10 @@ func TestReadExampleConfig(t *testing.T) {
 		expect = Config{
 			Global: Global{
 				Debug: true,
+			},
+			Database: Database{
+				RWPool: 2,
+				ROPool: 4,
 			},
 			Web: Web{
 				Address: "[::1]:4242",

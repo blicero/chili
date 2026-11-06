@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 12. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 11:49:16 krylon>
+// Time-stamp: <2026-11-06 12:26:25 krylon>
 
 // Package config deals with the configuration file
 package config
@@ -20,6 +20,10 @@ const defaultConf = `# Time-stamp: <>
 
 [Global]
 Debug = true
+
+[Database]
+RWPool = 1
+ROPool = 8
 
 [Web]
 Address = "[::1]:4001"
@@ -73,6 +77,27 @@ func (g *Global) Equal(other any) bool {
 
 	return g.Debug == g2.Debug
 } // func (g *Global) Equal(other any) bool
+
+// Database holds options for the Database layer, namely the
+// sizes for the readonly and writable connection pools
+type Database struct {
+	ROPool int64
+	RWPool int64
+}
+
+// Equal returns true if other is equal to the receiver.
+func (d *Database) Equal(other any) bool {
+	switch d2 := other.(type) {
+	case Database:
+		return (d.ROPool == d2.ROPool) &&
+			(d.RWPool == d2.RWPool)
+	case *Database:
+		return (d.ROPool == d2.ROPool) &&
+			(d.RWPool == d2.RWPool)
+	default:
+		return false
+	}
+} // func (d *Database) Equal(other any) bool
 
 // Web configures the Web server.
 type Web struct {
@@ -210,6 +235,7 @@ func (l *Loglevel) Equal(other any) bool {
 // Config defines the configurable settings of Chili
 type Config struct {
 	Global   Global
+	Database Database
 	Web      Web
 	Ping     Ping
 	Scan     Scan
@@ -223,6 +249,7 @@ func (cfg *Config) Equal(other any) bool {
 	switch c2 := other.(type) {
 	case *Config:
 		return cfg.Global.Equal(&c2.Global) &&
+			cfg.Database.Equal(&c2.Database) &&
 			cfg.Web.Equal(&c2.Web) &&
 			cfg.Ping.Equal(&c2.Ping) &&
 			cfg.Scan.Equal(&c2.Scan) &&
@@ -230,6 +257,7 @@ func (cfg *Config) Equal(other any) bool {
 			cfg.Loglevel.Equal(&c2.Loglevel)
 	case Config:
 		return cfg.Global.Equal(&c2.Global) &&
+			cfg.Database.Equal(&c2.Database) &&
 			cfg.Web.Equal(&c2.Web) &&
 			cfg.Ping.Equal(&c2.Ping) &&
 			cfg.Scan.Equal(&c2.Scan) &&

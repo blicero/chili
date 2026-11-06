@@ -1,7 +1,11 @@
-# Time-stamp: <2026-11-06 11:27:13 krylon>
+# Time-stamp: <2026-11-06 12:22:24 krylon>
 
 [Global]
 Debug = true
+
+[Database]
+RWPool = 2
+ROPool = 4
 
 [Web]
 Address = "[::1]:4242"
