@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-04 11:17:03 krylon>
+// Time-stamp: <2026-11-06 12:39:26 krylon>
 
 package query
 
@@ -25,6 +25,7 @@ const (
 	DeviceSetActive
 	DeviceUpdate
 	DeviceGetByID
+	DeviceGetByName
 	DeviceGetByNet
 	DeviceGetAll
 	AttributeAdd

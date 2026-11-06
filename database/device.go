@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-04 12:14:38 krylon>
+// Time-stamp: <2026-11-06 12:42:19 krylon>
 
 package database
 
@@ -303,7 +303,7 @@ EXEC_QUERY:
 	}
 
 	return nil
-}
+} // func (db *Database) DeviceUpdate(d *model.Device) error
 
 // DeviceGetByID loads a Device by its ID, if such a record exists in the Datbase.
 func (db *Database) DeviceGetByID(id int64) (*model.Device, error) {
@@ -363,6 +363,65 @@ EXEC_QUERY:
 
 	return nil, nil
 } // func (db *Database) DeviceGetByID(id int64) (*model.Device, error)
+
+// DeviceGetByName looks up a Device by its name.
+func (db *Database) DeviceGetByName(name string) (*model.Device, error) {
+	const qid query.ID = query.DeviceGetByName
+	var (
+		err  error
+		stmt *sql.Stmt
+	)
+
+	if stmt, err = db.getQuery(qid); err != nil {
+		db.log.Printf("[ERROR] Cannot prepare query %s: %s\n",
+			qid,
+			err.Error())
+		return nil, err
+	} else if db.tx != nil {
+		stmt = db.tx.Stmt(stmt)
+	}
+
+	var rows *sql.Rows
+
+EXEC_QUERY:
+	if rows, err = stmt.Query(name); err != nil {
+		if worthARetry(err) {
+			waitForRetry(1)
+			goto EXEC_QUERY
+		}
+
+		return nil, err
+	}
+
+	defer rows.Close() // nolint: errcheck,gosec
+
+	if rows.Next() {
+		var (
+			addstamp, contact int64
+			astr              string
+			d                 = &model.Device{Name: name}
+		)
+
+		if err = rows.Scan(&d.ID, &d.NetID, &astr, &addstamp, &contact, &d.OS, &d.Class, &d.Active); err != nil {
+			var ex = fmt.Errorf("failed to scan row: %w", err)
+			db.log.Printf("[ERROR] %s\n", ex.Error())
+			return nil, ex
+		} else if d.Addr = net.ParseIP(astr); d.Addr == nil {
+			var ex = fmt.Errorf("cannot parse IP address %q: %w",
+				astr,
+				err)
+			db.log.Printf("[ERROR] %s\n", ex.Error())
+			return nil, ex
+		}
+
+		d.LastContact = time.Unix(contact, 0)
+		d.Added = time.Unix(addstamp, 0)
+
+		return d, nil
+	}
+
+	return nil, nil
+} // func (db *Database) DeviceGetByName(name string) (*model.Device, error)
 
 // DeviceGetByNet loads all Devices belonging to a particular Network.
 func (db *Database) DeviceGetByNet(netID int64) ([]*model.Device, error) {

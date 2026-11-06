@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-04 11:28:06 krylon>
+// Time-stamp: <2026-11-06 12:40:08 krylon>
 //
 // This files contains the SQL queries we intend to run on the database.
 
@@ -60,6 +60,19 @@ SELECT
     active
 FROM device
 WHERE id = ?
+`,
+	query.DeviceGetByName: `
+SELECT
+    id,
+    net_id,
+    addr,
+    added,
+    last_contact,
+    COALESCE(os, ''),
+    class,
+    active
+FROM device
+WHERE name = ?
 `,
 	query.DeviceGetByNet: `
 SELECT
