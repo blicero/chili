@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-11-03 12:35:08 krylon>
+// Time-stamp: <2026-11-06 13:33:23 krylon>
 
 //go:build ignore
 // +build ignore
@@ -64,7 +64,6 @@ var candidates = map[string][]string{
 		"model/attribute",
 		"database/query",
 		"control",
-		"nexus/event",
 	},
 	"vet": {
 		"logdomain",
@@ -77,8 +76,6 @@ var candidates = map[string][]string{
 		"scanner",
 		"control",
 		"probe",
-		"nexus",
-		"nexus/event",
 		"config",
 	},
 	"lint": {
@@ -92,8 +89,6 @@ var candidates = map[string][]string{
 		"scanner",
 		"control",
 		"probe",
-		"nexus",
-		"nexus/event",
 		"config",
 	},
 	"nilaway": {
@@ -107,8 +102,6 @@ var candidates = map[string][]string{
 		"scanner",
 		"control",
 		"probe",
-		"nexus",
-		"nexus/event",
 		"config",
 	},
 	"test": {
