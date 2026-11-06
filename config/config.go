@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 12. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 11:10:36 krylon>
+// Time-stamp: <2026-11-06 11:49:16 krylon>
 
 // Package config deals with the configuration file
 package config
@@ -12,6 +12,7 @@ import (
 	"os"
 
 	"github.com/BurntSushi/toml"
+	"github.com/blicero/chili/common"
 	"github.com/blicero/krylib"
 )
 
@@ -303,6 +304,10 @@ func Read(path string) (*Config, error) {
 
 	if cfg.Loglevel.Nexus == "" {
 		cfg.Loglevel.Nexus = "DEBUG"
+	}
+
+	if cfg.Probe.Interval == 0 {
+		cfg.Probe.Interval = int64(common.DefaultProbeInterval.Seconds())
 	}
 
 	return cfg, nil
