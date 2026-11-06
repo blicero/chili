@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 12:27:56 krylon>
+// Time-stamp: <2026-11-06 14:40:53 krylon>
 
 package database
 
@@ -181,13 +181,13 @@ var ROPool *Pool
 var RWPool *Pool
 
 // InitPools initializes the global pools.
-func InitPools(rosize, rwsize int) error {
+func InitPools(rosize, rwsize int64) error {
 	var err error
 
-	if ROPool, err = NewPool(rosize, true); err != nil {
+	if ROPool, err = NewPool(int(rosize), true); err != nil {
 		ROPool = nil
 		return err
-	} else if RWPool, err = NewPool(rwsize, false); err != nil {
+	} else if RWPool, err = NewPool(int(rwsize), false); err != nil {
 		ROPool.Close() // nolint: errcheck
 		ROPool = nil
 		RWPool = nil

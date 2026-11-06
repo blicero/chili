@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 11:50:15 krylon>
+// Time-stamp: <2026-11-06 14:41:35 krylon>
 
 package main
 
@@ -19,6 +19,7 @@ import (
 
 	"github.com/blicero/chili/common"
 	"github.com/blicero/chili/config"
+	"github.com/blicero/chili/database"
 	"github.com/blicero/chili/logdomain"
 	"github.com/blicero/chili/model/attribute"
 	"github.com/blicero/chili/probe"
@@ -150,6 +151,14 @@ func main() {
 	pubKeys = []string{filepath.Join(os.Getenv("HOME"), ".ssh")}
 
 	common.PackageLevels[logdomain.Scanner] = "INFO"
+
+	if err = database.InitPools(cfg.Database.ROPool, cfg.Database.RWPool); err != nil {
+		fmt.Fprint(
+			os.Stderr,
+			"Failed to initialize global database connection pools: %s\n",
+			err.Error())
+		os.Exit(1)
+	}
 
 	if seconds(cfg.Probe.Interval) != common.DefaultProbeInterval {
 		pInterval = seconds(cfg.Probe.Interval)
