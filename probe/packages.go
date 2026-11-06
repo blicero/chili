@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 20. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-10-31 12:03:01 krylon>
+// Time-stamp: <2026-11-06 14:51:28 krylon>
 
 package probe
 
@@ -339,8 +339,8 @@ func (p *Probe) queryInstalled(id int, d *model.Device, port int) error {
 		Value:     model.Packages(pkg),
 	}
 
-	db = p.pool.Get()
-	defer p.pool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	p.log.Printf("[TRACE] Probe#%02d got DB connection\n",
 		id)

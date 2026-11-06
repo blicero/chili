@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 12:02:41 krylon>
+// Time-stamp: <2026-11-06 14:50:31 krylon>
 
 // Package probe implements the detailed interrogration of Devices
 // the Scanner has discovered.
@@ -75,7 +75,6 @@ type Probe struct {
 	lock        sync.RWMutex
 	CmdQ        chan control.Message
 	interval    time.Duration
-	pool        *database.Pool
 	parCnt      int
 	active      atomic.Bool
 	scanRunning atomic.Bool
@@ -110,10 +109,6 @@ func Create(cnt int, interval time.Duration, userName string, keyPath ...string)
 	} else if p.log, err = common.GetLogger(logdomain.Probe); err != nil {
 		return nil, err
 	} else if err = p.initConfig(userName, keyPath...); err != nil {
-		return nil, err
-	} else if p.pool, err = database.NewPool(1, false); err != nil {
-		p.log.Printf("[CRITICAL] Cannot open database connection pool: %s\n",
-			err.Error())
 		return nil, err
 	}
 
@@ -495,8 +490,8 @@ func (p *Probe) getAllDevices() ([]*model.Device, error) {
 		devs []*model.Device
 	)
 
-	db = p.pool.Get()
-	defer p.pool.Put(db)
+	db = database.ROPool.Get()
+	defer database.ROPool.Put(db)
 
 	if devs, err = db.DeviceGetAll(); err != nil {
 		p.log.Printf("[ERROR] Failed to load all Devices: %s\n",
@@ -514,8 +509,8 @@ func (p *Probe) getMostRecentAttributes(id int, dev *model.Device) ([]*model.Att
 		attr []*model.Attribute
 	)
 
-	db = p.pool.Get()
-	defer p.pool.Put(db)
+	db = database.ROPool.Get()
+	defer database.ROPool.Put(db)
 
 	if attr, err = db.AttributeGetMostRecent(dev); err != nil {
 		p.log.Printf("[ERROR] Probe#%02d failed to load attributes for %s: %s\n",
@@ -559,8 +554,8 @@ func (p *Probe) qUptime(id int, d *model.Device, port int) error {
 		Value:     up,
 	}
 
-	db = p.pool.Get()
-	defer p.pool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	p.log.Printf("[TRACE] Probe#%02d got DB connection\n",
 		id)
@@ -610,8 +605,8 @@ func (p *Probe) qDiskSpace(id int, d *model.Device, port int) error {
 		Value:     model.DiskSpace(ds),
 	}
 
-	db = p.pool.Get()
-	defer p.pool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	p.log.Printf("[TRACE] Probe#%02d - got DB connection\n",
 		id)
@@ -660,8 +655,8 @@ func (p *Probe) qSNMP(id int, d *model.Device, port int) error {
 		Value:     val,
 	}
 
-	db = p.pool.Get()
-	defer p.pool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	p.log.Printf("[TRACE] Probe#%02d - got DB connection\n",
 		id)
@@ -718,8 +713,8 @@ func (p *Probe) qDMI(id int, d *model.Device, port int) error {
 		Value:     val,
 	}
 
-	db = p.pool.Get()
-	defer p.pool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	p.log.Printf("[TRACE] Probe#%02d - got DB connection\n",
 		id)
@@ -768,8 +763,8 @@ func (p *Probe) qSvc(id int, d *model.Device, port int) error {
 		Value:     val,
 	}
 
-	db = p.pool.Get()
-	defer p.pool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	p.log.Printf("[TRACE] Probe#%02d got DB connection\n",
 		id)
@@ -818,8 +813,8 @@ func (p *Probe) qUpdate(id int, d *model.Device, port int) error {
 		Value:     model.Updates(upd),
 	}
 
-	db = p.pool.Get()
-	defer p.pool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	p.log.Printf("[TRACE] Probe#%02d - got DB connection",
 		id)
@@ -844,8 +839,8 @@ func (p *Probe) setOS(id int, d *model.Device, osname string) error {
 		db  *database.Database
 	)
 
-	db = p.pool.Get()
-	defer p.pool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	if err = db.DeviceSetOS(d, osname); err != nil {
 		p.log.Printf("[ERROR] Probe#%02d failed to set OS on %s to %s: %s\n",
