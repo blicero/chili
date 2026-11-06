@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 12:02:41 krylon>
+// Time-stamp: <2026-11-06 12:51:43 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -37,6 +37,7 @@ import (
 // }
 
 var (
+	// ScanInterval defines the period between two network scans.
 	ScanInterval = time.Hour * 4
 )
 
@@ -45,6 +46,8 @@ type scanTarget struct {
 	addr net.IP
 }
 
+// Scanner scans the Networks from the Database for Devices and adds those
+// to the Database.
 type Scanner struct {
 	log         *log.Logger
 	scanLock    sync.RWMutex
@@ -330,11 +333,22 @@ func (sc *Scanner) gatherDevices(devQ <-chan *model.Device) {
 		case <-ticker.C:
 			continue
 		case dev := <-devQ:
-			if err = db.DeviceAdd(dev); err != nil {
+			var d2 *model.Device
+			if d2, err = db.DeviceGetByName(dev.Name); err != nil {
+				sc.log.Printf("[ERROR] Failed to look for Device named %q: %s\n",
+					dev.Name,
+					err.Error())
+				continue
+			} else if d2 != nil {
+				sc.log.Printf("[DEBUG] A Device named %s is already in the Database\n",
+					dev.Name)
+				continue
+			} else if err = db.DeviceAdd(dev); err != nil {
 				sc.log.Printf("[ERROR] Cannot add Device %s/%s to Database: %s\n",
 					dev.Name,
 					dev.Addr,
 					err.Error())
+				continue
 			} else {
 				sc.log.Printf("[INFO] Device %s/%s was added to Database.\n",
 					dev.Name,
