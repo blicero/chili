@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 12:18:32 krylon>
+// Time-stamp: <2026-11-06 12:27:56 krylon>
 
 package database
 
@@ -180,7 +180,7 @@ var ROPool *Pool
 // RWPool is the pool for writable database connections.
 var RWPool *Pool
 
-// InitPool initializes the global pool.
+// InitPools initializes the global pools.
 func InitPools(rosize, rwsize int) error {
 	var err error
 
