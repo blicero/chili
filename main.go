@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 14:41:35 krylon>
+// Time-stamp: <2026-11-07 11:22:34 krylon>
 
 package main
 
@@ -153,7 +153,7 @@ func main() {
 	common.PackageLevels[logdomain.Scanner] = "INFO"
 
 	if err = database.InitPools(cfg.Database.ROPool, cfg.Database.RWPool); err != nil {
-		fmt.Fprint(
+		fmt.Fprintf(
 			os.Stderr,
 			"Failed to initialize global database connection pools: %s\n",
 			err.Error())
