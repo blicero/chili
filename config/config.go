@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 12. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-07 11:22:55 krylon>
+// Time-stamp: <2026-11-07 11:47:35 krylon>
 
 // Package config deals with the configuration file
 package config
@@ -54,7 +54,6 @@ Ping = "DEBUG"
 Probe = "DEBUG"
 Scanner = "DEBUG"
 Scheduler = "DEBUG"
-Nexus = "DEBUG"
 Web = "DEBUG"
 
 `
@@ -206,7 +205,6 @@ type Loglevel struct {
 	Probe     string
 	Scanner   string
 	Scheduler string
-	Nexus     string
 	Web       string
 }
 
@@ -228,7 +226,6 @@ func (l *Loglevel) Equal(other any) bool {
 		(l.Probe == m.Probe) &&
 		(l.Scanner == m.Scanner) &&
 		(l.Scheduler == m.Scheduler) &&
-		(l.Nexus == m.Nexus) &&
 		(l.Web == m.Web)
 } // func (l *Loglevel) Equal(other any) bool
 
@@ -328,10 +325,6 @@ func Read(path string) (*Config, error) {
 
 	if cfg.Loglevel.Scheduler == "" {
 		cfg.Loglevel.Scheduler = "DEBUG"
-	}
-
-	if cfg.Loglevel.Nexus == "" {
-		cfg.Loglevel.Nexus = "DEBUG"
 	}
 
 	if cfg.Probe.Interval == 0 {

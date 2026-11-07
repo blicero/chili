@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 15. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-07 11:27:47 krylon>
+// Time-stamp: <2026-11-07 11:48:05 krylon>
 
 package config
 
@@ -54,7 +54,6 @@ func TestReadNoConfig(t *testing.T) {
 				Probe:     "DEBUG",
 				Scanner:   "DEBUG",
 				Scheduler: "DEBUG",
-				Nexus:     "DEBUG",
 				Web:       "DEBUG",
 			},
 		}
@@ -115,7 +114,6 @@ func TestReadExampleConfig(t *testing.T) {
 				Probe:     "DEBUG",
 				Scanner:   "DEBUG",
 				Scheduler: "DEBUG",
-				Nexus:     "DEBUG",
 				Web:       "DEBUG",
 			},
 		}

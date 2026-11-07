@@ -1,4 +1,4 @@
-# Time-stamp: <2026-11-06 12:22:24 krylon>
+# Time-stamp: <2026-11-07 11:48:16 krylon>
 
 [Global]
 Debug = true
@@ -36,5 +36,4 @@ Ping = "DEBUG"
 Probe = "DEBUG"
 Scanner = "DEBUG"
 Scheduler = "DEBUG"
-Nexus = "DEBUG"
 Web = "DEBUG"
