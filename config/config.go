@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 12. 08. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 12:26:25 krylon>
+// Time-stamp: <2026-11-07 11:22:55 krylon>
 
 // Package config deals with the configuration file
 package config
@@ -22,7 +22,7 @@ const defaultConf = `# Time-stamp: <>
 Debug = true
 
 [Database]
-RWPool = 1
+RWPool = 4
 ROPool = 8
 
 [Web]
