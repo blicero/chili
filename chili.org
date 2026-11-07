@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-11-07 11:24:20 krylon>
+# Time-stamp: <2026-11-07 12:01:44 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,19 +8,19 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [43/44]
+* Chili [44/45]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-11-07 Sa 11:24]
+   #+CAPTION: Clock summary at [2026-11-07 Sa 12:01]
    | Headline                                         | Time      |            |          |      |      |
    |--------------------------------------------------+-----------+------------+----------+------+------|
-   | *Total time*                                     | *4d 7:26* |            |          |      |      |
+   | *Total time*                                     | *4d 7:35* |            |          |      |      |
    |--------------------------------------------------+-----------+------------+----------+------+------|
-   | *Chili [43/44]*                                  | *4d 7:26* |            |          |      |      |
+   | *Chili [44/45]*                                  | *4d 7:35* |            |          |      |      |
    | \_  /Components [40/41]/                         |           | /3d 23:48/ |          |      |      |
    | \_    Data model [0/0]                           |           |            |     8:50 |      |      |
    | \_    Database [2/2]                             |           |            |     8:16 |      |      |
@@ -68,8 +68,9 @@
    | \_      Allow number of scanners xor probes...   |           |            |          | 0:04 |      |
    | \_      Integrate Configuration parser           |           |            |          | 0:30 |      |
    | \_      Profiling                                |           |            |          | 0:44 |      |
-   | \_  /Features [1/1]/                             |           | /1:20/     |          |      |      |
-   | \_    Database Pools [0/0]                       |           |            |     1:11 |      |      |
+   | \_  /Features [1/1]/                             |           | /1:29/     |          |      |      |
+   | \_    Database Pools [1/1]                       |           |            |     1:20 |      |      |
+   | \_      Switch Web server to global pools        |           |            |          | 0:08 |      |
    | \_    Build Script [1/1]                         |           |            |     0:09 |      |      |
    | \_      Compress backup of binary                |           |            |          | 0:09 |      |
    | \_  /Bugs [2/2]/                                 |           | /6:18/     |          |      |      |
@@ -495,12 +496,13 @@
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
    :END:
-*** Database Pools [0/0]
+*** Database Pools [1/1]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
     :END:
     :LOGBOOK:
+    CLOCK: [2026-11-07 Sa 11:52]--[2026-11-07 Sa 11:53] =>  0:01
     CLOCK: [2026-11-07 Sa 10:54]--[2026-11-07 Sa 11:23] =>  0:29
     CLOCK: [2026-11-06 Fr 14:25]--[2026-11-06 Fr 14:57] =>  0:32
     CLOCK: [2026-11-06 Fr 13:19]--[2026-11-06 Fr 13:29] =>  0:10
@@ -508,6 +510,11 @@
     I want to change how I access the Database. I want to use a single global
     connection pool that is read only and a single connection that is writable.
     This should at least make it easier to track down deadlocks.
+**** DONE Switch Web server to global pools 
+     CLOSED: [2026-11-07 Sa 12:01]
+     :LOGBOOK:
+     CLOCK: [2026-11-07 Sa 11:53]--[2026-11-07 Sa 12:01] =>  0:08
+     :END:
 **** [2026-11-07 Sa 11:12]
      I think that made it worse.
 *** Build Script [1/1]
