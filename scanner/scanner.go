@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 12:51:43 krylon>
+// Time-stamp: <2026-11-07 11:02:01 krylon>
 
 // Package scanner implements traversing a range of IP addresses
 // and probing which of those correspond to live devices.
@@ -54,7 +54,6 @@ type Scanner struct {
 	active      atomic.Bool
 	scanRunning atomic.Bool
 	workerCnt   int
-	dbPool      *database.Pool
 	CmdQ        chan control.Message
 	devCache    map[string]*model.Device
 }
@@ -75,10 +74,6 @@ func New(wcnt int) (*Scanner, error) {
 	)
 
 	if sc.log, err = common.GetLogger(logdomain.Scanner); err != nil {
-		return nil, err
-	} else if sc.dbPool, err = database.NewPool(max(wcnt+1, 2), false); err != nil {
-		sc.log.Printf("[ERROR] Failed to create database pool: %s\n",
-			err.Error())
 		return nil, err
 	} else if err = sc.fillDevCache(); err != nil {
 		return nil, err
@@ -177,8 +172,8 @@ func (sc *Scanner) feeder(scanQ chan<- *scanTarget) {
 
 	defer ticker.Stop()
 
-	db = sc.dbPool.Get()
-	defer sc.dbPool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	if networks, err = db.NetGetAll(); err != nil {
 		sc.log.Printf("[ERROR] Failed to get networks from database: %s\n",
@@ -322,8 +317,8 @@ func (sc *Scanner) gatherDevices(devQ <-chan *model.Device) {
 	sc.log.Println("[TRACE] Scanner gather worker coming up...")
 	defer sc.log.Println("[TRACE] Scanner gather worker quitting...")
 
-	db = sc.dbPool.Get()
-	defer sc.dbPool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	ticker = time.NewTicker(common.ActiveTimeout)
 	defer ticker.Stop()
@@ -368,8 +363,8 @@ func (sc *Scanner) fillDevCache() error {
 		devs []*model.Device
 	)
 
-	db = sc.dbPool.Get()
-	defer sc.dbPool.Put(db)
+	db = database.ROPool.Get()
+	defer database.ROPool.Put(db)
 
 	if devs, err = db.DeviceGetAll(); err != nil {
 		sc.log.Printf("[ERROR] Failed to load all Devices: %s\n",
