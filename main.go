@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 07. 01. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-07 11:22:34 krylon>
+// Time-stamp: <2026-11-07 11:57:30 krylon>
 
 package main
 
@@ -138,7 +138,6 @@ func main() {
 	common.PackageLevels[logdomain.Probe] = logutils.LogLevel(cfg.Loglevel.Probe)
 	common.PackageLevels[logdomain.Scanner] = logutils.LogLevel(cfg.Loglevel.Scanner)
 	common.PackageLevels[logdomain.Scheduler] = logutils.LogLevel(cfg.Loglevel.Scheduler)
-	common.PackageLevels[logdomain.Nexus] = logutils.LogLevel(cfg.Loglevel.Nexus)
 	common.PackageLevels[logdomain.Web] = logutils.LogLevel(cfg.Loglevel.Web)
 
 	probe.Schedule[attribute.Updates] = seconds(cfg.Probe.Updates)
