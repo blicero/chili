@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-11-07 12:01:44 krylon>
+# Time-stamp: <2026-11-07 13:06:26 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -8,20 +8,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Chili [44/45]
+* Chili [45/45]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: children
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-11-07 Sa 12:01]
+   #+CAPTION: Clock summary at [2026-11-07 Sa 13:06]
    | Headline                                         | Time      |            |          |      |      |
    |--------------------------------------------------+-----------+------------+----------+------+------|
    | *Total time*                                     | *4d 7:35* |            |          |      |      |
    |--------------------------------------------------+-----------+------------+----------+------+------|
-   | *Chili [44/45]*                                  | *4d 7:35* |            |          |      |      |
-   | \_  /Components [40/41]/                         |           | /3d 23:48/ |          |      |      |
+   | *Chili [45/45]*                                  | *4d 7:35* |            |          |      |      |
+   | \_  /Components [41/41]/                         |           | /3d 23:48/ |          |      |      |
    | \_    Data model [0/0]                           |           |            |     8:50 |      |      |
    | \_    Database [2/2]                             |           |            |     8:16 |      |      |
    | \_      De-serialize attributes                  |           |            |          | 0:18 |      |
@@ -55,7 +55,7 @@
    | \_      Uptime                                   |           |            |          | 0:13 |      |
    | \_      Refactor for easier testing              |           |            |          | 0:29 |      |
    | \_    Nexus [0/0]                                |           |            |     1:17 |      |      |
-   | \_    Web UI [8/9]                               |           |            |    19:02 |      |      |
+   | \_    Web UI [9/9]                               |           |            |    19:02 |      |      |
    | \_      Edit Networks [0/0]                      |           |            |          | 5:18 |      |
    | \_      Edit Devices [0/0]                       |           |            |          | 2:24 |      |
    | \_      Display Device Attributes more prettily  |           |            |          | 3:12 |      |
@@ -77,7 +77,7 @@
    | \_    The little probe that could... get...      |           |            |     6:00 |      |      |
    | \_    Parse output of dnf on Fedora              |           |            |     0:18 |      |      |
    #+END:
-** Components [40/41]
+** Components [41/41]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: children
@@ -391,7 +391,7 @@
     :END:
     I need something vaguely resembling a message bus
     ... On second thought, I may have been overly ambitious here. Stay tuned.
-*** Web UI [8/9]
+*** Web UI [9/9]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: children
@@ -415,7 +415,8 @@
      CLOCK: [2026-08-12 Mi 09:34]--[2026-08-12 Mi 10:15] =>  0:41
      CLOCK: [2026-08-11 Di 14:06]--[2026-08-11 Di 18:12] =>  4:06
      :END:
-**** TODO Edit Devices [0/0]
+**** DONE Edit Devices [0/0]
+     CLOSED: [2026-11-07 Sa 13:06]
      :PROPERTIES:
      :COOKIE_DATA: todo recursive
      :VISIBILITY: children
