@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 22. 07. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 12:08:53 krylon>
+// Time-stamp: <2026-11-07 11:55:23 krylon>
 
 package web
 
@@ -39,7 +39,6 @@ import (
 const (
 	noCache    = "no-store, max-age=0"
 	tmplFolder = "assets/templates"
-	poolSize   = 4
 )
 
 func cacheSeconds(seconds int) string {
@@ -59,7 +58,6 @@ type Server struct {
 	addr      string
 	probeQ    chan<- control.Message
 	log       *log.Logger
-	pool      *database.Pool
 	active    atomic.Bool
 	lock      sync.RWMutex // nolint: unused
 	router    *mux.Router
@@ -92,10 +90,6 @@ func Create(addr string, pq chan<- control.Message) (*Server, error) {
 	)
 
 	if srv.log, err = common.GetLogger(logdomain.Web); err != nil {
-		return nil, err
-	} else if srv.pool, err = database.NewPool(poolSize, false); err != nil {
-		srv.log.Printf("[CRITICAL] Failed to open Database connection pool: %s\n",
-			err.Error())
 		return nil, err
 	}
 
@@ -176,7 +170,6 @@ func (srv *Server) IsActive() bool {
 func (srv *Server) Stop() {
 	srv.active.Store(false)
 	srv.web.Shutdown(context.Background()) // nolint: errcheck
-	srv.pool.Close()                       // nolint: errcheck
 } // func (srv *Server) Stop()
 
 // Run executes the Server's loop, waiting for new connections and starting
@@ -224,8 +217,8 @@ func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request) {
 		}
 	)
 
-	db = srv.pool.Get()
-	defer srv.pool.Put(db)
+	db = database.ROPool.Get()
+	defer database.ROPool.Put(db)
 
 	if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
 		msg = fmt.Sprintf("Could not find template %q", tmplName)
@@ -305,8 +298,8 @@ func (srv *Server) handleDeviceDetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db = srv.pool.Get()
-	defer srv.pool.Put(db)
+	db = database.ROPool.Get()
+	defer database.ROPool.Put(db)
 
 	if data.Device, err = db.DeviceGetByID(devID); err != nil {
 		msg = fmt.Sprintf("Error looking up device %d: %s",
@@ -384,8 +377,8 @@ func (srv *Server) handleNetworkAll(w http.ResponseWriter, r *http.Request) {
 		}
 	)
 
-	db = srv.pool.Get()
-	defer srv.pool.Put(db)
+	db = database.ROPool.Get()
+	defer database.ROPool.Put(db)
 
 	if data.Devices, err = db.DeviceGetAll(); err != nil {
 		msg = fmt.Sprintf("Failed to load all Devices: %s",
@@ -448,8 +441,8 @@ func (srv *Server) handleNetworkDetails(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	db = srv.pool.Get()
-	defer srv.pool.Put(db)
+	db = database.ROPool.Get()
+	defer database.ROPool.Put(db)
 
 	if data.Devices, err = db.DeviceGetAll(); err != nil {
 		msg = fmt.Sprintf("Failed to load all Devices: %s",
@@ -522,8 +515,8 @@ func (srv *Server) handleDeviceForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db = srv.pool.Get()
-	defer srv.pool.Put(db)
+	db = database.ROPool.Get()
+	defer database.ROPool.Put(db)
 
 	if data.Dev, err = db.DeviceGetByID(devID); err != nil {
 		msg = fmt.Sprintf("Failed to lookup Device %d in database: %s",
@@ -638,8 +631,8 @@ func (srv *Server) handleAjaxNetAdd(w http.ResponseWriter, r *http.Request) {
 
 	network.Name = name
 
-	db = srv.pool.Get()
-	defer srv.pool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	if err = db.NetAdd(&network); err != nil {
 		msg = fmt.Sprintf("adding new network %s failed: %s",
@@ -734,8 +727,8 @@ func (srv *Server) handleAjaxDeviceSubmit(w http.ResponseWriter, r *http.Request
 
 	dev.Class = device.Class(cls)
 
-	db = srv.pool.Get()
-	defer srv.pool.Put(db)
+	db = database.RWPool.Get()
+	defer database.RWPool.Put(db)
 
 	if err = db.DeviceUpdate(&dev); err != nil {
 		msg = fmt.Sprintf("failed to update Device %d (%s): %s",

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 04. 09. 2019 by Benjamin Walkenhorst
 // (c) 2019 Benjamin Walkenhorst
-// Time-stamp: <2026-08-06 10:23:06 krylon>
+// Time-stamp: <2026-11-07 11:55:51 krylon>
 //
 // Helper functions for use by the HTTP request handlers
 
@@ -50,8 +50,8 @@ func (srv *Server) getNotifications(dev *model.Device) ([]notification, error) {
 		attributes []*model.Attribute
 	)
 
-	db = srv.pool.Get()
-	defer srv.pool.Put(db)
+	db = database.ROPool.Get()
+	defer database.ROPool.Put(db)
 
 	if attributes, err = db.AttributeGetMostRecent(dev); err != nil {
 		srv.log.Printf("[ERROR] Failed to get Attributes for %s: %s\n",
