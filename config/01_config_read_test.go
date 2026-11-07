@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 15. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-11-06 12:27:31 krylon>
+// Time-stamp: <2026-11-07 11:27:47 krylon>
 
 package config
 
@@ -22,7 +22,7 @@ func TestReadNoConfig(t *testing.T) {
 				Debug: true,
 			},
 			Database: Database{
-				RWPool: 1,
+				RWPool: 4,
 				ROPool: 8,
 			},
 			Web: Web{
